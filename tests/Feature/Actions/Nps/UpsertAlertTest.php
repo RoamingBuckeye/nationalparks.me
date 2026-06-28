@@ -4,35 +4,15 @@ declare(strict_types=1);
 
 use App\Actions\Nps\UpsertAlert;
 use App\Actions\Nps\UpsertPark;
-use App\Integrations\Nps\Data\AlertData;
-use App\Integrations\Nps\Data\ParkData;
 use App\Integrations\Nps\Enums\AlertCategory;
 use App\Models\Alert;
-use App\Models\Park;
-
-function seedPark(string $code = 'yell'): Park
-{
-    return (new UpsertPark)(ParkData::fromArray([
-        'id' => "park-{$code}-uuid", 'parkCode' => $code, 'name' => 'Yellowstone',
-        'fullName' => 'Yellowstone NP', 'designation' => 'National Park', 'description' => '',
-        'latitude' => '44.6', 'longitude' => '-110.5', 'states' => 'WY', 'url' => '',
-    ]));
-}
-
-function alertData(array $overrides = []): AlertData
-{
-    return AlertData::fromArray(array_replace([
-        'id' => 'alert-1', 'parkCode' => 'yell', 'category' => 'Park Closure',
-        'title' => 'Lower Loop Closed', 'description' => 'Avalanche risk.',
-        'url' => 'https://www.nps.gov/yell/alert/1',
-        'lastIndexedDate' => '2026-06-28T08:00:00Z',
-    ], $overrides));
-}
+use Tests\Factories\Nps\AlertDataFactory;
+use Tests\Factories\Nps\ParkDataFactory;
 
 it('creates an alert attached to the matching park', function () {
-    seedPark();
+    (new UpsertPark)(ParkDataFactory::yellowstone());
 
-    $alert = (new UpsertAlert)(alertData());
+    $alert = (new UpsertAlert)(AlertDataFactory::closure());
 
     expect($alert)->toBeInstanceOf(Alert::class)
         ->and($alert->park->park_code)->toBe('yell')
@@ -42,18 +22,18 @@ it('creates an alert attached to the matching park', function () {
 });
 
 it('returns null when the alert references an unknown park', function () {
-    $result = (new UpsertAlert)(alertData(['parkCode' => 'unkw']));
+    $result = (new UpsertAlert)(AlertDataFactory::closure(['parkCode' => 'unkw']));
 
     expect($result)->toBeNull()
         ->and(Alert::count())->toBe(0);
 });
 
 it('is idempotent on repeated upserts', function () {
-    seedPark();
+    (new UpsertPark)(ParkDataFactory::yellowstone());
     $action = new UpsertAlert;
 
-    $first = $action(alertData());
-    $second = $action(alertData(['title' => 'Lower Loop — Reopened Tomorrow']));
+    $first = $action(AlertDataFactory::closure());
+    $second = $action(AlertDataFactory::closure(['title' => 'Lower Loop — Reopened Tomorrow']));
 
     expect($second->id)->toBe($first->id)
         ->and($second->title)->toBe('Lower Loop — Reopened Tomorrow')
@@ -61,11 +41,11 @@ it('is idempotent on repeated upserts', function () {
 });
 
 it('attaches the same NPS alert to multiple parks via parkCodeOverride', function () {
-    seedPark('sequ');
-    seedPark('kica');
+    (new UpsertPark)(ParkDataFactory::yellowstone(['parkCode' => 'sequ', 'name' => 'Sequoia', 'fullName' => 'Sequoia National Park']));
+    (new UpsertPark)(ParkDataFactory::yellowstone(['parkCode' => 'kica', 'name' => 'Kings Canyon', 'fullName' => 'Kings Canyon National Park']));
 
     $upsert = new UpsertAlert;
-    $upstream = alertData(['parkCode' => 'seki']);
+    $upstream = AlertDataFactory::closure(['parkCode' => 'seki']);
 
     $upsert($upstream, parkCodeOverride: 'sequ');
     $upsert($upstream, parkCodeOverride: 'kica');

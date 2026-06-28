@@ -3,22 +3,13 @@
 declare(strict_types=1);
 
 use App\Integrations\Nps\Data\AmenityData;
-use App\Integrations\Nps\Data\ParkData;
-use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Testing\FakeNpsClient;
-
-function fakeYellowstone(): ParkData
-{
-    return ParkData::fromArray([
-        'id' => 'park-yell', 'parkCode' => 'yell', 'name' => 'Yellowstone', 'fullName' => 'Yellowstone NP',
-        'designation' => 'National Park', 'description' => '', 'latitude' => '44.6', 'longitude' => '-110.5',
-        'states' => 'WY', 'url' => '',
-    ]);
-}
+use Tests\Factories\Nps\ParkDataFactory;
+use Tests\Factories\Nps\PointOfInterestDataFactory;
 
 it('returns preloaded parks via LazyCollection', function () {
-    $client = FakeNpsClient::make()->withParks([fakeYellowstone()]);
+    $client = FakeNpsClient::make()->withParks([ParkDataFactory::yellowstone()]);
 
     $parks = $client->parks()->all();
 
@@ -26,19 +17,16 @@ it('returns preloaded parks via LazyCollection', function () {
 });
 
 it('filters parks by parkCode list', function () {
-    $client = FakeNpsClient::make()->withParks([fakeYellowstone()]);
+    $client = FakeNpsClient::make()->withParks([ParkDataFactory::yellowstone()]);
 
     expect($client->parks(['grca'])->count())->toBe(0)
         ->and($client->parks(['yell'])->count())->toBe(1);
 });
 
 it('returns POIs by park and kind', function () {
-    $poi = PointOfInterestData::fromArray(
-        ['id' => 'p1', 'title' => 'Old Faithful', 'parkCode' => 'yell'],
-        PoiKind::Place,
-    );
-
-    $client = FakeNpsClient::make()->withPointsOfInterest('yell', PoiKind::Place, [$poi]);
+    $client = FakeNpsClient::make()->withPointsOfInterest('yell', PoiKind::Place, [
+        PointOfInterestDataFactory::oldFaithful(),
+    ]);
 
     expect($client->places('yell')->count())->toBe(1)
         ->and($client->places('grca')->count())->toBe(0)

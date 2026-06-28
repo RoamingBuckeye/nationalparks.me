@@ -3,10 +3,7 @@
 declare(strict_types=1);
 
 use App\Integrations\Nps\Contracts\NpsClient;
-use App\Integrations\Nps\Data\AlertData;
 use App\Integrations\Nps\Data\AmenityData;
-use App\Integrations\Nps\Data\ParkData;
-use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\NpsEntity;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Testing\FakeNpsClient;
@@ -14,33 +11,15 @@ use App\Models\Alert;
 use App\Models\NpsSync;
 use App\Models\Park;
 use App\Models\PointOfInterest;
-
-function buildFakeClient(): FakeNpsClient
-{
-    $yellowstone = ParkData::fromArray([
-        'id' => 'park-yell-uuid', 'parkCode' => 'yell', 'name' => 'Yellowstone',
-        'fullName' => 'Yellowstone NP', 'designation' => 'National Park', 'description' => '',
-        'latitude' => '44.6', 'longitude' => '-110.5', 'states' => 'WY', 'url' => '',
-    ]);
-
-    $devilsTower = ParkData::fromArray([
-        'id' => 'park-deto-uuid', 'parkCode' => 'deto', 'name' => 'Devils Tower',
-        'fullName' => 'Devils Tower National Monument', 'designation' => 'National Monument', 'description' => '',
-        'latitude' => '44.5', 'longitude' => '-104.7', 'states' => 'WY', 'url' => '',
-    ]);
-
-    $place = PointOfInterestData::fromArray([
-        'id' => 'place-1', 'title' => 'Old Faithful', 'parkCode' => 'yell',
-        'latitude' => '44.46', 'longitude' => '-110.83',
-    ], PoiKind::Place);
-
-    return FakeNpsClient::make()
-        ->withParks([$yellowstone, $devilsTower])
-        ->withPointsOfInterest('yell', PoiKind::Place, [$place]);
-}
+use Tests\Factories\Nps\AlertDataFactory;
+use Tests\Factories\Nps\ParkDataFactory;
+use Tests\Factories\Nps\PointOfInterestDataFactory;
 
 beforeEach(function () {
-    $this->app->instance(NpsClient::class, buildFakeClient());
+    $this->app->instance(NpsClient::class, FakeNpsClient::make()
+        ->withParks([ParkDataFactory::yellowstone(), ParkDataFactory::devilsTower()])
+        ->withPointsOfInterest('yell', PoiKind::Place, [PointOfInterestDataFactory::oldFaithful()])
+    );
 });
 
 it('syncs parks and POIs end-to-end via the all entity', function () {
@@ -104,13 +83,9 @@ it('limits POI sync to designation-matching parks only', function () {
 });
 
 it('splits seki into sequ and kica when syncing parks', function () {
-    $seki = ParkData::fromArray([
-        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
-        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
-        'description' => 'Two parks managed as one.', 'latitude' => '36.7', 'longitude' => '-118.6',
-        'states' => 'CA', 'url' => 'https://www.nps.gov/seki',
-    ]);
-    $this->app->instance(NpsClient::class, FakeNpsClient::make()->withParks([$seki]));
+    $this->app->instance(NpsClient::class, FakeNpsClient::make()
+        ->withParks([ParkDataFactory::sequoiaKingsCanyon()])
+    );
 
     $this->artisan('nps:sync', ['entity' => 'parks'])->assertSuccessful();
 
@@ -119,7 +94,7 @@ it('splits seki into sequ and kica when syncing parks', function () {
         ->and(Park::where('park_code', 'sequ')->first()->nps_source_code)
         ->toBe('seki')
         ->and(Park::where('park_code', 'sequ')->first()->nps_source_id)
-        ->toBe('park-seki-uuid')
+        ->toBe(ParkDataFactory::sequoiaKingsCanyon()->npsId)
         ->and(Park::where('park_code', 'kica')->first()->nps_source_code)
         ->toBe('seki')
         ->and(Park::where('park_code', 'seki')->exists())
@@ -127,30 +102,12 @@ it('splits seki into sequ and kica when syncing parks', function () {
 });
 
 it('syncs alerts only for canonical parks, duplicating seki to sequ + kica, and prunes stale rows', function () {
-    // Seed sequ + kica from a seki upstream so the alert codeMap covers seki → [sequ, kica].
-    $seki = ParkData::fromArray([
-        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
-        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
-        'description' => '', 'latitude' => '36.7', 'longitude' => '-118.6', 'states' => 'CA', 'url' => '',
-    ]);
-    $devilsTower = ParkData::fromArray([
-        'id' => 'park-deto-uuid', 'parkCode' => 'deto', 'name' => 'Devils Tower',
-        'fullName' => 'Devils Tower NM', 'designation' => 'National Monument', 'description' => '',
-        'latitude' => '44.5', 'longitude' => '-104.7', 'states' => 'WY', 'url' => '',
-    ]);
-
-    $sekiAlert = AlertData::fromArray([
-        'id' => 'alert-seki', 'parkCode' => 'seki', 'category' => 'Park Closure',
-        'title' => 'Highway closure', 'description' => 'Rockslide.',
-    ]);
-    $detoAlert = AlertData::fromArray([
-        'id' => 'alert-deto', 'parkCode' => 'deto', 'category' => 'Information',
-        'title' => 'Climbing closure', 'description' => 'Falcon nesting.',
-    ]);
-
     $this->app->instance(NpsClient::class, FakeNpsClient::make()
-        ->withParks([$seki, $devilsTower])
-        ->withAlerts([$sekiAlert, $detoAlert])
+        ->withParks([ParkDataFactory::sequoiaKingsCanyon(), ParkDataFactory::devilsTower()])
+        ->withAlerts([
+            AlertDataFactory::closure(['id' => 'alert-seki', 'parkCode' => 'seki', 'title' => 'Highway closure', 'description' => 'Rockslide.']),
+            AlertDataFactory::advisory(['id' => 'alert-deto', 'parkCode' => 'deto', 'category' => 'Information', 'title' => 'Climbing closure', 'description' => 'Falcon nesting.']),
+        ])
     );
 
     // Seed a stale alert that won't be in the upstream — should be pruned.
@@ -171,19 +128,11 @@ it('syncs alerts only for canonical parks, duplicating seki to sequ + kica, and 
 });
 
 it('routes seki POI fetches to both sequ and kica using nps_source_code', function () {
-    $seki = ParkData::fromArray([
-        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
-        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
-        'description' => '', 'latitude' => '36.7', 'longitude' => '-118.6', 'states' => 'CA', 'url' => '',
-    ]);
-    $generalSherman = PointOfInterestData::fromArray([
-        'id' => 'poi-sherman', 'title' => 'General Sherman Tree', 'parkCode' => 'seki',
-        'latitude' => '36.58', 'longitude' => '-118.75',
-    ], PoiKind::Place);
-
     $this->app->instance(NpsClient::class, FakeNpsClient::make()
-        ->withParks([$seki])
-        ->withPointsOfInterest('seki', PoiKind::Place, [$generalSherman])
+        ->withParks([ParkDataFactory::sequoiaKingsCanyon()])
+        ->withPointsOfInterest('seki', PoiKind::Place, [
+            PointOfInterestDataFactory::oldFaithful(['id' => 'poi-sherman', 'title' => 'General Sherman Tree', 'parkCode' => 'seki']),
+        ])
     );
 
     $this->artisan('nps:sync')->assertSuccessful();
