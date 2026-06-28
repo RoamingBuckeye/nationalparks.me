@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'nps' => [
+        'key' => env('NPS_API_KEY'),
+        'base_url' => env('NPS_BASE_URL', 'https://developer.nps.gov/api/v1/'),
+        'timeout' => (int) env('NPS_TIMEOUT', 15),
+        'connect_timeout' => (int) env('NPS_CONNECT_TIMEOUT', 5),
+        'retries' => (int) env('NPS_RETRIES', 2),
+        'retry_delay_ms' => (int) env('NPS_RETRY_DELAY_MS', 250),
+        'page_size' => (int) env('NPS_PAGE_SIZE', 200),
+    ],
+
 ];
