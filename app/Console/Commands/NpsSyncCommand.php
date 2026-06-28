@@ -11,6 +11,7 @@ use App\Integrations\Nps\Contracts\NpsClient;
 use App\Integrations\Nps\Data\ParkData;
 use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\NpsEntity;
+use App\Integrations\Nps\Enums\ParkDesignation;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Exceptions\NpsRateLimitedException;
 use App\Models\Alert;
@@ -29,17 +30,27 @@ class NpsSyncCommand extends Command
 
     public const string ALL_DESIGNATIONS = 'all';
 
-    /** NPS designations counted as one of the canonical "63 National Parks". */
-    public const array CANONICAL_DESIGNATIONS = [
-        'National Park',
-        'National Park & Preserve',
-        'National and State Parks',
-    ];
-
     /** Park codes counted as canonical despite having a non-matching designation. */
     public const array CANONICAL_EXTRA_PARK_CODES = [
         'npsa', // National Park of American Samoa — empty designation upstream
     ];
+
+    /**
+     * NPS designations counted as one of the canonical "63 National Parks".
+     * Kept as a method so the source of truth stays the enum's isCanonical().
+     *
+     * @return list<string>
+     */
+    public static function canonicalDesignationValues(): array
+    {
+        return array_values(array_map(
+            static fn (ParkDesignation $d): string => $d->value,
+            array_filter(
+                ParkDesignation::cases(),
+                static fn (ParkDesignation $d): bool => $d->isCanonical(),
+            ),
+        ));
+    }
 
     /**
      * NPS units we split into multiple local parks. Map of upstream park_code
@@ -212,7 +223,7 @@ class NpsSyncCommand extends Command
 
         if ($designation === self::CANONICAL) {
             return $query->where(function ($q): void {
-                $q->whereIn('designation', self::CANONICAL_DESIGNATIONS)
+                $q->whereIn('designation', self::canonicalDesignationValues())
                     ->orWhereIn('park_code', self::CANONICAL_EXTRA_PARK_CODES)
                     ->orWhereNotNull('nps_source_code');
             })->get();
@@ -377,7 +388,7 @@ class NpsSyncCommand extends Command
     {
         return match (true) {
             $designation === null => true,
-            $designation === self::CANONICAL => in_array($data->designation, self::CANONICAL_DESIGNATIONS, true)
+            $designation === self::CANONICAL => (ParkDesignation::tryFrom($data->designation)?->isCanonical() ?? false)
                 || in_array($data->parkCode, self::CANONICAL_EXTRA_PARK_CODES, true)
                 || array_key_exists($data->parkCode, self::SPLIT_PARKS),
             default => $data->designation === $designation,

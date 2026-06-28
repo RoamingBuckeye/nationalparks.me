@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Domain\Casts\UsStatesCast;
 use App\Domain\Coordinates;
+use App\Integrations\Nps\Enums\ParkDesignation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +20,7 @@ class Park extends Model
     protected function casts(): array
     {
         return [
-            'states' => 'array',
+            'states' => UsStatesCast::class,
             'activities' => 'array',
             'topics' => 'array',
             'operating_hours' => 'array',
@@ -28,6 +30,21 @@ class Park extends Model
             'last_synced_at' => 'datetime',
             'archived_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The designation column stores the raw NPS string (NPS has 30+ values
+     * across all park-system units). This accessor returns the matching
+     * `ParkDesignation` case for the canonical set or null otherwise —
+     * handy for filtering without locking the enum to be exhaustive.
+     *
+     * @return Attribute<ParkDesignation|null, never>
+     */
+    protected function designationEnum(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): ?ParkDesignation => ParkDesignation::tryFrom((string) $this->designation),
+        );
     }
 
     /** @return HasMany<PointOfInterest, $this> */

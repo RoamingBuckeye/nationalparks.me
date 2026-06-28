@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Actions\Nps\UpsertPark;
 use App\Domain\Coordinates;
+use App\Domain\UsState;
+use App\Integrations\Nps\Enums\ParkDesignation;
 use App\Models\Activity;
 use App\Models\Park;
 use App\Models\Topic;
@@ -14,7 +16,7 @@ it('creates a park with images on first upsert', function () {
 
     expect($park)->toBeInstanceOf(Park::class)
         ->and($park->park_code)->toBe('yell')
-        ->and($park->states)->toBe(['ID', 'MT', 'WY'])
+        ->and($park->states)->toBe([UsState::Idaho, UsState::Montana, UsState::Wyoming])
         ->and($park->images)->toHaveCount(1)
         ->and($park->coordinates)->toBeInstanceOf(Coordinates::class)
         ->and($park->last_synced_at)->not->toBeNull();
@@ -66,6 +68,16 @@ it('treats nps_source_code=null as self-sourced', function () {
 
     expect($park->isSplitChild())->toBeFalse()
         ->and($park->npsSourceCode())->toBe('yell');
+});
+
+it('exposes designation_enum for canonical-match parks (null for non-canonical)', function () {
+    $yellow = (new UpsertPark)(ParkDataFactory::yellowstone());
+    $deto = (new UpsertPark)(ParkDataFactory::devilsTower());
+
+    expect($yellow->designation)->toBe('National Park')
+        ->and($yellow->designation_enum)->toBe(ParkDesignation::NationalPark)
+        ->and($deto->designation)->toBe('National Monument')
+        ->and($deto->designation_enum)->toBeNull();
 });
 
 it('syncs activities and topics into reference tables and the M2M relation', function () {
