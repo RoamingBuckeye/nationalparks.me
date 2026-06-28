@@ -85,11 +85,16 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 ### Users & authentication
 
-- **Sign-up:** email + password only (no social logins for now)
+**Stack:** Laravel **Fortify** for auth flows + **Sanctum** for mobile API tokens + **`laravel/passkeys`** for WebAuthn + **`spatie/laravel-honeypot`** for bot deterrence on the registration form. All Vue/Inertia pages come from the Vue Starter Kit and are extended in place.
+
+- **Sign-up:** email + password + optional `display_name`. No social logins.
+- **Email verification:** **required** — account stays pending until verified (enforced via `MustVerifyEmail` on `User` + Fortify's verify flow + middleware-guarded routes).
 - **MFA (optional, per user):**
   - TOTP via authenticator app (Google Authenticator, 1Password, etc.)
-  - Email code as alternate second factor
-- Standard account flows: email verification, password reset, profile/security settings (mostly provided by the Fortify-based starter kit already installed)
+  - Email-code as alternate second factor (hand-rolled — no off-the-shelf package; ~50 LOC: Action + Mailable + Form Request + a small storage column)
+  - **Passkeys (WebAuthn)** via `laravel/passkeys` — optional, never required
+- **Profile / Settings:** `display_name`, `share_enabled` toggle, share URL with rotate/revoke, password change, 2FA setup, passkey enrollment, account deletion.
+- **Honeypot:** Spatie Laravel Honeypot on the registration form (no UI surface).
 
 ### Core actions (authenticated)
 
@@ -225,8 +230,15 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | Share token scope | One token per user; one URL renders list + map. | 2026-06-28 |
 | Visit visibility | Single `users.share_enabled` toggle; no per-visit visibility. | 2026-06-28 |
 | Notes scope | Visit-level only, UI label is **"Journal"**. | 2026-06-28 |
+| Auth package | **Laravel Fortify** (already installed via the Vue Starter Kit). | 2026-06-28 |
+| Passkeys (WebAuthn) | **Keep on** — optional second factor, never required. | 2026-06-28 |
+| `display_name` exposure | Surface on the sign-up form AND editable in profile. Not in share URLs. | 2026-06-28 |
+| `share_enabled` exposure | Profile page only, default `false`. Not collected at sign-up. | 2026-06-28 |
+| Email-code 2FA | Hand-rolled (~50 LOC) as an additional second factor alongside TOTP. | 2026-06-28 |
+| Email verification | Required — accounts stay pending until verified. | 2026-06-28 |
+| Sanctum | Yes — for the mobile API tokens. | 2026-06-28 |
+| Honeypot | `spatie/laravel-honeypot` on the registration form. | 2026-06-28 |
 
 ## Open questions
 
 1. **Map provider:** Mapbox (paid, free tier ~50k loads/mo, great default styles) vs. Leaflet + OpenStreetMap (free, lower polish). Likely answered when we start the map UI.
-2. **Starter-kit feature trim:** the Fortify starter kit ships with **passkeys (WebAuthn)** which you didn't mention in the original functional spec. Keep them in (no harm, modern), or remove to keep the surface to email/TOTP/email-code only?
