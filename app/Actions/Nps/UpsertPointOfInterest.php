@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Nps;
 
 use App\Integrations\Nps\Data\ImageData;
+use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Models\Park;
 use App\Models\PointOfInterest;
@@ -44,6 +45,7 @@ class UpsertPointOfInterest
                     'amenities' => $data->amenities,
                     'is_passport_stamp_location' => $data->isPassportStampLocation,
                     'details' => $data->details,
+                    'operating_hours' => self::serializeOperatingHours($data->operatingHours),
                     'last_synced_at' => now(),
                     'archived_at' => null,
                 ],
@@ -53,6 +55,20 @@ class UpsertPointOfInterest
 
             return $poi->refresh();
         });
+    }
+
+    /**
+     * @param  list<OperatingHoursData>  $hours
+     * @return list<array<string, mixed>>
+     */
+    protected static function serializeOperatingHours(array $hours): array
+    {
+        return array_map(static fn (OperatingHoursData $h): array => [
+            'name' => $h->name,
+            'description' => $h->description,
+            'standard_hours' => $h->standardHours,
+            'exceptions' => $h->exceptions,
+        ], $hours);
     }
 
     /** @param list<ImageData> $images */

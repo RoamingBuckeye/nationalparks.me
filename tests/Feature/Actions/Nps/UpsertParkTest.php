@@ -84,3 +84,22 @@ it('treats nps_source_code=null as self-sourced', function () {
     expect($park->isSplitChild())->toBeFalse()
         ->and($park->npsSourceCode())->toBe('yell');
 });
+
+it('persists activities, topics, operating_hours, and entrance_fees as JSON', function () {
+    $park = (new UpsertPark)(parkData([
+        'activities' => [['id' => 'a-1', 'name' => 'Hiking'], ['id' => 'a-2', 'name' => 'Stargazing']],
+        'topics' => [['id' => 't-1', 'name' => 'Geology']],
+        'entranceFees' => [['cost' => '35.00', 'title' => 'Private Vehicle', 'description' => '7-day pass']],
+        'entrancePasses' => [['cost' => '70.00', 'title' => 'Annual', 'description' => 'Annual pass']],
+        'operatingHours' => [['name' => 'Park Hours', 'description' => 'Open year-round', 'standardHours' => ['monday' => 'All Day'], 'exceptions' => []]],
+    ]));
+
+    expect($park->activities)->toBe(['Hiking', 'Stargazing'])
+        ->and($park->topics)->toBe(['Geology'])
+        ->and($park->entrance_fees)->toHaveCount(2)
+        ->and($park->entrance_fees[0])->toMatchArray(['kind' => 'entrance', 'title' => 'Private Vehicle', 'cost' => 35.0])
+        ->and($park->entrance_fees[1])->toMatchArray(['kind' => 'pass', 'title' => 'Annual', 'cost' => 70.0])
+        ->and($park->operating_hours)->toHaveCount(1)
+        ->and($park->operating_hours[0]['name'])->toBe('Park Hours')
+        ->and($park->operating_hours[0]['standard_hours'])->toBe(['monday' => 'All Day']);
+});

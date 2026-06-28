@@ -18,6 +18,10 @@ class Park extends Model
     {
         return [
             'states' => 'array',
+            'activities' => 'array',
+            'topics' => 'array',
+            'operating_hours' => 'array',
+            'entrance_fees' => 'array',
             'latitude' => 'float',
             'longitude' => 'float',
             'last_synced_at' => 'datetime',

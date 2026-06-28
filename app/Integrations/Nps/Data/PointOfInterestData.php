@@ -14,6 +14,7 @@ final readonly class PointOfInterestData
      * @param  list<ImageData>  $images
      * @param  list<RelatedParkData>  $relatedParks
      * @param  array<string, mixed>  $details
+     * @param  list<OperatingHoursData>  $operatingHours
      */
     public function __construct(
         public string $npsId,
@@ -30,6 +31,7 @@ final readonly class PointOfInterestData
         public array $relatedParks,
         public bool $isPassportStampLocation,
         public array $details,
+        public array $operatingHours = [],
     ) {}
 
     /** @param array<string, mixed> $row */
@@ -53,6 +55,7 @@ final readonly class PointOfInterestData
             relatedParks: $relatedParks,
             isPassportStampLocation: self::nullableBool($row['isPassportStampLocation'] ?? null) ?? false,
             details: self::detailsFor($row, $kind),
+            operatingHours: OperatingHoursData::listFrom(self::asListOrNull($row['operatingHours'] ?? null)),
         );
     }
 

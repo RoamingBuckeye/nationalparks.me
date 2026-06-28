@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 use App\Integrations\Nps\Contracts\NpsClient;
+use App\Integrations\Nps\Data\AlertData;
 use App\Integrations\Nps\Data\AmenityData;
 use App\Integrations\Nps\Data\ParkData;
 use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\NpsEntity;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Testing\FakeNpsClient;
+use App\Models\Alert;
 use App\Models\NpsSync;
 use App\Models\Park;
 use App\Models\PointOfInterest;
@@ -122,6 +124,50 @@ it('splits seki into sequ and kica when syncing parks', function () {
         ->toBe('seki')
         ->and(Park::where('park_code', 'seki')->exists())
         ->toBeFalse();
+});
+
+it('syncs alerts only for canonical parks, duplicating seki to sequ + kica, and prunes stale rows', function () {
+    // Seed sequ + kica from a seki upstream so the alert codeMap covers seki → [sequ, kica].
+    $seki = ParkData::fromArray([
+        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
+        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
+        'description' => '', 'latitude' => '36.7', 'longitude' => '-118.6', 'states' => 'CA', 'url' => '',
+    ]);
+    $devilsTower = ParkData::fromArray([
+        'id' => 'park-deto-uuid', 'parkCode' => 'deto', 'name' => 'Devils Tower',
+        'fullName' => 'Devils Tower NM', 'designation' => 'National Monument', 'description' => '',
+        'latitude' => '44.5', 'longitude' => '-104.7', 'states' => 'WY', 'url' => '',
+    ]);
+
+    $sekiAlert = AlertData::fromArray([
+        'id' => 'alert-seki', 'parkCode' => 'seki', 'category' => 'Park Closure',
+        'title' => 'Highway closure', 'description' => 'Rockslide.',
+    ]);
+    $detoAlert = AlertData::fromArray([
+        'id' => 'alert-deto', 'parkCode' => 'deto', 'category' => 'Information',
+        'title' => 'Climbing closure', 'description' => 'Falcon nesting.',
+    ]);
+
+    $this->app->instance(NpsClient::class, FakeNpsClient::make()
+        ->withParks([$seki, $devilsTower])
+        ->withAlerts([$sekiAlert, $detoAlert])
+    );
+
+    // Seed a stale alert that won't be in the upstream — should be pruned.
+    $this->artisan('nps:sync', ['entity' => 'parks'])->assertSuccessful();
+    Alert::create([
+        'nps_id' => '11111111-1111-1111-1111-111111111111',
+        'park_id' => Park::where('park_code', 'sequ')->value('id'),
+        'park_code' => 'sequ',
+        'category' => null,
+        'title' => 'Old alert that no longer exists upstream',
+        'last_synced_at' => now()->subDay(),
+    ]);
+
+    $this->artisan('nps:sync', ['entity' => 'alerts'])->assertSuccessful();
+
+    expect(Alert::pluck('park_code')->sort()->values()->all())
+        ->toBe(['kica', 'sequ']); // deto skipped (non-canonical); stale row pruned
 });
 
 it('routes seki POI fetches to both sequ and kica using nps_source_code', function () {

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions\Nps;
 
+use App\Integrations\Nps\Data\EntranceFeeData;
 use App\Integrations\Nps\Data\ImageData;
+use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\ParkData;
 use App\Models\Park;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -37,6 +39,10 @@ class UpsertPark
                     'directions_info' => $data->directionsInfo,
                     'directions_url' => $data->directionsUrl,
                     'weather_info' => $data->weatherInfo,
+                    'activities' => $data->activities,
+                    'topics' => $data->topics,
+                    'operating_hours' => self::serializeOperatingHours($data->operatingHours),
+                    'entrance_fees' => self::serializeFees($data->fees),
                     'last_synced_at' => now(),
                     'archived_at' => null,
                 ],
@@ -46,6 +52,34 @@ class UpsertPark
 
             return $park->refresh();
         });
+    }
+
+    /**
+     * @param  list<OperatingHoursData>  $hours
+     * @return list<array<string, mixed>>
+     */
+    protected static function serializeOperatingHours(array $hours): array
+    {
+        return array_map(static fn (OperatingHoursData $h): array => [
+            'name' => $h->name,
+            'description' => $h->description,
+            'standard_hours' => $h->standardHours,
+            'exceptions' => $h->exceptions,
+        ], $hours);
+    }
+
+    /**
+     * @param  list<EntranceFeeData>  $fees
+     * @return list<array<string, mixed>>
+     */
+    protected static function serializeFees(array $fees): array
+    {
+        return array_map(static fn (EntranceFeeData $f): array => [
+            'kind' => $f->kind->value,
+            'title' => $f->title,
+            'cost' => $f->cost,
+            'description' => $f->description,
+        ], $fees);
     }
 
     /** @param list<ImageData> $images */

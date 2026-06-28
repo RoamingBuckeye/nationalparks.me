@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Actions\Nps\UpsertAlert;
 use App\Actions\Nps\UpsertPark;
 use App\Actions\Nps\UpsertPointOfInterest;
 use App\Integrations\Nps\Contracts\NpsClient;
@@ -11,6 +12,7 @@ use App\Integrations\Nps\Data\ParkData;
 use App\Integrations\Nps\Enums\NpsEntity;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Exceptions\NpsRateLimitedException;
+use App\Models\Alert;
 use App\Models\NpsSync;
 use App\Models\Park;
 use Closure;
@@ -54,13 +56,13 @@ class NpsSyncCommand extends Command
     protected const int RATE_LIMIT_MAX_ATTEMPTS = 3;
 
     protected $signature = 'nps:sync
-                            {entity=all : One of parks, pois, all}
+                            {entity=all : One of parks, pois, alerts, all}
                             {--park-code= : Limit to a single park}
                             {--designation=canonical : "canonical" (default), "all", or an exact NPS designation string}';
 
-    protected $description = 'Mirror NPS data (parks and points of interest) into the local database';
+    protected $description = 'Mirror NPS data (parks, points of interest, alerts) into the local database';
 
-    public function handle(NpsClient $client, UpsertPark $upsertPark, UpsertPointOfInterest $upsertPoi): int
+    public function handle(NpsClient $client, UpsertPark $upsertPark, UpsertPointOfInterest $upsertPoi, UpsertAlert $upsertAlert): int
     {
         $entity = (string) $this->argument('entity');
         $parkCode = $this->option('park-code');
@@ -69,6 +71,7 @@ class NpsSyncCommand extends Command
         return match ($entity) {
             'parks' => $this->syncParks($client, $upsertPark, $parkCode, $designation),
             'pois' => $this->syncPois($client, $upsertPoi, $parkCode, $designation),
+            'alerts' => $this->syncAlerts($client, $upsertAlert, $parkCode),
             'all' => $this->syncAll($client, $upsertPark, $upsertPoi, $parkCode, $designation),
             default => $this->unknownEntity($entity),
         };
@@ -247,6 +250,85 @@ class NpsSyncCommand extends Command
         return $total;
     }
 
+    protected function syncAlerts(NpsClient $client, UpsertAlert $upsertAlert, ?string $parkCode): int
+    {
+        $sync = $this->openSync(NpsEntity::Alerts, $parkCode);
+        $count = 0;
+        $skipped = 0;
+        $syncStartedAt = Carbon::now();
+
+        // Build a parkCode → list<target parkCodes> map. For split parents (e.g. seki),
+        // upstream alerts map to the children (sequ, kica). Non-canonical codes are absent
+        // and get skipped.
+        $codeMap = $this->buildAlertParkCodeMap();
+
+        try {
+            $this->info('Syncing alerts'.($parkCode ? " (parkCode={$parkCode})" : '').'...');
+
+            $this->withRateLimitRetry(function () use ($client, $parkCode, $codeMap, $upsertAlert, &$count, &$skipped): void {
+                $count = 0;
+                $skipped = 0;
+                $client->alerts($parkCode)->each(function ($alertData) use ($codeMap, $upsertAlert, &$count, &$skipped): void {
+                    $upstream = $alertData->parkCode;
+                    if ($upstream === null || ! isset($codeMap[$upstream])) {
+                        $skipped++;
+
+                        return;
+                    }
+                    foreach ($codeMap[$upstream] as $targetCode) {
+                        $alert = $upsertAlert($alertData, parkCodeOverride: $targetCode);
+                        if ($alert !== null) {
+                            $count++;
+                        }
+                    }
+                });
+            });
+
+            $deleted = $this->pruneStaleAlerts($syncStartedAt, $parkCode);
+
+            $this->closeSync($sync, $count, succeeded: true);
+            $this->info("Synced {$count} alert(s); skipped {$skipped} for non-canonical parks; pruned {$deleted} stale.");
+
+            return self::SUCCESS;
+        } catch (Throwable $e) {
+            $this->closeSync($sync, $count, succeeded: false, error: $e->getMessage());
+            $this->error("Alert sync failed after {$count} record(s): {$e->getMessage()}");
+
+            return self::FAILURE;
+        }
+    }
+
+    /**
+     * Build a map of upstream parkCode → list of local parkCodes to attach.
+     * Most entries are 1:1 (own code). Split parents map to all children.
+     *
+     * @return array<string, list<string>>
+     */
+    protected function buildAlertParkCodeMap(): array
+    {
+        $map = [];
+
+        // Direct: every local park stores its upstream source code (or its own).
+        foreach (Park::query()->get(['park_code', 'nps_source_code']) as $park) {
+            $upstream = $park->nps_source_code ?? $park->park_code;
+            $map[$upstream] ??= [];
+            $map[$upstream][] = $park->park_code;
+        }
+
+        return $map;
+    }
+
+    protected function pruneStaleAlerts(Carbon $syncStartedAt, ?string $parkCode): int
+    {
+        $query = Alert::query()->where('last_synced_at', '<', $syncStartedAt);
+
+        if ($parkCode !== null) {
+            $query->where('park_code', $parkCode);
+        }
+
+        return $query->delete();
+    }
+
     protected function streamFor(NpsClient $client, PoiKind $kind, string $parkCode)
     {
         return match ($kind) {
@@ -329,7 +411,7 @@ class NpsSyncCommand extends Command
 
     protected function unknownEntity(string $entity): int
     {
-        $this->error("Unknown entity '{$entity}'. Use one of: parks, pois, all.");
+        $this->error("Unknown entity '{$entity}'. Use one of: parks, pois, alerts, all.");
 
         return self::FAILURE;
     }

@@ -24,6 +24,7 @@ class PointOfInterest extends Model
             'tags' => 'array',
             'amenities' => 'array',
             'details' => 'array',
+            'operating_hours' => 'array',
             'latitude' => 'float',
             'longitude' => 'float',
             'is_passport_stamp_location' => 'boolean',
