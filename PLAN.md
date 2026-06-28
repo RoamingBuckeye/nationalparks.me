@@ -185,23 +185,25 @@ Two layers: **NPS-mirrored tables** (kept fresh by sync jobs) and **user-data ta
 | `alerts` | `park_id`, `nps_id`, `category`, `title`, `description`, `url`, `last_indexed_at`. Optional. |
 | `nps_syncs` | Bookkeeping. `entity` (parks/places/etc.), `last_run_at`, `last_success_at`, `last_error`, `record_count`. |
 
-### User-data tables
+### User-data schema (locked)
+
+Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the underlying rationale per decision is captured in memory (`project_user_data_schema.md`).
 
 | Table | Purpose |
 |---|---|
-| `users` | Provided by Fortify starter kit; we'll add a `display_name` and `share_default_visibility`. |
-| `visits` | `user_id`, `park_id`, `started_at`, `ended_at` (nullable for live check-in still in progress), `notes`, `visibility` (enum: private/unlisted/public), `created_at`. |
-| `visit_points_of_interest` | Per-visit POI checklist. Cols: `visit_id`, `point_of_interest_id`, `checked_at`, `notes`. Unique on `(visit_id, point_of_interest_id)`. |
-| `photos` | Polymorphic. `photoable_type/id` (visit or visit_poi), `disk` (s3/local), `path`, `original_filename`, `mime`, `size`, `taken_at` (EXIF), `latitude`, `longitude`, `uploaded_by_user_id`. |
-| `share_tokens` | `user_id`, `token` (random URL-safe), `scope` (list/map/both), `created_at`, `revoked_at`. |
+| `users` | Extends Fortify starter kit with `display_name` (string, nullable) and `share_enabled` (bool, default `false`). |
+| `visits` | `user_id` FK, `park_id` FK, `started_at`, `ended_at` (nullable → live check-in), `notes` (text, surfaced as **"Journal"** in the UI), timestamps. One row per park visit. |
+| `visit_pois` | Per-visit POI checklist. Cols: `visit_id` FK cascade, `point_of_interest_id` FK cascade, `checked_at`, timestamps. Unique on `(visit_id, point_of_interest_id)`. Row exists ⇔ checked; uncheck = delete. |
+| `photos` | Polymorphic to visit or visit_poi. Cols: `photoable_type/id`, `disk` (local in dev, s3-compatible in prod), `path`, `original_filename`, `mime`, `size`, `taken_at` (EXIF, nullable), `latitude`/`longitude` (EXIF, nullable), `uploaded_by_user_id` FK, timestamps. |
+| `share_tokens` | One per user. Cols: `user_id` FK unique cascade, `token` (random URL-safe, unique), `revoked_at` (nullable), timestamps. One token → one URL → list + map both rendered. |
 
 ### Indexes worth calling out
 - `parks.park_code` unique
-- `points_of_interest.nps_id` unique
+- `points_of_interest.nps_id` indexed; unique on `(nps_id, park_id)` to allow split-park duplicates
 - `points_of_interest (park_id, kind)`
-- `visits (user_id, park_id, started_at)`
-- `visit_points_of_interest (visit_id, point_of_interest_id)` unique
-- `share_tokens.token` unique, partial where `revoked_at is null`
+- `visits (user_id, started_at)` and `visits (user_id, park_id)`
+- `visit_pois (visit_id, point_of_interest_id)` unique
+- `share_tokens.user_id` unique, `share_tokens.token` unique
 
 ### Sync strategy
 
@@ -210,12 +212,21 @@ Two layers: **NPS-mirrored tables** (kept fresh by sync jobs) and **user-data ta
 - Initial bulk load: ~63 parks, ~3k–30k POIs depending on which endpoints we mirror. Well under daily rate limit.
 - Refresh cadence (proposal): parks weekly, POIs monthly, alerts every 15 min.
 
+## Decisions log
+
+| Topic | Decision | Date |
+|---|---|---|
+| POI scope | All four POI endpoints mirrored into a unified `points_of_interest` table with a `kind` discriminator. | 2026-06-27 |
+| Photo storage | Local disk in dev, S3-API-compatible in prod (Laravel Cloud R2). `photos.disk` column captures which. | 2026-06-28 |
+| Visit boundary | One visit = one park. | 2026-06-28 |
+| Live check-in | `visits.ended_at IS NULL` means live; backdated visits set both timestamps. | 2026-06-28 |
+| POI check-off | Row exists ⇔ checked; uncheck = delete. No wishlist. | 2026-06-28 |
+| Share URL identity | Token only — no name in URL. | 2026-06-28 |
+| Share token scope | One token per user; one URL renders list + map. | 2026-06-28 |
+| Visit visibility | Single `users.share_enabled` toggle; no per-visit visibility. | 2026-06-28 |
+| Notes scope | Visit-level only, UI label is **"Journal"**. | 2026-06-28 |
+
 ## Open questions
 
-1. **POI scope:** the schema mirrors all four POI-shaped NPS endpoints (`places`, `thingstodo`, `visitorcenters`, `campgrounds`) into one `points_of_interest` table with a `kind` discriminator. That's ~3k–30k rows. Is that the right surface? Or should we trim (e.g. skip campgrounds since the app isn't about lodging logistics)?
-2. **Photo storage:** S3 in prod, local disk in dev, device sandbox in the mobile build (synced up on connection). OK?
-3. **Map provider:** Mapbox (paid, free tier ~50k loads/mo, great default styles) vs. Leaflet + OpenStreetMap (free, lower polish). Preference?
-4. **Starter-kit feature trim:** the starter kit ships with **passkeys (WebAuthn)** which you didn't mention. Keep them in (no harm, modern), or remove to keep the surface to email/TOTP/email-code only?
-5. **Visit semantics:** schema assumes a user can have **multiple visits** to the same park, each with its own POI checklist. Confirm?
-6. **Public share scope:** schema has `share_tokens.scope` (list/map/both). Is one link per user that covers both views the right default?
-7. **Visit POI uniqueness:** the schema enforces one row per `(visit, POI)`. If a user revisits a POI within the same trip (e.g. Old Faithful twice), do we want that captured separately, or is "checked = yes" enough?
+1. **Map provider:** Mapbox (paid, free tier ~50k loads/mo, great default styles) vs. Leaflet + OpenStreetMap (free, lower polish). Likely answered when we start the map UI.
+2. **Starter-kit feature trim:** the Fortify starter kit ships with **passkeys (WebAuthn)** which you didn't mention in the original functional spec. Keep them in (no harm, modern), or remove to keep the surface to email/TOTP/email-code only?
