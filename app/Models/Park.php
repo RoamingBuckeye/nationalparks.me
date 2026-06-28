@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Domain\Casts\UsStatesCast;
 use App\Domain\Coordinates;
 use App\Integrations\Nps\Enums\ParkDesignation;
+use Database\Factories\ParkFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -15,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Park extends Model
 {
+    /** @use HasFactory<ParkFactory> */
+    use HasFactory;
+
     protected $guarded = [];
 
     protected function casts(): array

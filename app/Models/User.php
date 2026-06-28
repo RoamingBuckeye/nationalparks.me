@@ -7,6 +7,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -17,6 +19,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 /**
  * @property int $id
  * @property string $name
+ * @property string|null $display_name
+ * @property bool $share_enabled
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
@@ -27,7 +31,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'display_name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -45,6 +49,19 @@ class User extends Authenticatable implements PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'share_enabled' => 'boolean',
         ];
+    }
+
+    /** @return HasMany<Visit, $this> */
+    public function visits(): HasMany
+    {
+        return $this->hasMany(Visit::class);
+    }
+
+    /** @return HasOne<ShareToken, $this> */
+    public function shareToken(): HasOne
+    {
+        return $this->hasOne(ShareToken::class);
     }
 }

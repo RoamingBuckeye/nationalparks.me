@@ -6,7 +6,9 @@ namespace App\Models;
 
 use App\Domain\Coordinates;
 use App\Integrations\Nps\Enums\PoiKind;
+use Database\Factories\PointOfInterestFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,6 +16,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class PointOfInterest extends Model
 {
+    /** @use HasFactory<PointOfInterestFactory> */
+    use HasFactory;
+
     protected $table = 'points_of_interest';
 
     protected $guarded = [];
