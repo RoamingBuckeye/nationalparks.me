@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# Pre-push check — runs the same gates as the CI workflows so failures
+# show up before they hit GitHub. Bypass with `git push --no-verify`.
+#
+
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Pretty step output that survives `set -e`.
+step() {
+    printf '\n\033[1;34m▸ %s\033[0m\n' "$1"
+}
+
+ok() {
+    printf '\033[1;32m✓ %s\033[0m\n' "$1"
+}
+
+step 'Pint (PHP code style)'
+./vendor/bin/pint --parallel --test
+ok 'pint clean'
+
+step 'PHPStan (PHP type analysis)'
+./vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+ok 'phpstan clean'
+
+step 'Prettier (JS format check)'
+npm run --silent format:check
+ok 'prettier clean'
+
+step 'ESLint (JS lint)'
+npm run --silent lint:check
+ok 'eslint clean'
+
+step 'vue-tsc (TS type check)'
+npm run --silent types:check
+ok 'types clean'
+
+step 'Pest (PHP tests, in-memory SQLite)'
+DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test --without-tty
+ok 'tests passed'
+
+printf '\n\033[1;32m✓ All pre-push checks passed\033[0m\n'

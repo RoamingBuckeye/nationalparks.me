@@ -57,6 +57,9 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"
         ],
+        "hooks:install": [
+            "git config core.hooksPath .githooks"
+        ],
         "lint": [
             "pint --parallel"
         ],
