@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Actions\Nps\UpsertPark;
 use App\Domain\Coordinates;
+use App\Models\Activity;
 use App\Models\Park;
+use App\Models\Topic;
 use Tests\Factories\Nps\ParkDataFactory;
 
 it('creates a park with images on first upsert', function () {
@@ -64,6 +66,24 @@ it('treats nps_source_code=null as self-sourced', function () {
 
     expect($park->isSplitChild())->toBeFalse()
         ->and($park->npsSourceCode())->toBe('yell');
+});
+
+it('syncs activities and topics into reference tables and the M2M relation', function () {
+    $park = (new UpsertPark)(ParkDataFactory::yellowstone());
+
+    expect($park->activities()->pluck('name')->sort()->values()->all())->toBe(['Camping', 'Hiking'])
+        ->and($park->topics()->pluck('name')->all())->toBe(['Geology'])
+        ->and(Activity::count())->toBe(2)
+        ->and(Topic::count())->toBe(1)
+        ->and(Activity::where('name', 'Hiking')->value('slug'))->toBe('hiking');
+});
+
+it('reuses existing taxonomy rows by slug across parks', function () {
+    (new UpsertPark)(ParkDataFactory::yellowstone());
+    (new UpsertPark)(ParkDataFactory::yosemite(['activities' => [['id' => 'a-1', 'name' => 'Hiking']]]));
+
+    expect(Activity::where('name', 'Hiking')->count())->toBe(1)
+        ->and(Activity::where('name', 'Hiking')->first()->parks()->count())->toBe(2);
 });
 
 it('persists activities, topics, operating_hours, and entrance_fees as JSON', function () {

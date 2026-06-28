@@ -11,6 +11,8 @@ final readonly class PointOfInterestData
     /**
      * @param  list<string>  $tags
      * @param  list<string>  $amenities
+     * @param  list<string>  $activities
+     * @param  list<string>  $topics
      * @param  list<ImageData>  $images
      * @param  list<RelatedParkData>  $relatedParks
      * @param  array<string, mixed>  $details
@@ -27,6 +29,8 @@ final readonly class PointOfInterestData
         public ?string $url,
         public array $tags,
         public array $amenities,
+        public array $activities,
+        public array $topics,
         public array $images,
         public array $relatedParks,
         public bool $isPassportStampLocation,
@@ -51,6 +55,8 @@ final readonly class PointOfInterestData
             url: self::nullableString($row['url'] ?? null),
             tags: self::stringList($row['tags'] ?? null),
             amenities: self::resolveAmenities($row['amenities'] ?? null),
+            activities: self::namesFromList($row['activities'] ?? null),
+            topics: self::namesFromList($row['topics'] ?? null),
             images: ImageData::listFrom(self::asListOrNull($row['images'] ?? null)),
             relatedParks: $relatedParks,
             isPassportStampLocation: self::nullableBool($row['isPassportStampLocation'] ?? null) ?? false,
@@ -168,8 +174,6 @@ final readonly class PointOfInterestData
                 'feeDescription' => self::nullableString($row['feeDescription'] ?? null),
                 'isReservationRequired' => self::nullableBool($row['isReservationRequired'] ?? null),
                 'reservationDescription' => self::nullableString($row['reservationDescription'] ?? null),
-                'activities' => self::namesFromList($row['activities'] ?? null),
-                'topics' => self::namesFromList($row['topics'] ?? null),
                 'location' => self::nullableString($row['location'] ?? null),
                 'locationDescription' => self::nullableString($row['locationDescription'] ?? null),
             ], static fn (mixed $v): bool => $v !== null && $v !== []),

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Park extends Model
 {
@@ -39,6 +40,18 @@ class Park extends Model
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    /** @return MorphToMany<Activity, $this> */
+    public function activities(): MorphToMany
+    {
+        return $this->morphToMany(Activity::class, 'activatable');
+    }
+
+    /** @return MorphToMany<Topic, $this> */
+    public function topics(): MorphToMany
+    {
+        return $this->morphToMany(Topic::class, 'topicable');
     }
 
     /**

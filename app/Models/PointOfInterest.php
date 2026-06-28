@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class PointOfInterest extends Model
 {
@@ -43,6 +44,30 @@ class PointOfInterest extends Model
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    /** @return MorphToMany<Activity, $this> */
+    public function activities(): MorphToMany
+    {
+        return $this->morphToMany(Activity::class, 'activatable');
+    }
+
+    /** @return MorphToMany<Topic, $this> */
+    public function topics(): MorphToMany
+    {
+        return $this->morphToMany(Topic::class, 'topicable');
+    }
+
+    /** @return MorphToMany<Tag, $this> */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    /** @return MorphToMany<Amenity, $this> */
+    public function amenities(): MorphToMany
+    {
+        return $this->morphToMany(Amenity::class, 'amenitiable');
     }
 
     /** @return Attribute<Coordinates|null, never> */

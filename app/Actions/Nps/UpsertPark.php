@@ -8,10 +8,13 @@ use App\Integrations\Nps\Data\EntranceFeeData;
 use App\Integrations\Nps\Data\ImageData;
 use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\ParkData;
+use App\Models\Activity;
 use App\Models\Image;
 use App\Models\Park;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UpsertPark
 {
@@ -51,8 +54,47 @@ class UpsertPark
 
             $this->syncImages($park->images(), $data->images);
 
+            $park->activities()->sync($this->activityIds($data->activities));
+            $park->topics()->sync($this->topicIds($data->topics));
+
             return $park->refresh();
         });
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function activityIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Activity::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function topicIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Topic::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
     }
 
     /**

@@ -7,12 +7,17 @@ namespace App\Actions\Nps;
 use App\Integrations\Nps\Data\ImageData;
 use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\PointOfInterestData;
+use App\Models\Activity;
+use App\Models\Amenity;
 use App\Models\Image;
 use App\Models\Park;
 use App\Models\PointOfInterest;
+use App\Models\Tag;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UpsertPointOfInterest
 {
@@ -54,8 +59,85 @@ class UpsertPointOfInterest
 
             $this->syncImages($poi->images(), $data->images);
 
+            $poi->activities()->sync($this->activityIds($data->activities));
+            $poi->topics()->sync($this->topicIds($data->topics));
+            $poi->tags()->sync($this->tagIds($data->tags));
+            $poi->amenities()->sync($this->amenityIds($data->amenities));
+
             return $poi->refresh();
         });
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function activityIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Activity::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function topicIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Topic::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function tagIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Tag::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<int>
+     */
+    protected function amenityIds(array $names): array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $ids[Amenity::firstOrCreate(['slug' => Str::slug($trimmed)], ['name' => $trimmed])->id] = true;
+        }
+
+        return array_keys($ids);
     }
 
     /**
