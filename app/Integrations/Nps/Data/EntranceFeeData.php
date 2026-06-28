@@ -36,10 +36,10 @@ final readonly class EntranceFeeData
             return [];
         }
 
-        return array_values(array_map(
+        return array_map(
             fn (array $row): self => self::fromArray($row, $kind),
             $rows,
-        ));
+        );
     }
 
     protected static function nullableString(mixed $value): ?string

@@ -33,16 +33,19 @@ class PointOfInterest extends Model
         ];
     }
 
+    /** @return BelongsTo<Park, $this> */
     public function park(): BelongsTo
     {
         return $this->belongsTo(Park::class);
     }
 
+    /** @return MorphMany<Image, $this> */
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
     }
 
+    /** @return Attribute<Coordinates|null, never> */
     protected function coordinates(): Attribute
     {
         return Attribute::make(

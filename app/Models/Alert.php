@@ -22,6 +22,7 @@ class Alert extends Model
         ];
     }
 
+    /** @return BelongsTo<Park, $this> */
     public function park(): BelongsTo
     {
         return $this->belongsTo(Park::class);

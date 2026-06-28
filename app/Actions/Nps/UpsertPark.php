@@ -8,6 +8,7 @@ use App\Integrations\Nps\Data\EntranceFeeData;
 use App\Integrations\Nps\Data\ImageData;
 use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\ParkData;
+use App\Models\Image;
 use App\Models\Park;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
@@ -82,7 +83,10 @@ class UpsertPark
         ], $fees);
     }
 
-    /** @param list<ImageData> $images */
+    /**
+     * @param  MorphMany<Image, Park>  $relation
+     * @param  list<ImageData>  $images
+     */
     protected function syncImages(MorphMany $relation, array $images): void
     {
         $seenUrls = [];

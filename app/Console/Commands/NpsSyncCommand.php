@@ -9,6 +9,7 @@ use App\Actions\Nps\UpsertPark;
 use App\Actions\Nps\UpsertPointOfInterest;
 use App\Integrations\Nps\Contracts\NpsClient;
 use App\Integrations\Nps\Data\ParkData;
+use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\NpsEntity;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Integrations\Nps\Exceptions\NpsRateLimitedException;
@@ -19,6 +20,7 @@ use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\LazyCollection;
 use Throwable;
 
 class NpsSyncCommand extends Command
@@ -329,7 +331,8 @@ class NpsSyncCommand extends Command
         return $query->delete();
     }
 
-    protected function streamFor(NpsClient $client, PoiKind $kind, string $parkCode)
+    /** @return LazyCollection<int, PointOfInterestData> */
+    protected function streamFor(NpsClient $client, PoiKind $kind, string $parkCode): LazyCollection
     {
         return match ($kind) {
             PoiKind::Place => $client->places($parkCode),

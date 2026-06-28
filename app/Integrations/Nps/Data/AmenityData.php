@@ -29,10 +29,10 @@ final readonly class AmenityData
      */
     public static function listFrom(array $rows): array
     {
-        return array_values(array_map(
+        return array_map(
             fn (array $row): self => self::fromArray($row),
             $rows,
-        ));
+        );
     }
 
     /** @return list<string> */

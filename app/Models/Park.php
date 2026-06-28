@@ -29,11 +29,13 @@ class Park extends Model
         ];
     }
 
+    /** @return HasMany<PointOfInterest, $this> */
     public function pointsOfInterest(): HasMany
     {
         return $this->hasMany(PointOfInterest::class);
     }
 
+    /** @return MorphMany<Image, $this> */
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
@@ -54,6 +56,7 @@ class Park extends Model
         return $this->nps_source_code !== null;
     }
 
+    /** @return Attribute<Coordinates|null, never> */
     protected function coordinates(): Attribute
     {
         return Attribute::make(

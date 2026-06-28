@@ -39,10 +39,10 @@ final readonly class RelatedParkData
             return [];
         }
 
-        return array_values(array_map(
+        return array_map(
             fn (array $row): self => self::fromArray($row),
             $rows,
-        ));
+        );
     }
 
     /** @return list<string> */

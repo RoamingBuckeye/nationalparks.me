@@ -7,6 +7,7 @@ namespace App\Actions\Nps;
 use App\Integrations\Nps\Data\ImageData;
 use App\Integrations\Nps\Data\OperatingHoursData;
 use App\Integrations\Nps\Data\PointOfInterestData;
+use App\Models\Image;
 use App\Models\Park;
 use App\Models\PointOfInterest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,7 +72,10 @@ class UpsertPointOfInterest
         ], $hours);
     }
 
-    /** @param list<ImageData> $images */
+    /**
+     * @param  MorphMany<Image, PointOfInterest>  $relation
+     * @param  list<ImageData>  $images
+     */
     protected function syncImages(MorphMany $relation, array $images): void
     {
         $seenUrls = [];

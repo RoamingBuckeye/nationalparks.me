@@ -65,12 +65,13 @@ final readonly class PointOfInterestData
      */
     public static function listFrom(array $rows, PoiKind $kind): array
     {
-        return array_values(array_map(
+        return array_map(
             fn (array $row): self => self::fromArray($row, $kind),
             $rows,
-        ));
+        );
     }
 
+    /** @param array<string, mixed> $row */
     protected static function resolveTitle(array $row, PoiKind $kind): string
     {
         return match ($kind) {
@@ -79,6 +80,7 @@ final readonly class PointOfInterestData
         };
     }
 
+    /** @param array<string, mixed> $row */
     protected static function resolveDescription(array $row, PoiKind $kind): ?string
     {
         $value = match ($kind) {
@@ -134,7 +136,10 @@ final readonly class PointOfInterestData
         return $out;
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
     protected static function detailsFor(array $row, PoiKind $kind): array
     {
         return match ($kind) {
