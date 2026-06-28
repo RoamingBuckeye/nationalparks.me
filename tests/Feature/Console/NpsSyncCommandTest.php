@@ -17,8 +17,14 @@ function buildFakeClient(): FakeNpsClient
 {
     $yellowstone = ParkData::fromArray([
         'id' => 'park-yell-uuid', 'parkCode' => 'yell', 'name' => 'Yellowstone',
-        'fullName' => 'Yellowstone NP', 'designation' => 'NP', 'description' => '',
+        'fullName' => 'Yellowstone NP', 'designation' => 'National Park', 'description' => '',
         'latitude' => '44.6', 'longitude' => '-110.5', 'states' => 'WY', 'url' => '',
+    ]);
+
+    $devilsTower = ParkData::fromArray([
+        'id' => 'park-deto-uuid', 'parkCode' => 'deto', 'name' => 'Devils Tower',
+        'fullName' => 'Devils Tower National Monument', 'designation' => 'National Monument', 'description' => '',
+        'latitude' => '44.5', 'longitude' => '-104.7', 'states' => 'WY', 'url' => '',
     ]);
 
     $place = PointOfInterestData::fromArray([
@@ -27,7 +33,7 @@ function buildFakeClient(): FakeNpsClient
     ], PoiKind::Place);
 
     return FakeNpsClient::make()
-        ->withParks([$yellowstone])
+        ->withParks([$yellowstone, $devilsTower])
         ->withPointsOfInterest('yell', PoiKind::Place, [$place]);
 }
 
@@ -71,4 +77,72 @@ it('fails to sync POIs when no parks have been synced yet', function () {
     ]));
 
     $this->artisan('nps:sync', ['entity' => 'pois'])->assertFailed();
+});
+
+it('filters out units that do not match the designation', function () {
+    $this->artisan('nps:sync', ['entity' => 'parks'])->assertSuccessful();
+
+    expect(Park::count())->toBe(1)
+        ->and(Park::first()->park_code)->toBe('yell');
+});
+
+it('syncs every unit when --designation=all is passed', function () {
+    $this->artisan('nps:sync', ['entity' => 'parks', '--designation' => 'all'])->assertSuccessful();
+
+    expect(Park::count())->toBe(2);
+});
+
+it('limits POI sync to designation-matching parks only', function () {
+    $this->artisan('nps:sync', ['entity' => 'parks', '--designation' => 'all'])->assertSuccessful();
+
+    $this->artisan('nps:sync', ['entity' => 'pois'])->assertSuccessful();
+
+    expect(PointOfInterest::count())->toBe(1)
+        ->and(PointOfInterest::first()->park->park_code)->toBe('yell');
+});
+
+it('splits seki into sequ and kica when syncing parks', function () {
+    $seki = ParkData::fromArray([
+        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
+        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
+        'description' => 'Two parks managed as one.', 'latitude' => '36.7', 'longitude' => '-118.6',
+        'states' => 'CA', 'url' => 'https://www.nps.gov/seki',
+    ]);
+    $this->app->instance(NpsClient::class, FakeNpsClient::make()->withParks([$seki]));
+
+    $this->artisan('nps:sync', ['entity' => 'parks'])->assertSuccessful();
+
+    expect(Park::where('park_code', 'sequ')->first())
+        ->not->toBeNull()
+        ->and(Park::where('park_code', 'sequ')->first()->nps_source_code)
+        ->toBe('seki')
+        ->and(Park::where('park_code', 'sequ')->first()->nps_source_id)
+        ->toBe('park-seki-uuid')
+        ->and(Park::where('park_code', 'kica')->first()->nps_source_code)
+        ->toBe('seki')
+        ->and(Park::where('park_code', 'seki')->exists())
+        ->toBeFalse();
+});
+
+it('routes seki POI fetches to both sequ and kica using nps_source_code', function () {
+    $seki = ParkData::fromArray([
+        'id' => 'park-seki-uuid', 'parkCode' => 'seki', 'name' => 'Sequoia & Kings Canyon',
+        'fullName' => 'Sequoia & Kings Canyon National Parks', 'designation' => 'National Parks',
+        'description' => '', 'latitude' => '36.7', 'longitude' => '-118.6', 'states' => 'CA', 'url' => '',
+    ]);
+    $generalSherman = PointOfInterestData::fromArray([
+        'id' => 'poi-sherman', 'title' => 'General Sherman Tree', 'parkCode' => 'seki',
+        'latitude' => '36.58', 'longitude' => '-118.75',
+    ], PoiKind::Place);
+
+    $this->app->instance(NpsClient::class, FakeNpsClient::make()
+        ->withParks([$seki])
+        ->withPointsOfInterest('seki', PoiKind::Place, [$generalSherman])
+    );
+
+    $this->artisan('nps:sync')->assertSuccessful();
+
+    expect(PointOfInterest::count())->toBe(2)
+        ->and(PointOfInterest::with('park')->get()->pluck('park.park_code')->sort()->values()->all())
+        ->toBe(['kica', 'sequ']);
 });

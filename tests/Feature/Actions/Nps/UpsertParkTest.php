@@ -64,3 +64,23 @@ it('clears archived_at when a park reappears in the upstream', function () {
 
     expect($park->refresh()->archived_at)->toBeNull();
 });
+
+it('records nps_source_code and nps_source_id for split children', function () {
+    $sequ = (new UpsertPark)(
+        parkData(['parkCode' => 'sequ', 'name' => 'Sequoia', 'fullName' => 'Sequoia National Park']),
+        sourceCode: 'seki',
+        sourceId: 'park-seki-uuid',
+    );
+
+    expect($sequ->nps_source_code)->toBe('seki')
+        ->and($sequ->nps_source_id)->toBe('park-seki-uuid')
+        ->and($sequ->isSplitChild())->toBeTrue()
+        ->and($sequ->npsSourceCode())->toBe('seki');
+});
+
+it('treats nps_source_code=null as self-sourced', function () {
+    $park = (new UpsertPark)(parkData());
+
+    expect($park->isSplitChild())->toBeFalse()
+        ->and($park->npsSourceCode())->toBe('yell');
+});

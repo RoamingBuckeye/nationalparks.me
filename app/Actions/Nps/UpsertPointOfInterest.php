@@ -14,19 +14,26 @@ use Illuminate\Support\Facades\DB;
 
 class UpsertPointOfInterest
 {
-    public function __invoke(PointOfInterestData $data): PointOfInterest
+    /**
+     * Upsert a POI. Keyed on (nps_id, park_id) — a single NPS POI may attach
+     * to multiple parks (e.g. seki POIs duplicate across sequ + kica).
+     * Pass $parkCodeOverride when the resolved park differs from $data->parkCode.
+     */
+    public function __invoke(PointOfInterestData $data, ?string $parkCodeOverride = null): PointOfInterest
     {
-        $park = Park::query()->where('park_code', $data->parkCode)->first();
+        $parkCode = $parkCodeOverride ?? $data->parkCode;
+        $park = $parkCode === null
+            ? null
+            : Park::query()->where('park_code', $parkCode)->first();
 
         if ($park === null) {
-            throw (new ModelNotFoundException)->setModel(Park::class, [$data->parkCode]);
+            throw (new ModelNotFoundException)->setModel(Park::class, [$parkCode ?? '(null)']);
         }
 
         return DB::transaction(function () use ($data, $park): PointOfInterest {
             $poi = PointOfInterest::updateOrCreate(
-                ['nps_id' => $data->npsId],
+                ['nps_id' => $data->npsId, 'park_id' => $park->id],
                 [
-                    'park_id' => $park->id,
                     'kind' => $data->kind,
                     'title' => $data->title,
                     'description' => $data->description,

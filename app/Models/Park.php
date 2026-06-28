@@ -35,6 +35,21 @@ class Park extends Model
         return $this->morphMany(Image::class, 'imageable');
     }
 
+    /**
+     * For split parks (e.g. Sequoia/Kings Canyon both derived from `seki`),
+     * the upstream NPS source is what API calls and POI ownership reference.
+     * For self-sourced parks this equals park_code.
+     */
+    public function npsSourceCode(): string
+    {
+        return $this->nps_source_code ?? $this->park_code;
+    }
+
+    public function isSplitChild(): bool
+    {
+        return $this->nps_source_code !== null;
+    }
+
     protected function coordinates(): Attribute
     {
         return Attribute::make(

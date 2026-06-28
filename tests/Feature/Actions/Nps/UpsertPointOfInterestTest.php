@@ -7,6 +7,7 @@ use App\Actions\Nps\UpsertPointOfInterest;
 use App\Integrations\Nps\Data\ParkData;
 use App\Integrations\Nps\Data\PointOfInterestData;
 use App\Integrations\Nps\Enums\PoiKind;
+use App\Models\Park;
 use App\Models\PointOfInterest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -67,4 +68,28 @@ it('is idempotent on repeated upserts', function () {
     expect($second->id)->toBe($first->id)
         ->and($second->title)->toBe('Old Faithful Geyser')
         ->and(PointOfInterest::count())->toBe(1);
+});
+
+it('attaches the same POI to multiple parks via parkCodeOverride (split scenario)', function () {
+    // Two synthetic parks sharing one upstream NPS unit.
+    (new UpsertPark)(ParkData::fromArray([
+        'id' => 'park-seki-uuid', 'parkCode' => 'sequ', 'name' => 'Sequoia',
+        'fullName' => 'Sequoia National Park', 'designation' => 'National Park', 'description' => '',
+        'latitude' => '36.6', 'longitude' => '-118.7', 'states' => 'CA', 'url' => '',
+    ]));
+    (new UpsertPark)(ParkData::fromArray([
+        'id' => 'park-seki-uuid', 'parkCode' => 'kica', 'name' => 'Kings Canyon',
+        'fullName' => 'Kings Canyon National Park', 'designation' => 'National Park', 'description' => '',
+        'latitude' => '36.8', 'longitude' => '-118.5', 'states' => 'CA', 'url' => '',
+    ]));
+
+    $upsert = new UpsertPointOfInterest;
+    $sourceData = poiData(['parkCode' => 'seki']);
+
+    $upsert($sourceData, parkCodeOverride: 'sequ');
+    $upsert($sourceData, parkCodeOverride: 'kica');
+
+    expect(PointOfInterest::count())->toBe(2)
+        ->and(PointOfInterest::where('park_id', Park::where('park_code', 'sequ')->value('id'))->count())->toBe(1)
+        ->and(PointOfInterest::where('park_id', Park::where('park_code', 'kica')->value('id'))->count())->toBe(1);
 });

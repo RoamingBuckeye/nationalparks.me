@@ -12,13 +12,20 @@ use Illuminate\Support\Facades\DB;
 
 class UpsertPark
 {
-    public function __invoke(ParkData $data): Park
+    /**
+     * Upsert a park, keyed on park_code (since split children share their
+     * source's nps_id). For split children, pass $sourceCode / $sourceId
+     * so we can map back to the original NPS unit.
+     */
+    public function __invoke(ParkData $data, ?string $sourceCode = null, ?string $sourceId = null): Park
     {
-        return DB::transaction(function () use ($data): Park {
+        return DB::transaction(function () use ($data, $sourceCode, $sourceId): Park {
             $park = Park::updateOrCreate(
-                ['nps_id' => $data->npsId],
+                ['park_code' => $data->parkCode],
                 [
-                    'park_code' => $data->parkCode,
+                    'nps_id' => $data->npsId,
+                    'nps_source_code' => $sourceCode,
+                    'nps_source_id' => $sourceId,
                     'name' => $data->name,
                     'full_name' => $data->fullName,
                     'designation' => $data->designation,
