@@ -30,6 +30,9 @@ function makeClient(): HttpNpsClient
 
 beforeEach(function () {
     Http::preventStrayRequests();
+    // The HttpNpsClient singleton fail-fasts on a missing API key; CI has no
+    // real key so set a dummy before any container resolution in this file.
+    config(['services.nps.key' => 'test-key']);
 });
 
 it('paginates parks until total is reached', function () {
