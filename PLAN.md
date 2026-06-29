@@ -127,6 +127,10 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 - The shared page is read-only and doesn't reveal account/profile data beyond a display name
 - The link is revocable; the user can rotate/disable it from their settings
 
+### Alerts
+
+**Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information) and color-coded, each with title, description, and an optional NPS link. `AlertCategory::severity()` drives the ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Deferred:** alert/closure indicators on the parks list and map.
+
 ### Out of scope (for now)
 
 - Social logins

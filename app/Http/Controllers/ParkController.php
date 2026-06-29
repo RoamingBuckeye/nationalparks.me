@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\UsState;
 use App\Integrations\Nps\Enums\PoiKind;
+use App\Models\Alert;
 use App\Models\Park;
 use App\Models\Visit;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,6 +76,21 @@ class ParkController extends Controller
             ->groupBy('kind')
             ->pluck('aggregate', 'kind');
 
+        $alerts = $park->alerts()
+            ->active()
+            ->orderByDesc('last_indexed_at')
+            ->get()
+            ->sortByDesc(fn (Alert $alert): int => $alert->category?->severity() ?? 0)
+            ->values()
+            ->map(fn (Alert $alert): array => [
+                'id' => $alert->id,
+                'category' => $alert->category?->value,
+                'severity' => $alert->category?->severity() ?? 0,
+                'title' => $alert->title,
+                'description' => $alert->description,
+                'url' => $alert->url,
+            ]);
+
         $visits = $park->visits()
             ->whereBelongsTo($request->user())
             ->withCount('visitPois')
@@ -112,6 +128,7 @@ class ParkController extends Controller
                 'label' => $kind->pluralLabel(),
                 'count' => (int) ($poiCounts[$kind->value] ?? 0),
             ]),
+            'alerts' => $alerts,
             'visits' => $visits,
         ]);
     }

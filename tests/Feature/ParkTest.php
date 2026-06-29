@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Integrations\Nps\Enums\AlertCategory;
 use App\Integrations\Nps\Enums\PoiKind;
+use App\Models\Alert;
 use App\Models\Park;
 use App\Models\PointOfInterest;
 use App\Models\User;
@@ -52,6 +54,22 @@ it('shows a park with POI counts and the user\'s visits', function () {
             ->where('park.id', $park->id)
             ->has('poiCounts', 4)
             ->has('visits', 1));
+});
+
+it('shows active alerts severity-ordered and excludes archived ones', function () {
+    $user = User::factory()->create();
+    $park = Park::factory()->create();
+    Alert::factory()->for($park)->category(AlertCategory::Information)->create();
+    Alert::factory()->for($park)->category(AlertCategory::Danger)->create();
+    Alert::factory()->for($park)->archived()->category(AlertCategory::Caution)->create();
+
+    $this->actingAs($user)
+        ->get(route('parks.show', $park))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('alerts', 2)
+            ->where('alerts.0.category', 'Danger')
+            ->where('alerts.1.category', 'Information'));
 });
 
 it('requires verification to browse parks', function () {

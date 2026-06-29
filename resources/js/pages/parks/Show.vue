@@ -2,6 +2,7 @@
 import { Head, Link, router, setLayoutProps, useForm } from '@inertiajs/vue3';
 import { CalendarPlus, ExternalLink, MapPin, Trash2 } from '@lucide/vue';
 import { ref } from 'vue';
+import ParkAlerts from '@/components/ParkAlerts.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,15 @@ type Park = {
 
 type PoiCount = { value: string; label: string; count: number };
 
+type ParkAlert = {
+    id: number;
+    category: string | null;
+    severity: number;
+    title: string;
+    description: string | null;
+    url: string | null;
+};
+
 type VisitSummary = {
     id: number;
     started_at: string;
@@ -39,6 +49,7 @@ type VisitSummary = {
 const props = defineProps<{
     park: Park;
     poiCounts: PoiCount[];
+    alerts: ParkAlert[];
     visits: VisitSummary[];
 }>();
 
@@ -144,6 +155,8 @@ const deleteVisit = (id: number): void => {
                 </CardContent>
             </Card>
         </div>
+
+        <ParkAlerts :alerts="alerts" />
 
         <section class="flex flex-col gap-4">
             <div class="flex flex-wrap items-center justify-between gap-3">

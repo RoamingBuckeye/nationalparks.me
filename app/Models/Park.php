@@ -113,6 +113,12 @@ class Park extends Model
         return $this->hasMany(Visit::class);
     }
 
+    /** @return HasMany<Alert, $this> */
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(Alert::class);
+    }
+
     /** @return MorphMany<Image, $this> */
     public function images(): MorphMany
     {
