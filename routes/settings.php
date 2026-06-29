@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use App\Http\Controllers\Settings\SharingController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('settings/sharing', [SharingController::class, 'edit'])->name('sharing.edit');
+    Route::post('settings/sharing', [SharingController::class, 'store'])->name('sharing.store');
+    Route::delete('settings/sharing', [SharingController::class, 'destroy'])->name('sharing.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

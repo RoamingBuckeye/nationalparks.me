@@ -28,18 +28,7 @@ class ParkController extends Controller
 
         $parks = Park::query()
             ->active()
-            ->addSelect([
-                'visits_count' => Visit::query()
-                    ->selectRaw('count(*)')
-                    ->whereColumn('park_id', 'parks.id')
-                    ->where('user_id', $userId),
-                'last_visited_at' => Visit::query()
-                    ->select('started_at')
-                    ->whereColumn('park_id', 'parks.id')
-                    ->where('user_id', $userId)
-                    ->latest('started_at')
-                    ->limit(1),
-            ])
+            ->withVisitStatsFor($userId)
             ->when($search !== '', fn (Builder $query) => $query->where(
                 fn (Builder $inner) => $inner
                     ->where('name', 'like', "%{$search}%")

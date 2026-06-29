@@ -4,11 +4,15 @@ use App\Http\Controllers\Auth\TwoFactorEmailChallengeController;
 use App\Http\Controllers\Auth\TwoFactorEmailCodeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ParkController;
+use App\Http\Controllers\SharedListController;
 use App\Http\Controllers\ToggleVisitPoiController;
 use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
+
+// Public, read-only shared list (token-gated, no auth).
+Route::get('s/{token}', SharedListController::class)->name('shared.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
