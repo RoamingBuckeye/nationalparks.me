@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\TwoFactorEmailChallengeController;
 use App\Http\Controllers\Auth\TwoFactorEmailCodeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ParkController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\SharedListController;
 use App\Http\Controllers\ToggleVisitPoiController;
 use App\Http\Controllers\VisitController;
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('visits/{visit}/pois/{pointOfInterest}', ToggleVisitPoiController::class)
         ->name('visits.pois.toggle');
+
+    Route::post('visits/{visit}/photos', [PhotoController::class, 'store'])->name('visits.photos.store');
+    Route::get('photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
+    Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 });
 
 // Email-code alternative for the two-factor challenge (no auth yet — mid-login).

@@ -98,7 +98,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 ### Core actions (authenticated)
 
-**Status (2026-06-29):** the web core visit loop is built — park list (`/parks`, visited state + search/state/visited filters), park detail (`/parks/{park}`, POI kind counts + your visits + check-in / log-past-visit), and the visit page (`/visits/{visit}`, editable dates + Journal, live/end toggle, paginated POI checklist with per-visit check-off). Dashboard shows real stats. Photo upload is **not yet built** (next slice).
+**Status (2026-06-29):** the web core visit loop is built — park list (`/parks`, visited state + search/state/visited filters), park detail (`/parks/{park}`, POI kind counts + your visits + check-in / log-past-visit), and the visit page (`/visits/{visit}`, editable dates + Journal, live/end toggle, paginated POI checklist with per-visit check-off). Dashboard shows real stats. **Visit-level photo upload is built**: multi-file upload on the visit page, EXIF `taken_at`/GPS captured on ingest, stored on the default disk (local in dev), served through an authorized `/photos/{photo}` route (S3-ready), with delete. Photos are polymorphic (`photoable`), so **per-POI photos** are a small future addition — the per-POI upload UI is deferred.
 
 1. **Log a park visit**
    - Check in **live** (now) or **log a past visit** (backdated)
