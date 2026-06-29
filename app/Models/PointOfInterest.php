@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Domain\Coordinates;
 use App\Integrations\Nps\Enums\PoiKind;
 use Database\Factories\PointOfInterestFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+/**
+ * @property int $id
+ * @property int $park_id
+ * @property PoiKind $kind
+ * @property string $title
+ * @property string|null $description
+ */
 class PointOfInterest extends Model
 {
     /** @use HasFactory<PointOfInterestFactory> */
@@ -37,6 +45,12 @@ class PointOfInterest extends Model
             'last_synced_at' => 'datetime',
             'archived_at' => 'datetime',
         ];
+    }
+
+    /** @param Builder<PointOfInterest> $query */
+    public function scopeActive(Builder $query): void
+    {
+        $query->whereNull('archived_at');
     }
 
     /** @return BelongsTo<Park, $this> */

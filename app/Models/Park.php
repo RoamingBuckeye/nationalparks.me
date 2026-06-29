@@ -6,15 +6,36 @@ namespace App\Models;
 
 use App\Domain\Casts\UsStatesCast;
 use App\Domain\Coordinates;
+use App\Domain\UsState;
 use App\Integrations\Nps\Enums\ParkDesignation;
 use Database\Factories\ParkFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $park_code
+ * @property string|null $nps_source_code
+ * @property string $name
+ * @property string|null $full_name
+ * @property string|null $designation
+ * @property string|null $description
+ * @property string|null $url
+ * @property string|null $directions_url
+ * @property string|null $weather_info
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property list<UsState> $states
+ * @property Carbon|null $archived_at
+ * @property-read int $visits_count
+ * @property-read string|null $last_visited_at
+ */
 class Park extends Model
 {
     /** @use HasFactory<ParkFactory> */
@@ -52,10 +73,22 @@ class Park extends Model
         );
     }
 
+    /** @param Builder<Park> $query */
+    public function scopeActive(Builder $query): void
+    {
+        $query->whereNull('archived_at');
+    }
+
     /** @return HasMany<PointOfInterest, $this> */
     public function pointsOfInterest(): HasMany
     {
         return $this->hasMany(PointOfInterest::class);
+    }
+
+    /** @return HasMany<Visit, $this> */
+    public function visits(): HasMany
+    {
+        return $this->hasMany(Visit::class);
     }
 
     /** @return MorphMany<Image, $this> */

@@ -20,4 +20,30 @@ enum PoiKind: string
             self::Campground => NpsEntity::Campgrounds,
         };
     }
+
+    /**
+     * Human-readable singular label for UI display.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Place => 'Place',
+            self::ThingToDo => 'Thing to do',
+            self::VisitorCenter => 'Visitor center',
+            self::Campground => 'Campground',
+        };
+    }
+
+    /**
+     * Human-readable plural label for UI display.
+     */
+    public function pluralLabel(): string
+    {
+        return match ($this) {
+            self::Place => 'Places',
+            self::ThingToDo => 'Things to do',
+            self::VisitorCenter => 'Visitor centers',
+            self::Campground => 'Campgrounds',
+        };
+    }
 }
