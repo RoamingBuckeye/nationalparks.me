@@ -2,12 +2,15 @@
 import { Head } from '@inertiajs/vue3';
 import { Check } from '@lucide/vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import ParksMap from '@/components/ParksMap.vue';
 
 type SharedPark = {
     id: number;
     name: string;
     designation: string | null;
     states: string[];
+    latitude: number | null;
+    longitude: number | null;
     visited: boolean;
     visits_count: number;
     last_visited_at: string | null;
@@ -53,6 +56,8 @@ defineProps<{
                     visited
                 </p>
             </div>
+
+            <ParksMap :parks="parks" class="mb-8" />
 
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <div

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\TwoFactorEmailChallengeController;
 use App\Http\Controllers\Auth\TwoFactorEmailCodeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\SharedListController;
@@ -20,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('parks', [ParkController::class, 'index'])->name('parks.index');
     Route::get('parks/{park}', [ParkController::class, 'show'])->name('parks.show');
+
+    Route::get('map', MapController::class)->name('map');
 
     Route::post('visits', [VisitController::class, 'store'])->name('visits.store');
     Route::get('visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
