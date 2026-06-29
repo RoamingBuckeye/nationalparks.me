@@ -79,6 +79,28 @@ class Park extends Model
         $query->whereNull('archived_at');
     }
 
+    /**
+     * Add per-park visit stats for a given user as `visits_count` and
+     * `last_visited_at` selects (no eager-loaded rows, no N+1).
+     *
+     * @param  Builder<Park>  $query
+     */
+    public function scopeWithVisitStatsFor(Builder $query, int $userId): void
+    {
+        $query->addSelect([
+            'visits_count' => Visit::query()
+                ->selectRaw('count(*)')
+                ->whereColumn('park_id', 'parks.id')
+                ->where('user_id', $userId),
+            'last_visited_at' => Visit::query()
+                ->select('started_at')
+                ->whereColumn('park_id', 'parks.id')
+                ->where('user_id', $userId)
+                ->latest('started_at')
+                ->limit(1),
+        ]);
+    }
+
     /** @return HasMany<PointOfInterest, $this> */
     public function pointsOfInterest(): HasMany
     {
