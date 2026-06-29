@@ -17,6 +17,7 @@ trait ProfileValidationRules
     {
         return [
             'name' => $this->nameRules(),
+            'display_name' => $this->displayNameRules(),
             'email' => $this->emailRules($userId),
         ];
     }
@@ -29,6 +30,16 @@ trait ProfileValidationRules
     protected function nameRules(): array
     {
         return ['required', 'string', 'max:255'];
+    }
+
+    /**
+     * Get the validation rules used to validate the optional public display name.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function displayNameRules(): array
+    {
+        return ['nullable', 'string', 'max:255'];
     }
 
     /**

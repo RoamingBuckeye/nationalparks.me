@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -13,6 +14,7 @@ use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Spatie\Honeypot\Honeypot;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -69,11 +71,40 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::registerView(fn () => Inertia::render('auth/Register', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'honeypot' => app(Honeypot::class)->toArray(),
         ]));
 
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
+        Fortify::twoFactorChallengeView(fn (Request $request) => Inertia::render('auth/TwoFactorChallenge', [
+            'maskedEmail' => $this->maskedPendingEmail($request),
+        ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/ConfirmPassword'));
+    }
+
+    /**
+     * Build a masked version of the email for the user pending a 2FA challenge.
+     */
+    private function maskedPendingEmail(Request $request): ?string
+    {
+        $userId = $request->session()->get('login.id');
+
+        if ($userId === null) {
+            return null;
+        }
+
+        $email = User::query()->whereKey($userId)->value('email');
+
+        if (! is_string($email) || ! str_contains($email, '@')) {
+            return null;
+        }
+
+        [$local, $domain] = explode('@', $email, 2);
+
+        $maskedLocal = mb_strlen($local) <= 2
+            ? str_repeat('•', mb_strlen($local))
+            : mb_substr($local, 0, 1).str_repeat('•', 3).mb_substr($local, -1);
+
+        return $maskedLocal.'@'.$domain;
     }
 
     /**
