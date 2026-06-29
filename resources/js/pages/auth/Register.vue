@@ -12,6 +12,12 @@ import { store } from '@/routes/register';
 
 defineProps<{
     passwordRules: string;
+    honeypot: {
+        enabled: boolean;
+        nameFieldName: string;
+        validFromFieldName: string;
+        encryptedValidFrom: string;
+    };
 }>();
 
 defineOptions({
@@ -48,12 +54,28 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
+                <Label for="display_name"
+                    >Display name
+                    <span class="text-muted-foreground">(optional)</span></Label
+                >
+                <Input
+                    id="display_name"
+                    type="text"
+                    :tabindex="2"
+                    autocomplete="nickname"
+                    name="display_name"
+                    placeholder="Shown on your shared list"
+                />
+                <InputError :message="errors.display_name" />
+            </div>
+
+            <div class="grid gap-2">
                 <Label for="email">Email address</Label>
                 <Input
                     id="email"
                     type="email"
                     required
-                    :tabindex="2"
+                    :tabindex="3"
                     autocomplete="email"
                     name="email"
                     placeholder="email@example.com"
@@ -66,7 +88,7 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     required
-                    :tabindex="3"
+                    :tabindex="4"
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
@@ -80,7 +102,7 @@ defineOptions({
                 <PasswordInput
                     id="password_confirmation"
                     required
-                    :tabindex="4"
+                    :tabindex="5"
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
@@ -89,10 +111,33 @@ defineOptions({
                 <InputError :message="errors.password_confirmation" />
             </div>
 
+            <div
+                v-if="honeypot.enabled"
+                :id="`${honeypot.nameFieldName}_wrap`"
+                style="display: none"
+                aria-hidden="true"
+            >
+                <input
+                    :id="honeypot.nameFieldName"
+                    :name="honeypot.nameFieldName"
+                    type="text"
+                    value=""
+                    autocomplete="nope"
+                    tabindex="-1"
+                />
+                <input
+                    :name="honeypot.validFromFieldName"
+                    type="text"
+                    :value="honeypot.encryptedValidFrom"
+                    autocomplete="off"
+                    tabindex="-1"
+                />
+            </div>
+
             <Button
                 type="submit"
                 class="mt-2 w-full"
-                tabindex="5"
+                tabindex="6"
                 :disabled="processing"
                 data-test="register-user-button"
             >
@@ -106,7 +151,7 @@ defineOptions({
             <TextLink
                 :href="login()"
                 class="underline underline-offset-4"
-                :tabindex="6"
+                :tabindex="7"
                 >Log in</TextLink
             >
         </div>

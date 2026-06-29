@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Fortify\Features;
+use Spatie\Honeypot\ProtectAgainstSpam;
 
 return [
 
@@ -101,7 +102,7 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => ['web', ProtectAgainstSpam::class],
 
     /*
     |--------------------------------------------------------------------------

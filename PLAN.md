@@ -238,6 +238,11 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | Email verification | Required — accounts stay pending until verified. | 2026-06-28 |
 | Sanctum | Yes — for the mobile API tokens. | 2026-06-28 |
 | Honeypot | `spatie/laravel-honeypot` on the registration form. | 2026-06-28 |
+| Email-code 2FA mechanism | Built as an **alternate way to pass the existing Fortify two-factor challenge** (offered to anyone who reaches `/two-factor-challenge`), not a standalone login trigger. Code is a 6-digit, cache-stored hash with a 10-min TTL. | 2026-06-28 |
+| Honeypot wiring | Added `ProtectAgainstSpam` to `config/fortify.php` `middleware` (no-op unless honeypot fields are present, so only the register form is gated). | 2026-06-28 |
+| Sanctum scope (so far) | Foundation only — `HasApiTokens` + `personal_access_tokens` table installed. Token-issuing API endpoints belong to the mobile-API slice (not built yet). | 2026-06-28 |
+
+**Auth slice status:** all rows above are implemented as of 2026-06-28; full suite green (134 Pest tests). Rationale archive: memory `project_auth_stack_decisions.md`.
 
 ## Open questions
 
