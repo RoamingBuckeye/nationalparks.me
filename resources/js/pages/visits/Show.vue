@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router, setLayoutProps, useForm } from '@inertiajs/vue3';
-import { Trash2 } from '@lucide/vue';
+import { ImagePlus, Trash2 } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,16 +8,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { index as parksIndex, show as parkShow } from '@/routes/parks';
+import { destroy as photoDestroy } from '@/routes/photos';
 import {
     destroy as visitDestroy,
     show as visitShow,
     update as visitUpdate,
 } from '@/routes/visits';
+import { store as photosStore } from '@/routes/visits/photos';
 import { toggle as poiToggle } from '@/routes/visits/pois';
 
 type PaginationLink = { url: string | null; label: string; active: boolean };
 
 type Poi = { id: number; title: string; kind: string; kind_label: string };
+
+type VisitPhoto = {
+    id: number;
+    url: string;
+    original_filename: string;
+    taken_at: string | null;
+};
 
 const props = defineProps<{
     visit: {
@@ -30,6 +39,7 @@ const props = defineProps<{
     park: { id: number; name: string };
     pois: { data: Poi[]; links: PaginationLink[] };
     checkedPoiIds: number[];
+    photos: VisitPhoto[];
     totalPois: number;
     kinds: { value: string; label: string }[];
     filters: { kind: string; search: string };
@@ -78,6 +88,37 @@ const deleteVisit = (): void => {
         )
     ) {
         router.delete(visitDestroy(props.visit.id).url);
+    }
+};
+
+// Photos.
+const photoForm = useForm<{ photos: File[] }>({ photos: [] });
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const uploadPhotos = (event: Event): void => {
+    const files = (event.target as HTMLInputElement).files;
+
+    if (!files || files.length === 0) {
+        return;
+    }
+
+    photoForm.photos = Array.from(files);
+    photoForm.post(photosStore(props.visit.id).url, {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            photoForm.reset();
+
+            if (fileInput.value) {
+                fileInput.value.value = '';
+            }
+        },
+    });
+};
+
+const deletePhoto = (id: number): void => {
+    if (confirm('Delete this photo?')) {
+        router.delete(photoDestroy(id).url, { preserveScroll: true });
     }
 };
 
@@ -185,6 +226,79 @@ watch(search, () => {
                 </form>
             </CardContent>
         </Card>
+
+        <section class="flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Photos</h2>
+                <label>
+                    <input
+                        ref="fileInput"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        class="sr-only"
+                        @change="uploadPhotos"
+                    />
+                    <span
+                        class="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                        :class="{
+                            'pointer-events-none opacity-50':
+                                photoForm.processing,
+                        }"
+                    >
+                        <ImagePlus class="size-4" />
+                        {{ photoForm.processing ? 'Uploading…' : 'Add photos' }}
+                    </span>
+                </label>
+            </div>
+
+            <p v-if="photoForm.errors.photos" class="text-sm text-destructive">
+                {{ photoForm.errors.photos }}
+            </p>
+
+            <div
+                v-if="photos.length === 0"
+                class="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground"
+            >
+                No photos yet. Add shots from this trip — we'll read the date
+                and location from each image when available.
+            </div>
+
+            <div
+                v-else
+                class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
+            >
+                <div
+                    v-for="photo in photos"
+                    :key="photo.id"
+                    class="group relative aspect-square overflow-hidden rounded-lg border"
+                >
+                    <a :href="photo.url" target="_blank" rel="noopener">
+                        <img
+                            :src="photo.url"
+                            :alt="photo.original_filename"
+                            loading="lazy"
+                            class="size-full object-cover transition-transform group-hover:scale-105"
+                        />
+                    </a>
+                    <span
+                        v-if="photo.taken_at"
+                        class="absolute right-0 bottom-0 left-0 bg-black/50 px-2 py-1 text-xs text-white"
+                    >
+                        {{ photo.taken_at }}
+                    </span>
+                    <Button
+                        variant="secondary"
+                        size="icon"
+                        class="absolute top-1 right-1 size-7 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="Delete photo"
+                        @click="deletePhoto(photo.id)"
+                    >
+                        <Trash2 class="size-4 text-destructive" />
+                    </Button>
+                </div>
+            </div>
+        </section>
 
         <section class="flex flex-col gap-4">
             <h2 class="text-lg font-semibold">Points of interest</h2>

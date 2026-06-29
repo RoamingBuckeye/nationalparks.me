@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVisitRequest;
 use App\Http\Requests\UpdateVisitRequest;
 use App\Integrations\Nps\Enums\PoiKind;
+use App\Models\Photo;
 use App\Models\PointOfInterest;
 use App\Models\Visit;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,6 +75,12 @@ class VisitController extends Controller
             ],
             'pois' => $pois,
             'checkedPoiIds' => $visit->visitPois()->pluck('point_of_interest_id'),
+            'photos' => $visit->photos()->latest()->get()->map(fn (Photo $photo): array => [
+                'id' => $photo->id,
+                'url' => route('photos.show', $photo->id),
+                'original_filename' => $photo->original_filename,
+                'taken_at' => $photo->taken_at?->toDateString(),
+            ]),
             'totalPois' => $visit->park->pointsOfInterest()->active()->count(),
             'kinds' => collect(PoiKind::cases())->map(fn (PoiKind $poiKind): array => [
                 'value' => $poiKind->value,
