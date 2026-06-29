@@ -2,12 +2,27 @@
 
 use App\Http\Controllers\Auth\TwoFactorEmailChallengeController;
 use App\Http\Controllers\Auth\TwoFactorEmailCodeController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ParkController;
+use App\Http\Controllers\ToggleVisitPoiController;
+use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('parks', [ParkController::class, 'index'])->name('parks.index');
+    Route::get('parks/{park}', [ParkController::class, 'show'])->name('parks.show');
+
+    Route::post('visits', [VisitController::class, 'store'])->name('visits.store');
+    Route::get('visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
+    Route::patch('visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
+    Route::delete('visits/{visit}', [VisitController::class, 'destroy'])->name('visits.destroy');
+
+    Route::post('visits/{visit}/pois/{pointOfInterest}', ToggleVisitPoiController::class)
+        ->name('visits.pois.toggle');
 });
 
 // Email-code alternative for the two-factor challenge (no auth yet — mid-login).
