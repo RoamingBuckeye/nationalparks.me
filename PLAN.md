@@ -117,9 +117,11 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 - **Map view:** US map with parks pinned, color/state encoded as visited vs. unvisited; tap/click a pin to see visit summary
 - Filtering / sorting: by state, by visited status, by date of last visit
 
+**Status (2026-06-29):** built with **Leaflet + OpenStreetMap** (free, no API key). A reusable `ParksMap` Vue component (OSM tiles, `circleMarker`s colored emerald=visited / gray=unvisited, click popups with visit summary) powers both an authenticated `/map` page (sidebar nav, links pins to park detail) and the public shared page. `MapController` returns parks with coordinates + the user's visited state via `Park::withVisitStatsFor()`.
+
 ### Sharing
 
-**Status (2026-06-29):** built. Token management lives on a dedicated **Sharing settings page** (`/settings/sharing`): generate / rotate / revoke + copy URL. The `share_enabled` master toggle stays on the Profile page (per the locked decision); the Sharing page reflects its state and links to Profile when off. The public page (`/s/{token}`) is a standalone, read-only list of all 63 parks with the owner's visited state — gated to 404 unless the token is active **and** `share_enabled` is on (never reveals a token exists). The byline shows `display_name`, falling back to a generic "A National Parks explorer" so the real `name` is never exposed. Map rendering on the shared page is deferred until the map view exists.
+**Status (2026-06-29):** built. Token management lives on a dedicated **Sharing settings page** (`/settings/sharing`): generate / rotate / revoke + copy URL. The `share_enabled` master toggle stays on the Profile page (per the locked decision); the Sharing page reflects its state and links to Profile when off. The public page (`/s/{token}`) is a standalone, read-only list of all 63 parks with the owner's visited state — gated to 404 unless the token is active **and** `share_enabled` is on (never reveals a token exists). The byline shows `display_name`, falling back to a generic "A National Parks explorer" so the real `name` is never exposed. The shared page now renders the Leaflet map (visited/unvisited pins) above the list.
 
 - A user can generate a **public share link** for their list and/or map
 - The shared page is read-only and doesn't reveal account/profile data beyond a display name
@@ -250,4 +252,4 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 
 ## Open questions
 
-1. **Map provider:** Mapbox (paid, free tier ~50k loads/mo, great default styles) vs. Leaflet + OpenStreetMap (free, lower polish). Likely answered when we start the map UI.
+1. ~~**Map provider:** Mapbox vs. Leaflet + OpenStreetMap.~~ **Resolved 2026-06-29 → Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only if we want vector tiles / richer styling later.

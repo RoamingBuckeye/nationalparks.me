@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Mountain } from '@lucide/vue';
+import { LayoutGrid, Map, Mountain } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -13,7 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, map as mapRoute } from '@/routes';
 import { index as parksIndex } from '@/routes/parks';
 import type { NavItem } from '@/types';
 
@@ -27,6 +27,11 @@ const mainNavItems: NavItem[] = [
         title: 'Parks',
         href: parksIndex(),
         icon: Mountain,
+    },
+    {
+        title: 'Map',
+        href: mapRoute(),
+        icon: Map,
     },
 ];
 </script>

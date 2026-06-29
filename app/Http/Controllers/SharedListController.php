@@ -40,6 +40,8 @@ class SharedListController extends Controller
                 'name' => $park->name,
                 'designation' => $park->designation,
                 'states' => array_map(fn (UsState $state): string => $state->value, $park->states),
+                'latitude' => $park->latitude,
+                'longitude' => $park->longitude,
                 'visited' => (int) $park->visits_count > 0,
                 'visits_count' => (int) $park->visits_count,
                 'last_visited_at' => $park->last_visited_at !== null
