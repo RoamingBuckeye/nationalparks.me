@@ -129,7 +129,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 ### Alerts
 
-**Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information) and color-coded, each with title, description, and an optional NPS link. `AlertCategory::severity()` drives the ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Deferred:** alert/closure indicators on the parks list and map.
+**Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information). Rendered as a **two-level accordion, collapsed/compact by default**: the section collapses to a single row whose header still shows severity count chips (e.g. "6 Closures · 3 Cautions · 1 Info") so a collapsed section never hides a closure; expanding reveals one-line per-alert rows that each expand to show description + NPS link. `AlertCategory::severity()` drives ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Deferred:** alert/closure indicators on the parks list and map.
 
 ### Out of scope (for now)
 
