@@ -49,9 +49,7 @@ defineProps<{
                 <h1 class="text-3xl font-bold tracking-tight">
                     {{ displayName }}'s parks
                 </h1>
-                <p
-                    class="text-[#706f6c] text-muted-foreground dark:text-[#A1A09A]"
-                >
+                <p class="text-[#706f6c] dark:text-[#A1A09A]">
                     {{ visitedCount }} of {{ totalCount }} National Parks
                     visited
                 </p>

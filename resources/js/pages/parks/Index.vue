@@ -71,10 +71,12 @@ watch([visited, state], applyFilters);
                 v-model="search"
                 type="search"
                 placeholder="Search parks…"
+                aria-label="Search parks"
                 class="sm:max-w-xs"
             />
             <select
                 v-model="visited"
+                aria-label="Filter by visited status"
                 class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
             >
                 <option value="">All parks</option>
@@ -83,6 +85,7 @@ watch([visited, state], applyFilters);
             </select>
             <select
                 v-model="state"
+                aria-label="Filter by state"
                 class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
             >
                 <option value="">All states</option>

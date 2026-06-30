@@ -12,9 +12,12 @@ use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class PhotoController extends Controller
 {
@@ -30,24 +33,45 @@ class PhotoController extends Controller
         $disk = (string) config('filesystems.default');
         $userId = $request->user()->id;
 
-        foreach (Arr::wrap($request->file('photos')) as $file) {
-            $metadata = $extractMetadata($file->getRealPath(), $file->getMimeType());
+        // Persist all photos atomically: if any row fails, roll back and remove
+        // every file we already stored so nothing is left orphaned on disk.
+        $storedPaths = [];
 
-            // Generate the thumbnail before store() moves the temp file.
-            $thumbnailPath = $generateThumbnail($file, $disk, $userId);
+        try {
+            DB::transaction(function () use ($request, $visit, $extractMetadata, $generateThumbnail, $disk, $userId, &$storedPaths): void {
+                foreach (Arr::wrap($request->file('photos')) as $file) {
+                    $metadata = $extractMetadata($file->getRealPath(), $file->getMimeType());
 
-            $visit->photos()->create([
-                'disk' => $disk,
-                'path' => $file->store("photos/{$userId}", $disk),
-                'thumbnail_path' => $thumbnailPath,
-                'original_filename' => $file->getClientOriginalName(),
-                'mime' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'taken_at' => $metadata['taken_at'],
-                'latitude' => $metadata['latitude'],
-                'longitude' => $metadata['longitude'],
-                'uploaded_by_user_id' => $userId,
-            ]);
+                    // Generate the thumbnail before store() moves the temp file.
+                    $thumbnailPath = $generateThumbnail($file, $disk, $userId);
+                    if ($thumbnailPath !== null) {
+                        $storedPaths[] = $thumbnailPath;
+                    }
+
+                    $path = $file->store("photos/{$userId}", $disk);
+                    if ($path === false) {
+                        throw new RuntimeException('Failed to store uploaded photo.');
+                    }
+                    $storedPaths[] = $path;
+
+                    $visit->photos()->create([
+                        'disk' => $disk,
+                        'path' => $path,
+                        'thumbnail_path' => $thumbnailPath,
+                        'original_filename' => $file->getClientOriginalName(),
+                        'mime' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'taken_at' => $metadata['taken_at'],
+                        'latitude' => $metadata['latitude'],
+                        'longitude' => $metadata['longitude'],
+                        'uploaded_by_user_id' => $userId,
+                    ]);
+                }
+            });
+        } catch (Throwable $exception) {
+            Storage::disk($disk)->delete($storedPaths);
+
+            throw $exception;
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Photos uploaded.')]);
