@@ -78,6 +78,7 @@ class VisitController extends Controller
             'photos' => $visit->photos()->latest()->get()->map(fn (Photo $photo): array => [
                 'id' => $photo->id,
                 'url' => route('photos.show', $photo->id),
+                'thumbnail_url' => route('photos.show', ['photo' => $photo->id, 'variant' => 'thumbnail']),
                 'original_filename' => $photo->original_filename,
                 'taken_at' => $photo->taken_at?->toDateString(),
             ]),

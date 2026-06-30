@@ -24,6 +24,7 @@ type Poi = { id: number; title: string; kind: string; kind_label: string };
 type VisitPhoto = {
     id: number;
     url: string;
+    thumbnail_url: string;
     original_filename: string;
     taken_at: string | null;
 };
@@ -275,7 +276,7 @@ watch(search, () => {
                 >
                     <a :href="photo.url" target="_blank" rel="noopener">
                         <img
-                            :src="photo.url"
+                            :src="photo.thumbnail_url"
                             :alt="photo.original_filename"
                             loading="lazy"
                             class="size-full object-cover transition-transform group-hover:scale-105"

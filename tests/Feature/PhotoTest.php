@@ -8,7 +8,7 @@ use App\Models\Visit;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-it('uploads photos to a visit', function () {
+it('uploads photos to a visit and generates thumbnails', function () {
     Storage::fake('local');
     $user = User::factory()->create();
     $visit = Visit::factory()->for($user)->create();
@@ -25,8 +25,10 @@ it('uploads photos to a visit', function () {
     expect($visit->photos()->count())->toBe(2);
 
     $photo = $visit->photos()->first();
-    expect($photo->uploaded_by_user_id)->toBe($user->id);
+    expect($photo->uploaded_by_user_id)->toBe($user->id)
+        ->and($photo->thumbnail_path)->not->toBeNull();
     Storage::disk('local')->assertExists($photo->path);
+    Storage::disk('local')->assertExists($photo->thumbnail_path);
 });
 
 it('rejects non-image uploads', function () {
@@ -54,7 +56,7 @@ it('forbids uploading photos to another user\'s visit', function () {
         ->assertForbidden();
 });
 
-it('streams a photo to its owner', function () {
+it('streams the full photo and the thumbnail variant to its owner', function () {
     Storage::fake('local');
     $user = User::factory()->create();
     $visit = Visit::factory()->for($user)->create();
@@ -65,6 +67,26 @@ it('streams a photo to its owner', function () {
 
     $this->actingAs($user)
         ->get(route('photos.show', $photo))
+        ->assertOk();
+
+    $this->actingAs($user)
+        ->get(route('photos.show', ['photo' => $photo, 'variant' => 'thumbnail']))
+        ->assertOk()
+        ->assertHeader('content-type', 'image/jpeg');
+});
+
+it('falls back to the original when a photo has no thumbnail', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $visit = Visit::factory()->for($user)->create();
+    $this->actingAs($user)->post(route('visits.photos.store', $visit), [
+        'photos' => [UploadedFile::fake()->image('x.jpg')],
+    ]);
+    $photo = $visit->photos()->sole();
+    $photo->update(['thumbnail_path' => null]);
+
+    $this->actingAs($user)
+        ->get(route('photos.show', ['photo' => $photo, 'variant' => 'thumbnail']))
         ->assertOk();
 });
 
@@ -77,7 +99,7 @@ it('forbids viewing another user\'s photo', function () {
         ->assertForbidden();
 });
 
-it('deletes a photo and its file', function () {
+it('deletes a photo and both of its files', function () {
     Storage::fake('local');
     $user = User::factory()->create();
     $visit = Visit::factory()->for($user)->create();
@@ -85,11 +107,14 @@ it('deletes a photo and its file', function () {
         'photos' => [UploadedFile::fake()->image('x.jpg')],
     ]);
     $photo = $visit->photos()->sole();
+    $originalPath = $photo->path;
+    $thumbnailPath = $photo->thumbnail_path;
 
     $this->actingAs($user)
         ->delete(route('photos.destroy', $photo))
         ->assertRedirect();
 
     $this->assertModelMissing($photo);
-    Storage::disk('local')->assertMissing($photo->path);
+    Storage::disk('local')->assertMissing($originalPath);
+    Storage::disk('local')->assertMissing($thumbnailPath);
 });
