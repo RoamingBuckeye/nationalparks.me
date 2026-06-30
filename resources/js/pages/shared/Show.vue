@@ -36,7 +36,7 @@ defineProps<{
         <header class="mx-auto w-full max-w-5xl p-6 lg:p-8">
             <a href="/" class="flex items-center gap-2 font-semibold">
                 <span
-                    class="flex size-8 items-center justify-center rounded-md bg-emerald-700 text-white"
+                    class="flex size-8 items-center justify-center rounded-md bg-brand-700 text-white"
                 >
                     <AppLogoIcon class="size-5" />
                 </span>
@@ -64,7 +64,7 @@ defineProps<{
                     class="rounded-xl border p-4"
                     :class="
                         park.visited
-                            ? 'border-emerald-700/30 bg-emerald-700/5'
+                            ? 'border-brand-700/30 bg-brand-700/5'
                             : 'border-black/5 opacity-60 dark:border-white/10'
                     "
                 >
@@ -74,7 +74,7 @@ defineProps<{
                         </h2>
                         <span
                             v-if="park.visited"
-                            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
                         >
                             <Check class="size-3" />
                             Visited
@@ -102,7 +102,7 @@ defineProps<{
             Track your own at
             <a
                 href="/"
-                class="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                class="font-medium text-brand-700 hover:underline dark:text-brand-400"
                 >nationalparks.me</a
             >
         </footer>

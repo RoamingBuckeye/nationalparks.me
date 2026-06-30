@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\HasCoordinates;
 use App\Domain\Casts\UsStatesCast;
-use App\Domain\Coordinates;
 use App\Domain\UsState;
 use App\Integrations\Nps\Enums\ParkDesignation;
 use Database\Factories\ParkFactory;
@@ -39,7 +39,7 @@ use Illuminate\Support\Carbon;
 class Park extends Model
 {
     /** @use HasFactory<ParkFactory> */
-    use HasFactory;
+    use HasCoordinates, HasFactory;
 
     protected $guarded = [];
 
@@ -150,15 +150,5 @@ class Park extends Model
     public function isSplitChild(): bool
     {
         return $this->nps_source_code !== null;
-    }
-
-    /** @return Attribute<Coordinates|null, never> */
-    protected function coordinates(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): ?Coordinates => $this->latitude !== null && $this->longitude !== null
-                ? new Coordinates((float) $this->latitude, (float) $this->longitude)
-                : null,
-        );
     }
 }

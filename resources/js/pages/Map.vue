@@ -30,7 +30,7 @@ defineOptions({
             </div>
             <div class="flex items-center gap-4 text-sm text-muted-foreground">
                 <span class="flex items-center gap-1.5">
-                    <span class="size-3 rounded-full bg-emerald-700" />
+                    <span class="size-3 rounded-full bg-brand-700" />
                     Visited
                 </span>
                 <span class="flex items-center gap-1.5">

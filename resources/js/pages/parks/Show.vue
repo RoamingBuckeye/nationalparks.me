@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { index as parksIndex, show as parkShow } from '@/routes/parks';
 import { destroy as visitDestroy, store as visitStore } from '@/routes/visits';
 import { show as visitShow } from '@/routes/visits';
+import type { ParkAlert } from '@/types';
 
 type Park = {
     id: number;
@@ -27,15 +28,6 @@ type Park = {
 };
 
 type PoiCount = { value: string; label: string; count: number };
-
-type ParkAlert = {
-    id: number;
-    category: string | null;
-    severity: number;
-    title: string;
-    description: string | null;
-    url: string | null;
-};
 
 type VisitSummary = {
     id: number;
@@ -122,7 +114,7 @@ const deleteVisit = (id: number): void => {
                     :href="park.url"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center gap-1 text-emerald-700 hover:underline dark:text-emerald-400"
+                    class="inline-flex items-center gap-1 text-brand-700 hover:underline dark:text-brand-400"
                 >
                     <ExternalLink class="size-3.5" /> NPS park page
                 </a>
@@ -131,7 +123,7 @@ const deleteVisit = (id: number): void => {
                     :href="park.directions_url"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center gap-1 text-emerald-700 hover:underline dark:text-emerald-400"
+                    class="inline-flex items-center gap-1 text-brand-700 hover:underline dark:text-brand-400"
                 >
                     <MapPin class="size-3.5" /> Directions
                 </a>
@@ -273,7 +265,7 @@ const deleteVisit = (id: number): void => {
                                 >
                                 <span
                                     v-if="visit.is_live"
-                                    class="rounded-full bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                                    class="rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
                                 >
                                     Live
                                 </span>
