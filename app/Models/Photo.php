@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $photoable_id
  * @property string $disk
  * @property string $path
+ * @property string|null $thumbnail_path
  * @property string $original_filename
  * @property string $mime
  * @property int $size

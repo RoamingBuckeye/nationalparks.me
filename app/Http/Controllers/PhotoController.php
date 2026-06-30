@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Photos\ExtractPhotoMetadata;
+use App\Actions\Photos\GenerateThumbnail;
 use App\Http\Requests\StorePhotoRequest;
 use App\Models\Photo;
 use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -19,17 +21,25 @@ class PhotoController extends Controller
     /**
      * Attach one or more photos to a visit.
      */
-    public function store(StorePhotoRequest $request, Visit $visit, ExtractPhotoMetadata $extractMetadata): RedirectResponse
-    {
+    public function store(
+        StorePhotoRequest $request,
+        Visit $visit,
+        ExtractPhotoMetadata $extractMetadata,
+        GenerateThumbnail $generateThumbnail,
+    ): RedirectResponse {
         $disk = (string) config('filesystems.default');
         $userId = $request->user()->id;
 
         foreach (Arr::wrap($request->file('photos')) as $file) {
             $metadata = $extractMetadata($file->getRealPath(), $file->getMimeType());
 
+            // Generate the thumbnail before store() moves the temp file.
+            $thumbnailPath = $generateThumbnail($file, $disk, $userId);
+
             $visit->photos()->create([
                 'disk' => $disk,
                 'path' => $file->store("photos/{$userId}", $disk),
+                'thumbnail_path' => $thumbnailPath,
                 'original_filename' => $file->getClientOriginalName(),
                 'mime' => $file->getMimeType(),
                 'size' => $file->getSize(),
@@ -47,24 +57,34 @@ class PhotoController extends Controller
 
     /**
      * Stream a photo to its owner (works for local disk now, S3 later).
+     *
+     * Pass `?variant=thumbnail` for the small gallery image; falls back to the
+     * original when no thumbnail exists.
      */
-    public function show(Photo $photo): StreamedResponse
+    public function show(Request $request, Photo $photo): StreamedResponse
     {
         $this->authorize('view', $photo);
 
-        return Storage::disk($photo->disk)->response($photo->path, $photo->original_filename, [
-            'Content-Type' => $photo->mime,
-        ]);
+        $wantsThumbnail = $request->query('variant') === 'thumbnail'
+            && $photo->thumbnail_path !== null;
+
+        return Storage::disk($photo->disk)->response(
+            $wantsThumbnail ? $photo->thumbnail_path : $photo->path,
+            $photo->original_filename,
+            ['Content-Type' => $wantsThumbnail ? 'image/jpeg' : $photo->mime],
+        );
     }
 
     /**
-     * Delete a photo and its underlying file.
+     * Delete a photo and both of its underlying files.
      */
     public function destroy(Photo $photo): RedirectResponse
     {
         $this->authorize('delete', $photo);
 
-        Storage::disk($photo->disk)->delete($photo->path);
+        Storage::disk($photo->disk)->delete(
+            array_filter([$photo->path, $photo->thumbnail_path]),
+        );
 
         $photo->delete();
 
