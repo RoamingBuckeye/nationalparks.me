@@ -99,7 +99,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 **Remaining / deferred:**
 
 - **Mobile track (largest unbuilt area):** Sanctum token-issuing API endpoints, the NativePHP build, and offline-first SQLite sync.
-- **Polish / fast-follows:** per-POI photos; list/map closure indicators (closures-only recommended); open code-review items R9–R18 (rule-compliance + minor efficiency tweaks).
+- **Polish / fast-follows:** list/map closure indicators (closures-only recommended).
 
 Per-section detail and the decisions log follow below.
 
@@ -118,7 +118,7 @@ Per-section detail and the decisions log follow below.
 
 ### Core actions (authenticated)
 
-**Status (2026-06-29):** the web core visit loop is built — park list (`/parks`, visited state + search/state/visited filters), park detail (`/parks/{park}`, POI kind counts + your visits + check-in / log-past-visit), and the visit page (`/visits/{visit}`, editable dates + Journal, live/end toggle, paginated POI checklist with per-visit check-off). Dashboard shows real stats. **Visit-level photo upload is built**: multi-file upload on the visit page, EXIF `taken_at`/GPS captured on ingest, stored on the default disk (local in dev), served through an authorized `/photos/{photo}` route (S3-ready), with delete. On upload a 500×500 cover-cropped JPEG **thumbnail** is generated (Intervention Image, `photos.thumbnail_path`) and served to the gallery via `?variant=thumbnail` (≈90% smaller; full image on click-through; falls back to the original when no thumbnail exists). Photos are polymorphic (`photoable`), so **per-POI photos** are a small future addition — the per-POI upload UI is deferred.
+**Status (2026-06-29):** the web core visit loop is built — park list (`/parks`, visited state + search/state/visited filters), park detail (`/parks/{park}`, POI kind counts + your visits + check-in / log-past-visit), and the visit page (`/visits/{visit}`, editable dates + Journal, live/end toggle, paginated POI checklist with per-visit check-off). Dashboard shows real stats. **Visit-level photo upload is built**: multi-file upload on the visit page, EXIF `taken_at`/GPS captured on ingest, stored on the default disk (local in dev), served through an authorized `/photos/{photo}` route (S3-ready), with delete. On upload a 500×500 cover-cropped JPEG **thumbnail** is generated (Intervention Image, `photos.thumbnail_path`) and served to the gallery via `?variant=thumbnail` (≈90% smaller; full image on click-through; falls back to the original when no thumbnail exists). Photos are stored polymorphically (`photoable`), attached at the visit level.
 
 1. **Log a park visit**
    - Check in **live** (now) or **log a past visit** (backdated)
