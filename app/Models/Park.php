@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Concerns\HasCoordinates;
 use App\Domain\Casts\UsStatesCast;
 use App\Domain\UsState;
+use App\Integrations\Nps\Enums\AlertCategory;
 use App\Integrations\Nps\Enums\ParkDesignation;
 use Database\Factories\ParkFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $archived_at
  * @property-read int $visits_count
  * @property-read string|null $last_visited_at
+ * @property-read int $has_active_closure
  */
 class Park extends Model
 {
@@ -98,6 +100,23 @@ class Park extends Model
                 ->where('user_id', $userId)
                 ->latest('started_at')
                 ->limit(1),
+        ]);
+    }
+
+    /**
+     * Flag whether the park currently has an active "Park Closure" alert as a
+     * `has_active_closure` count select — no eager-loaded alert rows.
+     *
+     * @param  Builder<Park>  $query
+     */
+    public function scopeWithClosureStatus(Builder $query): void
+    {
+        $query->addSelect([
+            'has_active_closure' => Alert::query()
+                ->selectRaw('count(*)')
+                ->whereColumn('park_id', 'parks.id')
+                ->active()
+                ->where('category', AlertCategory::ParkClosure),
         ]);
     }
 

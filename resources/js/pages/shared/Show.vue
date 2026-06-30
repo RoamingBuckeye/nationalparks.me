@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { Check } from '@lucide/vue';
+import { Ban, Check } from '@lucide/vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import ParksMap from '@/components/ParksMap.vue';
 
@@ -14,6 +14,7 @@ type SharedPark = {
     visited: boolean;
     visits_count: number;
     last_visited_at: string | null;
+    closed: boolean;
 };
 
 defineProps<{
@@ -72,13 +73,22 @@ defineProps<{
                         <h2 class="leading-tight font-semibold">
                             {{ park.name }}
                         </h2>
-                        <span
-                            v-if="park.visited"
-                            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
-                        >
-                            <Check class="size-3" />
-                            Visited
-                        </span>
+                        <div class="flex shrink-0 flex-col items-end gap-1">
+                            <span
+                                v-if="park.closed"
+                                class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400"
+                            >
+                                <Ban class="size-3" />
+                                Closure
+                            </span>
+                            <span
+                                v-if="park.visited"
+                                class="inline-flex items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
+                            >
+                                <Check class="size-3" />
+                                Visited
+                            </span>
+                        </div>
                     </div>
                     <p class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">
                         {{ park.designation }}
