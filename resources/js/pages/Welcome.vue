@@ -17,7 +17,7 @@ import { dashboard, login, register } from '@/routes';
             <nav class="flex items-center justify-between gap-4">
                 <span class="flex items-center gap-2 font-semibold">
                     <span
-                        class="flex size-8 items-center justify-center rounded-md bg-emerald-700 text-white"
+                        class="flex size-8 items-center justify-center rounded-md bg-brand-700 text-white"
                     >
                         <AppLogoIcon class="size-5" />
                     </span>
@@ -28,7 +28,7 @@ import { dashboard, login, register } from '@/routes';
                     <Link
                         v-if="$page.props.auth.user"
                         :href="dashboard()"
-                        class="rounded-md bg-emerald-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-emerald-800"
+                        class="rounded-md bg-brand-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-brand-800"
                     >
                         Go to dashboard
                     </Link>
@@ -41,7 +41,7 @@ import { dashboard, login, register } from '@/routes';
                         </Link>
                         <Link
                             :href="register()"
-                            class="rounded-md bg-emerald-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-emerald-800"
+                            class="rounded-md bg-brand-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-brand-800"
                         >
                             Get started
                         </Link>
@@ -54,14 +54,14 @@ import { dashboard, login, register } from '@/routes';
             class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center"
         >
             <span
-                class="inline-flex items-center gap-2 rounded-full border border-emerald-700/20 bg-emerald-700/10 px-3 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300"
+                class="inline-flex items-center gap-2 rounded-full border border-brand-700/20 bg-brand-700/10 px-3 py-1 text-xs font-medium text-brand-800 dark:text-brand-300"
             >
                 All 63 U.S. National Parks
             </span>
 
             <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
                 Every park. One map.
-                <span class="text-emerald-700 dark:text-emerald-400"
+                <span class="text-brand-700 dark:text-brand-400"
                     >Your story.</span
                 >
             </h1>
@@ -76,14 +76,14 @@ import { dashboard, login, register } from '@/routes';
                 <Link
                     v-if="$page.props.auth.user"
                     :href="dashboard()"
-                    class="rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition-colors hover:bg-emerald-800"
+                    class="rounded-lg bg-brand-700 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
                 >
                     Go to your dashboard
                 </Link>
                 <template v-else>
                     <Link
                         :href="register()"
-                        class="rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white transition-colors hover:bg-emerald-800"
+                        class="rounded-lg bg-brand-700 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
                     >
                         Start your map
                     </Link>
@@ -103,7 +103,7 @@ import { dashboard, login, register } from '@/routes';
                     class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
                 >
                     <dt
-                        class="text-2xl font-bold text-emerald-700 dark:text-emerald-400"
+                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
                     >
                         63
                     </dt>
@@ -115,7 +115,7 @@ import { dashboard, login, register } from '@/routes';
                     class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
                 >
                     <dt
-                        class="text-2xl font-bold text-emerald-700 dark:text-emerald-400"
+                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
                     >
                         7,000+
                     </dt>
@@ -127,7 +127,7 @@ import { dashboard, login, register } from '@/routes';
                     class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
                 >
                     <dt
-                        class="text-2xl font-bold text-emerald-700 dark:text-emerald-400"
+                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
                     >
                         Web + app
                     </dt>

@@ -117,7 +117,7 @@ watch([visited, state], applyFilters);
                             </h2>
                             <span
                                 v-if="park.visits_count > 0"
-                                class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                                class="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
                             >
                                 <Check class="size-3" />
                                 Visited

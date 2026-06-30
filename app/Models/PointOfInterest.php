@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Domain\Coordinates;
+use App\Concerns\HasCoordinates;
 use App\Integrations\Nps\Enums\PoiKind;
 use Database\Factories\PointOfInterestFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class PointOfInterest extends Model
 {
     /** @use HasFactory<PointOfInterestFactory> */
-    use HasFactory;
+    use HasCoordinates, HasFactory;
 
     protected $table = 'points_of_interest';
 
@@ -87,15 +86,5 @@ class PointOfInterest extends Model
     public function amenities(): MorphToMany
     {
         return $this->morphToMany(Amenity::class, 'amenitiable');
-    }
-
-    /** @return Attribute<Coordinates|null, never> */
-    protected function coordinates(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): ?Coordinates => $this->latitude !== null && $this->longitude !== null
-                ? new Coordinates((float) $this->latitude, (float) $this->longitude)
-                : null,
-        );
     }
 }

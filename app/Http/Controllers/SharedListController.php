@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Domain\UsState;
+use App\Actions\Parks\SummarizePark;
 use App\Models\Park;
 use App\Models\ShareToken;
-use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,7 +18,7 @@ class SharedListController extends Controller
      * 404s unless the token is active and the owner still has sharing on —
      * never reveals that a token exists.
      */
-    public function __invoke(string $token): Response
+    public function __invoke(string $token, SummarizePark $summarizePark): Response
     {
         $shareToken = ShareToken::query()
             ->active()
@@ -35,19 +34,7 @@ class SharedListController extends Controller
             ->withVisitStatsFor($shareToken->user->id)
             ->orderBy('name')
             ->get()
-            ->map(fn (Park $park): array => [
-                'id' => $park->id,
-                'name' => $park->name,
-                'designation' => $park->designation,
-                'states' => array_map(fn (UsState $state): string => $state->value, $park->states),
-                'latitude' => $park->latitude,
-                'longitude' => $park->longitude,
-                'visited' => (int) $park->visits_count > 0,
-                'visits_count' => (int) $park->visits_count,
-                'last_visited_at' => $park->last_visited_at !== null
-                    ? Carbon::parse($park->last_visited_at)->toDateString()
-                    : null,
-            ]);
+            ->map($summarizePark);
 
         return Inertia::render('shared/Show', [
             'displayName' => $shareToken->user->display_name ?: 'A National Parks explorer',

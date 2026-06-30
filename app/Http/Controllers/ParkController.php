@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Parks\SummarizePark;
 use App\Domain\UsState;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Models\Alert;
@@ -11,7 +12,6 @@ use App\Models\Park;
 use App\Models\Visit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,7 +20,7 @@ class ParkController extends Controller
     /**
      * List all parks with the current user's visited state.
      */
-    public function index(Request $request): Response
+    public function index(Request $request, SummarizePark $summarizePark): Response
     {
         $userId = $request->user()->id;
         $search = trim((string) $request->string('search'));
@@ -40,17 +40,7 @@ class ParkController extends Controller
             ->get()
             ->when($visited === 'visited', fn ($parks) => $parks->where('visits_count', '>', 0))
             ->when($visited === 'unvisited', fn ($parks) => $parks->where('visits_count', 0))
-            ->map(fn (Park $park): array => [
-                'id' => $park->id,
-                'park_code' => $park->park_code,
-                'name' => $park->name,
-                'designation' => $park->designation,
-                'states' => array_map(fn (UsState $state): string => $state->value, $park->states),
-                'visits_count' => (int) $park->visits_count,
-                'last_visited_at' => $park->last_visited_at !== null
-                    ? Carbon::parse($park->last_visited_at)->toDateString()
-                    : null,
-            ])
+            ->map($summarizePark)
             ->values();
 
         return Inertia::render('parks/Index', [

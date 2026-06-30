@@ -44,7 +44,7 @@ const buildPopup = (park: MapPark): HTMLElement => {
         const link = document.createElement('a');
         link.href = park.href;
         link.textContent = 'View park →';
-        link.className = 'text-emerald-700 underline';
+        link.className = 'text-brand-700 underline';
         container.appendChild(link);
     }
 

@@ -358,7 +358,7 @@ watch(search, () => {
                         class="rounded-md px-3 py-1.5 text-sm"
                         :class="
                             link.active
-                                ? 'bg-emerald-700 text-white'
+                                ? 'bg-brand-700 text-white'
                                 : 'text-muted-foreground hover:bg-muted'
                         "
                         @click.prevent="

@@ -7,17 +7,9 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import type { ParkAlert } from '@/types';
 
-type Alert = {
-    id: number;
-    category: string | null;
-    severity: number;
-    title: string;
-    description: string | null;
-    url: string | null;
-};
-
-const props = defineProps<{ alerts: Alert[] }>();
+const props = defineProps<{ alerts: ParkAlert[] }>();
 
 type Variant = {
     wrap: string;
@@ -175,7 +167,7 @@ const summary = computed(() =>
                                     :href="alert.url"
                                     target="_blank"
                                     rel="noopener"
-                                    class="text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                                    class="text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
                                 >
                                     Details →
                                 </a>

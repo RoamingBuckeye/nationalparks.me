@@ -29,6 +29,12 @@
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
 
+    /* Brand accent — aliased to emerald so the brand color lives in one place. */
+    --color-brand-300: var(--color-emerald-300);
+    --color-brand-400: var(--color-emerald-400);
+    --color-brand-700: var(--color-emerald-700);
+    --color-brand-800: var(--color-emerald-800);
+
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
 

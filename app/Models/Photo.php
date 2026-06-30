@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Domain\Coordinates;
+use App\Concerns\HasCoordinates;
 use Database\Factories\PhotoFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,7 +30,7 @@ use Illuminate\Support\Carbon;
 class Photo extends Model
 {
     /** @use HasFactory<PhotoFactory> */
-    use HasFactory;
+    use HasCoordinates, HasFactory;
 
     protected $guarded = [];
 
@@ -55,15 +54,5 @@ class Photo extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by_user_id');
-    }
-
-    /** @return Attribute<Coordinates|null, never> */
-    protected function coordinates(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): ?Coordinates => $this->latitude !== null && $this->longitude !== null
-                ? new Coordinates((float) $this->latitude, (float) $this->longitude)
-                : null,
-        );
     }
 }

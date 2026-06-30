@@ -78,7 +78,7 @@ const stats = computed(() => [
                     </CardTitle>
                     <component
                         :is="stat.icon"
-                        class="size-5 text-emerald-700 dark:text-emerald-400"
+                        class="size-5 text-brand-700 dark:text-brand-400"
                     />
                 </CardHeader>
                 <CardContent>
@@ -97,7 +97,7 @@ const stats = computed(() => [
                     class="flex flex-col items-center justify-center gap-3 py-12 text-center"
                 >
                     <div
-                        class="flex size-12 items-center justify-center rounded-full bg-emerald-700/10 text-emerald-700 dark:text-emerald-400"
+                        class="flex size-12 items-center justify-center rounded-full bg-brand-700/10 text-brand-700 dark:text-brand-400"
                     >
                         <MapPin class="size-6" />
                     </div>
@@ -121,7 +121,7 @@ const stats = computed(() => [
                                 {{ visit.park_name }}
                                 <span
                                     v-if="visit.is_live"
-                                    class="rounded-full bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                                    class="rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
                                 >
                                     Live
                                 </span>
