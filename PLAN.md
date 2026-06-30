@@ -78,10 +78,30 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 - Install CocoaPods (`brew install cocoapods`) before first iOS device build
 - Confirm Java/Gradle pickup once we open the Android project in Android Studio once
-- NPS Data API key (functional dependency, not stack) — Bill to locate existing key
+- ~~NPS Data API key~~ — **resolved**: key located and in `.env`; all entities synced (63 parks, ~7.5k POIs, 169 alerts)
 - Apple Developer Program enrollment — required when we're ready to test on a real iPhone
 
 ## Functionality
+
+### Implementation status
+
+**Web app: feature-complete for the core scope** as of 2026-06-29 (10 PRs merged; 171 Pest tests green; Pint, PHPStan level 7, ESLint, vue-tsc, Prettier all clean; enforced by a pre-push hook). Shipped slices:
+
+- **Auth** — Fortify email/password, required email verification, TOTP + hand-rolled email-code 2FA, passkeys, honeypot on registration, Sanctum installed (token endpoints pending). `display_name` + `share_enabled` surfaced.
+- **NPS data** — 63 parks, ~7.5k POIs, and 169 alerts synced and refreshed on schedule.
+- **Core visit loop** — browse parks (list + search/state/visited filters), park detail, log live/past visits with a Journal, per-visit POI check-off (paginated checklist).
+- **Photos** — multi-file visit photo upload with EXIF capture and server-side thumbnails, served through an authorized streaming route; uploads are transactional (no orphaned files on partial failure).
+- **Map** — Leaflet + OpenStreetMap map of all parks by visited state (authenticated `/map` + the public shared page).
+- **Sharing** — token-gated, read-only public list + map; generate / rotate / revoke from settings.
+- **Alerts** — NPS alerts on park detail as a compact, severity-ordered two-level accordion.
+- **Dashboard + branded homepage** — real stats; brand color centralized as `brand-*` Tailwind tokens.
+
+**Remaining / deferred:**
+
+- **Mobile track (largest unbuilt area):** Sanctum token-issuing API endpoints, the NativePHP build, and offline-first SQLite sync.
+- **Polish / fast-follows:** per-POI photos; list/map closure indicators (closures-only recommended); open code-review items R9–R18 (rule-compliance + minor efficiency tweaks).
+
+Per-section detail and the decisions log follow below.
 
 ### Users & authentication
 
@@ -251,8 +271,11 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | Email-code 2FA mechanism | Built as an **alternate way to pass the existing Fortify two-factor challenge** (offered to anyone who reaches `/two-factor-challenge`), not a standalone login trigger. Code is a 6-digit, cache-stored hash with a 10-min TTL. | 2026-06-28 |
 | Honeypot wiring | Added `ProtectAgainstSpam` to `config/fortify.php` `middleware` (no-op unless honeypot fields are present, so only the register form is gated). | 2026-06-28 |
 | Sanctum scope (so far) | Foundation only — `HasApiTokens` + `personal_access_tokens` table installed. Token-issuing API endpoints belong to the mobile-API slice (not built yet). | 2026-06-28 |
+| Map provider | **Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only for vector tiles / richer styling. | 2026-06-29 |
+| Brand color | Centralized as `brand-{300,400,700,800}` Tailwind tokens aliased to `emerald` in `resources/css/app.css`; rebrand = repoint those aliases. UI uses `brand-*`, never raw `emerald-*`. | 2026-06-29 |
+| Closure indicators | Deferred; when built, **closures-only** is the recommended scope (a red "Closure" chip on cards + a red ring on map pins) over full per-category counts. | 2026-06-29 |
 
-**Auth slice status:** all rows above are implemented as of 2026-06-28; full suite green (134 Pest tests). Rationale archive: memory `project_auth_stack_decisions.md`.
+**Auth slice status:** the auth rows above were implemented 2026-06-28. Broader status: see **Implementation status** near the top of Functionality. Rationale archives in memory: `project_auth_stack_decisions.md`, `project_user_data_schema.md`.
 
 ## Open questions
 
