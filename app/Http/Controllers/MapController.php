@@ -20,6 +20,7 @@ class MapController extends Controller
         $parks = Park::query()
             ->active()
             ->withVisitStatsFor($request->user()->id)
+            ->withClosureStatus()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->orderBy('name')

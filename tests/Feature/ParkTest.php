@@ -72,6 +72,35 @@ it('shows active alerts severity-ordered and excludes archived ones', function (
             ->where('alerts.1.category', 'Information'));
 });
 
+it('flags parks with an active closure on the list', function () {
+    $user = User::factory()->create();
+    $closed = Park::factory()->create(['name' => 'Closed Canyon']);
+    Park::factory()->create(['name' => 'Open Range']);
+
+    Alert::factory()->for($closed)->category(AlertCategory::ParkClosure)->create();
+
+    $this->actingAs($user)
+        ->get(route('parks.index'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('parks.0.closed', true)
+            ->where('parks.1.closed', false));
+});
+
+it('ignores archived and non-closure alerts for the closure flag', function () {
+    $user = User::factory()->create();
+    $park = Park::factory()->create();
+
+    Alert::factory()->for($park)->category(AlertCategory::ParkClosure)->archived()->create();
+    Alert::factory()->for($park)->category(AlertCategory::Danger)->create();
+
+    $this->actingAs($user)
+        ->get(route('parks.index'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('parks.0.closed', false));
+});
+
 it('requires verification to browse parks', function () {
     $user = User::factory()->unverified()->create();
 

@@ -30,6 +30,7 @@ class ParkController extends Controller
         $parks = Park::query()
             ->active()
             ->withVisitStatsFor($userId)
+            ->withClosureStatus()
             ->when($search !== '', fn (Builder $query) => $query->where(
                 fn (Builder $inner) => $inner
                     ->where('name', 'like', "%{$search}%")

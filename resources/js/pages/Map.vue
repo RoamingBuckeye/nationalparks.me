@@ -37,6 +37,12 @@ defineOptions({
                     <span class="size-3 rounded-full bg-gray-400" />
                     Not visited
                 </span>
+                <span class="flex items-center gap-1.5">
+                    <span
+                        class="size-3 rounded-full border-2 border-red-600 bg-gray-400"
+                    />
+                    Active closure
+                </span>
             </div>
         </div>
 

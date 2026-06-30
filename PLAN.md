@@ -87,7 +87,9 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 **Web app: feature-complete for the core scope** as of 2026-06-29 (10 PRs merged; 171 Pest tests green; Pint, PHPStan level 7, ESLint, vue-tsc, Prettier all clean; enforced by a pre-push hook). Shipped slices:
 
-- **Auth** — Fortify email/password, required email verification, TOTP + hand-rolled email-code 2FA, passkeys, honeypot on registration, Sanctum installed (token endpoints pending). `display_name` + `share_enabled` surfaced.
+- **Auth** — Fortify email/password, required email verification, TOTP + hand-rolled email-code 2FA, passkeys, honeypot on registration. `display_name` + `share_enabled` surfaced.
+- **Mobile token API** — Sanctum bearer-token endpoints (`POST /api/login`, `/api/two-factor-challenge`, `/api/two-factor-challenge/email-code`, `/api/logout`, `GET /api/user`) with full 2FA parity (TOTP, email code, recovery codes) and the same email-verification gate as the web. Tokens never expire.
+- **Closure indicators** — red "Closure" chip on park cards (list + shared page) and a red ring on map pins for parks with an active NPS "Park Closure" alert.
 - **NPS data** — 63 parks, ~7.5k POIs, and 169 alerts synced and refreshed on schedule.
 - **Core visit loop** — browse parks (list + search/state/visited filters), park detail, log live/past visits with a Journal, per-visit POI check-off (paginated checklist).
 - **Photos** — multi-file visit photo upload with EXIF capture and server-side thumbnails, served through an authorized streaming route; uploads are transactional (no orphaned files on partial failure).
@@ -98,8 +100,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 **Remaining / deferred:**
 
-- **Mobile track (largest unbuilt area):** Sanctum token-issuing API endpoints, the NativePHP build, and offline-first SQLite sync.
-- **Polish / fast-follows:** list/map closure indicators (closures-only recommended).
+- **Mobile track (largest unbuilt area):** the NativePHP build and offline-first SQLite sync. The Sanctum token API the app will authenticate against is now built (see Mobile token API above).
 
 Per-section detail and the decisions log follow below.
 
@@ -149,7 +150,7 @@ Per-section detail and the decisions log follow below.
 
 ### Alerts
 
-**Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information). Rendered as a **two-level accordion, collapsed/compact by default**: the section collapses to a single row whose header still shows severity count chips (e.g. "6 Closures · 3 Cautions · 1 Info") so a collapsed section never hides a closure; expanding reveals one-line per-alert rows that each expand to show description + NPS link. `AlertCategory::severity()` drives ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Deferred:** alert/closure indicators on the parks list and map.
+**Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information). Rendered as a **two-level accordion, collapsed/compact by default**: the section collapses to a single row whose header still shows severity count chips (e.g. "6 Closures · 3 Cautions · 1 Info") so a collapsed section never hides a closure; expanding reveals one-line per-alert rows that each expand to show description + NPS link. `AlertCategory::severity()` drives ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Closure indicators (built 2026-06-30):** parks with an active `Park Closure` alert get a red "Closure" chip on the list + shared page and a red ring on their map pin. A `Park::scopeWithClosureStatus()` subquery feeds a `closed` flag through `SummarizePark`, so all three pages share one source of truth.
 
 ### Out of scope (for now)
 
@@ -271,9 +272,14 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | Email-code 2FA mechanism | Built as an **alternate way to pass the existing Fortify two-factor challenge** (offered to anyone who reaches `/two-factor-challenge`), not a standalone login trigger. Code is a 6-digit, cache-stored hash with a 10-min TTL. | 2026-06-28 |
 | Honeypot wiring | Added `ProtectAgainstSpam` to `config/fortify.php` `middleware` (no-op unless honeypot fields are present, so only the register form is gated). | 2026-06-28 |
 | Sanctum scope (so far) | Foundation only — `HasApiTokens` + `personal_access_tokens` table installed. Token-issuing API endpoints belong to the mobile-API slice (not built yet). | 2026-06-28 |
+| Mobile token API | **Built 2026-06-30.** `routes/api.php` wired in `bootstrap/app.php`; `sanctum` guard added to `config/auth.php`. Endpoints: `login`, `two-factor-challenge`, `two-factor-challenge/email-code`, `logout`, `user`. Login mirrors Fortify — returns `{two_factor, challenge_token}` (cache-backed, 10-min TTL, replaces session `login.id`) instead of a token when TOTP is enabled. | 2026-06-30 |
+| API 2FA scope | **Full parity** — the challenge endpoint accepts a TOTP code, the hand-rolled email code, or a recovery code (consumed on use). TOTP verification is wrapped so a malformed secret can't crash the request. | 2026-06-30 |
+| API token lifetime | **Never expire** (Sanctum default; no `config/sanctum.php` expiration). The app holds a token until logout/revoke. | 2026-06-30 |
+| API resource wrapping | `JsonResource::withoutWrapping()` — the mobile API returns bare JSON objects (no top-level `data` key), consistent for nested and top-level resources. | 2026-06-30 |
+| API rate limits | `api-auth` (10/min by IP) on the unauthenticated auth endpoints; `api` (60/min by user/IP) on authenticated endpoints. Defined in `AppServiceProvider`. | 2026-06-30 |
 | Map provider | **Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only for vector tiles / richer styling. | 2026-06-29 |
 | Brand color | Centralized as `brand-{300,400,700,800}` Tailwind tokens aliased to `emerald` in `resources/css/app.css`; rebrand = repoint those aliases. UI uses `brand-*`, never raw `emerald-*`. | 2026-06-29 |
-| Closure indicators | Deferred; when built, **closures-only** is the recommended scope (a red "Closure" chip on cards + a red ring on map pins) over full per-category counts. | 2026-06-29 |
+| Closure indicators | **Built 2026-06-30** as closures-only: a red "Closure" chip on cards (list + shared page) and a red ring on map pins, driven by a `Park::scopeWithClosureStatus()` subquery surfaced through `SummarizePark` as a `closed` flag. | 2026-06-29 |
 
 **Auth slice status:** the auth rows above were implemented 2026-06-28. Broader status: see **Implementation status** near the top of Functionality. Rationale archives in memory: `project_auth_stack_decisions.md`, `project_user_data_schema.md`.
 

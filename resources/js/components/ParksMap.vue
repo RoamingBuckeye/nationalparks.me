@@ -11,6 +11,7 @@ export type MapPark = {
     visited: boolean;
     visits_count: number;
     last_visited_at: string | null;
+    closed?: boolean;
     href?: string;
 };
 
@@ -38,6 +39,13 @@ const buildPopup = (park: MapPark): HTMLElement => {
         const last = document.createElement('p');
         last.textContent = `Last visited ${park.last_visited_at}`;
         container.appendChild(last);
+    }
+
+    if (park.closed) {
+        const closure = document.createElement('p');
+        closure.textContent = 'Active closure';
+        closure.className = 'font-medium text-red-600';
+        container.appendChild(closure);
     }
 
     if (park.href) {
@@ -76,8 +84,8 @@ onMounted(() => {
 
         L.circleMarker([park.latitude, park.longitude], {
             radius: 6,
-            color: '#ffffff',
-            weight: 1,
+            color: park.closed ? '#dc2626' : '#ffffff',
+            weight: park.closed ? 2.5 : 1,
             fillColor: park.visited ? '#15803d' : '#9ca3af',
             fillOpacity: 0.9,
         })

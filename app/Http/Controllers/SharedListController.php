@@ -32,6 +32,7 @@ class SharedListController extends Controller
         $parks = Park::query()
             ->active()
             ->withVisitStatsFor($shareToken->user->id)
+            ->withClosureStatus()
             ->orderBy('name')
             ->get()
             ->map($summarizePark);

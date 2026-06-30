@@ -28,6 +28,7 @@ class SummarizePark
             'longitude' => $park->longitude,
             'visits_count' => (int) $park->visits_count,
             'visited' => (int) $park->visits_count > 0,
+            'closed' => (int) $park->has_active_closure > 0,
             'last_visited_at' => $park->last_visited_at !== null
                 ? Carbon::parse($park->last_visited_at)->toDateString()
                 : null,
