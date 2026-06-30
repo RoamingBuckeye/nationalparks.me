@@ -309,10 +309,12 @@ watch(search, () => {
                     v-model="search"
                     type="search"
                     placeholder="Search points of interest…"
+                    aria-label="Search points of interest"
                     class="sm:max-w-xs"
                 />
                 <select
                     v-model="kind"
+                    aria-label="Filter by kind"
                     class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
                 >
                     <option value="">All kinds</option>

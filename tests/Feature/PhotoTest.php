@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Actions\Photos\ExtractPhotoMetadata;
 use App\Models\Photo;
 use App\Models\User;
 use App\Models\Visit;
@@ -29,6 +30,41 @@ it('uploads photos to a visit and generates thumbnails', function () {
         ->and($photo->thumbnail_path)->not->toBeNull();
     Storage::disk('local')->assertExists($photo->path);
     Storage::disk('local')->assertExists($photo->thumbnail_path);
+});
+
+it('rolls back and cleans up stored files when an upload fails midway', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $visit = Visit::factory()->for($user)->create();
+
+    // Fail on the second photo, after the first has stored its files + row.
+    $this->app->bind(ExtractPhotoMetadata::class, fn () => new class extends ExtractPhotoMetadata
+    {
+        private int $calls = 0;
+
+        public function __invoke(string $absolutePath, ?string $mime): array
+        {
+            $this->calls++;
+
+            if ($this->calls > 1) {
+                throw new RuntimeException('boom');
+            }
+
+            return ['taken_at' => null, 'latitude' => null, 'longitude' => null];
+        }
+    });
+
+    $this->actingAs($user)
+        ->post(route('visits.photos.store', $visit), [
+            'photos' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->image('b.jpg'),
+            ],
+        ])
+        ->assertStatus(500);
+
+    expect($visit->photos()->count())->toBe(0)
+        ->and(Storage::disk('local')->allFiles())->toBeEmpty();
 });
 
 it('rejects non-image uploads', function () {

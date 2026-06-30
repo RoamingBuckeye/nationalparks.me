@@ -64,6 +64,7 @@ const switchMode = (next: ChallengeMode, clearErrors?: () => void): void => {
     clearErrors?.();
     code.value = '';
     emailCodeValue.value = '';
+    emailCodeSent.value = false;
 };
 
 const sendEmailCode = (): void => {
