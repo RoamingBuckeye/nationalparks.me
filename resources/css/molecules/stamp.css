@@ -1,0 +1,88 @@
+/*
+ * Stamp — a collectible park badge. Molecule.
+ * Colors/fonts come from the design tokens (CSS custom properties); no Tailwind.
+ */
+
+.stamp {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.stamp__badge {
+    position: relative;
+    width: var(--stamp-size, 128px);
+    height: var(--stamp-size, 128px);
+}
+
+.stamp__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition:
+        filter 0.3s ease,
+        opacity 0.3s ease;
+}
+
+/* Locked stamps read as greyed-out. */
+.stamp__svg--locked {
+    filter: grayscale(1);
+    opacity: 0.6;
+}
+
+/* Status pip, notched into the badge's lower-right corner. */
+.stamp__pip {
+    position: absolute;
+    right: 0;
+    bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    color: #fff;
+    box-shadow: 0 0 0 2px var(--color-background);
+}
+
+.stamp__pip--earned {
+    background: var(--color-brand-700);
+}
+
+.stamp__pip--locked {
+    background: var(--color-muted-foreground);
+}
+
+.stamp__pip-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.stamp__label {
+    max-width: 8rem;
+}
+
+.stamp__name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.stamp__status {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Progress tally reads as data. */
+.stamp__progress {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stamp__svg {
+        transition: none;
+    }
+}

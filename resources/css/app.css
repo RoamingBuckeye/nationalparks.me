@@ -2,6 +2,9 @@
 
 @import 'tw-animate-css';
 
+/* Custom BEM/Atomic layer (migrating off Tailwind, component by component). */
+@import './molecules/stamp.css';
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 

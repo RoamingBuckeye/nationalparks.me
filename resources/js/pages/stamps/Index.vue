@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import Stamp from '@/components/Stamp.vue';
+import Stamp from '@/components/molecules/Stamp.vue';
 import { stamps as stampsRoute } from '@/routes';
 import type { Stamp as StampType } from '@/types';
 

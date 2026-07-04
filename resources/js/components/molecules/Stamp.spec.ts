@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import Stamp from '@/components/Stamp.vue';
+import Stamp from '@/components/molecules/Stamp.vue';
 import type { Stamp as StampType } from '@/types/stamps';
 
 function makeStamp(overrides: Partial<StampType> = {}): StampType {
@@ -30,7 +30,7 @@ describe('Stamp', () => {
         });
 
         expect(wrapper.text()).toContain('3/5');
-        expect(wrapper.find('svg').classes()).toContain('grayscale');
+        expect(wrapper.find('svg').classes()).toContain('stamp__svg--locked');
     });
 
     it('shows "Earned" and full color when earned', () => {
@@ -42,7 +42,9 @@ describe('Stamp', () => {
 
         expect(wrapper.text()).toContain('Earned');
         expect(wrapper.text()).not.toContain('/');
-        expect(wrapper.find('svg').classes()).not.toContain('grayscale');
+        expect(wrapper.find('svg').classes()).not.toContain(
+            'stamp__svg--locked',
+        );
     });
 
     it('labels a vintage edition with the year it was earned', () => {

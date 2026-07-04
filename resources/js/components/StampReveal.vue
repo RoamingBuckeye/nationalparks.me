@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
-import Stamp from '@/components/Stamp.vue';
+import Stamp from '@/components/molecules/Stamp.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
