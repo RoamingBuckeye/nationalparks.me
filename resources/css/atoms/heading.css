@@ -1,0 +1,28 @@
+/* Heading — a section title with an optional description. Atom. */
+
+.heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-bottom: 2rem;
+}
+
+.heading--small {
+    margin-bottom: 0;
+}
+
+.heading__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.heading--small .heading__title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.heading__description {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}

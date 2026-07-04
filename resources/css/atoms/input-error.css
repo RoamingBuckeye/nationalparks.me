@@ -1,0 +1,6 @@
+/* InputError — a form field validation message. Atom. */
+
+.input-error {
+    font-size: 0.875rem;
+    color: var(--color-destructive);
+}

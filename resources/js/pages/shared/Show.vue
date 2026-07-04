@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Ban, Check } from '@lucide/vue';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppLogoIcon from '@/components/atoms/AppLogoIcon.vue';
 import ParksMap from '@/components/ParksMap.vue';
 
 type SharedPark = {
