@@ -103,6 +103,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 **Remaining / deferred:**
 
 - **Mobile track (largest unbuilt area):** the NativePHP build and offline-first SQLite sync. The Sanctum token API the app will authenticate against is now built (see Mobile token API above).
+- **Styling refactor (planned):** move off Tailwind utility styling to a **custom CSS system** — **BEM** (Block-Element-Modifier) class naming + **Atomic Design** component organization (atoms/molecules/organisms/templates). A large, app-wide change that replaces the current Tailwind-token design system; the passport palette/type tokens carry over as CSS custom properties.
 
 Per-section detail and the decisions log follow below.
 
