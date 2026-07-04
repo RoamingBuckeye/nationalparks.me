@@ -37,6 +37,10 @@ step 'vue-tsc (TS type check)'
 npm run --silent types:check
 ok 'types clean'
 
+step 'Vitest (JS component tests)'
+npm run --silent test:js
+ok 'js tests passed'
+
 step 'Pest (PHP tests, in-memory SQLite)'
 DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test --without-tty
 ok 'tests passed'
