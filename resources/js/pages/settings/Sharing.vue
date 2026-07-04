@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Check, Copy } from '@lucide/vue';
 import { ref } from 'vue';
-import Heading from '@/components/Heading.vue';
+import Heading from '@/components/atoms/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { edit as profileEdit } from '@/routes/profile';

@@ -1,0 +1,13 @@
+/* TextLink — an inline text link. Atom. */
+
+.text-link {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.3s ease-out;
+}
+
+.text-link:hover {
+    text-decoration-color: currentColor;
+}

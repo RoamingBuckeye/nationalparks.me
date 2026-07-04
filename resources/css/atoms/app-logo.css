@@ -1,0 +1,41 @@
+/* AppLogo — the brand mark + wordmark. Atom. */
+
+.app-logo__mark {
+    display: flex;
+    aspect-ratio: 1 / 1;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: var(--color-sidebar-primary);
+    color: var(--color-sidebar-primary-foreground);
+}
+
+.app-logo__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+    color: #fff;
+}
+
+.dark .app-logo__icon {
+    color: #000;
+}
+
+.app-logo__text {
+    display: grid;
+    flex: 1 1 0%;
+    margin-left: 0.25rem;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.app-logo__name {
+    margin-bottom: 0.125rem;
+    overflow: hidden;
+    line-height: 1.25;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
