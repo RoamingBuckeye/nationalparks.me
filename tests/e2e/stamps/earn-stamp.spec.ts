@@ -19,7 +19,17 @@ test.describe('Earning a stamp by checking in', () => {
         await parks.openPark('New River Gorge');
         await new ParkPage(authenticatedPage).checkInNow();
 
-        // The first-visit milestone and the Mountaineer collection are now earned.
+        // The reveal modal celebrates the unlock (First Stamp + Mountaineer).
+        const reveal = authenticatedPage.getByRole('dialog');
+        await expect(reveal).toBeVisible();
+        await expect(reveal).toContainText('New stamps earned!');
+        await expect(
+            reveal.getByRole('img', { name: /First Stamp stamp, earned/ }),
+        ).toBeVisible();
+        await authenticatedPage.getByRole('button', { name: 'Nice!' }).click();
+        await expect(reveal).toBeHidden();
+
+        // And they're now in the collection.
         await stamps.goto();
         await expect(stamps.earnedStamp('First Stamp')).toBeVisible();
         await expect(stamps.earnedStamp('Mountaineer')).toBeVisible();
