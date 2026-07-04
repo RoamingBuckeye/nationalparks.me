@@ -42,15 +42,12 @@ const ariaLabel = computed(() => {
 </script>
 
 <template>
-    <div class="inline-flex flex-col items-center gap-2 text-center">
-        <div
-            class="relative"
-            :style="{ width: `${size}px`, height: `${size}px` }"
-        >
+    <div class="stamp" :style="{ '--stamp-size': `${size}px` }">
+        <div class="stamp__badge">
             <svg
                 viewBox="0 0 128 128"
-                class="h-full w-full transition duration-300"
-                :class="{ 'opacity-60 grayscale': !isEarned }"
+                class="stamp__svg"
+                :class="{ 'stamp__svg--locked': !isEarned }"
                 role="img"
                 :aria-label="ariaLabel"
             >
@@ -78,29 +75,29 @@ const ariaLabel = computed(() => {
 
             <span
                 v-if="isEarned"
-                class="absolute right-0 bottom-1 flex size-6 items-center justify-center rounded-full bg-brand-700 text-white ring-2 ring-white"
+                class="stamp__pip stamp__pip--earned"
                 aria-hidden="true"
             >
-                <Check class="size-3.5" />
+                <Check class="stamp__pip-icon" />
             </span>
             <span
                 v-else
-                class="absolute right-0 bottom-1 flex size-6 items-center justify-center rounded-full bg-gray-400 text-white ring-2 ring-white"
+                class="stamp__pip stamp__pip--locked"
                 aria-hidden="true"
             >
-                <Lock class="size-3" />
+                <Lock class="stamp__pip-icon" />
             </span>
         </div>
 
-        <div v-if="showLabel" class="max-w-32">
-            <p class="text-sm leading-tight font-semibold">{{ stamp.name }}</p>
-            <p class="text-xs text-muted-foreground">
+        <div v-if="showLabel" class="stamp__label">
+            <p class="stamp__name">{{ stamp.name }}</p>
+            <p class="stamp__status">
                 <template v-if="isEarned && stamp.vintage_year">
                     Earned · {{ stamp.vintage_year }}
                 </template>
                 <template v-else-if="isEarned">Earned</template>
                 <template v-else>
-                    <span class="font-mono tabular-nums"
+                    <span class="stamp__progress"
                         >{{ stamp.progress }}/{{ stamp.required }}</span
                     >
                 </template>
