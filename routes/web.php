@@ -7,6 +7,7 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\SharedListController;
+use App\Http\Controllers\StampsController;
 use App\Http\Controllers\ToggleVisitPoiController;
 use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('parks/{park}', [ParkController::class, 'show'])->name('parks.show');
 
     Route::get('map', MapController::class)->name('map');
+
+    Route::get('stamps', StampsController::class)->name('stamps');
 
     Route::post('visits', [VisitController::class, 'store'])->name('visits.store');
     Route::get('visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
