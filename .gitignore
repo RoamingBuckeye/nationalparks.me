@@ -29,3 +29,10 @@ yarn-error.log
 /.zed
 /.claude/settings.local.json
 /.claude/scheduled_tasks.lock
+
+# E2E (Playwright)
+/database/e2e.sqlite
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache

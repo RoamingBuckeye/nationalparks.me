@@ -81,6 +81,8 @@ export default defineConfigWithVueTs(
             'tailwind.config.js',
             'vite.config.ts',
             'vitest.config.ts',
+            'playwright.config.ts',
+            'tests/e2e/**',
             'resources/js/actions/**',
             'resources/js/components/ui/*',
             'resources/js/routes/**',
