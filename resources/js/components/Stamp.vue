@@ -99,9 +99,11 @@ const ariaLabel = computed(() => {
                     Earned · {{ stamp.vintage_year }}
                 </template>
                 <template v-else-if="isEarned">Earned</template>
-                <template v-else
-                    >{{ stamp.progress }}/{{ stamp.required }}</template
-                >
+                <template v-else>
+                    <span class="font-mono tabular-nums"
+                        >{{ stamp.progress }}/{{ stamp.required }}</span
+                    >
+                </template>
             </p>
         </div>
     </div>
