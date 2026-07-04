@@ -21,7 +21,7 @@ import { dashboard, login, register } from '@/routes';
                     >
                         <AppLogoIcon class="size-5" />
                     </span>
-                    National Parks
+                    NationalParks.me
                 </span>
 
                 <div class="flex items-center gap-3 text-sm">
