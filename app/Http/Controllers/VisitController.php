@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Stamps\EvaluateStamps;
 use App\Http\Requests\StoreVisitRequest;
 use App\Http\Requests\UpdateVisitRequest;
 use App\Integrations\Nps\Enums\PoiKind;
 use App\Models\Photo;
 use App\Models\PointOfInterest;
+use App\Models\Stamp;
 use App\Models\Visit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +23,7 @@ class VisitController extends Controller
     /**
      * Log a new visit — live check-in (no dates) or a backdated past visit.
      */
-    public function store(StoreVisitRequest $request): RedirectResponse
+    public function store(StoreVisitRequest $request, EvaluateStamps $evaluateStamps): RedirectResponse
     {
         $data = $request->validated();
 
@@ -31,6 +33,19 @@ class VisitController extends Controller
             'ended_at' => $data['ended_at'] ?? null,
             'notes' => $data['notes'] ?? null,
         ]);
+
+        $earned = $evaluateStamps($request->user());
+
+        if ($earned->isNotEmpty()) {
+            Inertia::flash('stampsEarned', $earned->map(fn (Stamp $stamp): array => [
+                'id' => $stamp->id,
+                'slug' => $stamp->slug,
+                'name' => $stamp->name,
+                'description' => $stamp->description,
+                'scene' => $stamp->scene,
+                'accent_color' => $stamp->accent_color,
+            ])->all());
+        }
 
         return to_route('visits.show', $visit);
     }
