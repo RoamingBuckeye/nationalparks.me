@@ -13,12 +13,13 @@ A single Laravel codebase serves two targets from the same source: a **web app**
 |---|---|
 | Framework | Laravel 13, PHP 8.5 |
 | Frontend | Vue 3 (Composition API, TypeScript strict) + Inertia.js 3 |
-| Styling | Tailwind CSS 4 |
+| Styling | Tailwind CSS 4 — a passport-book theme (paper & pine palette, Instrument Sans + Fraunces) |
 | Build | Vite + `laravel-vite-plugin`, Wayfinder typed routes |
 | Auth | Laravel Fortify (email/password, TOTP, email-code 2FA, passkeys) + Sanctum for mobile tokens |
 | Queue | Laravel Horizon (Redis) — web only |
 | Mobile | NativePHP for Mobile 3 (`me.nationalparks.app`) |
 | Data source | [NPS Data API](https://www.nps.gov/subjects/developer/api-documentation.htm) |
+| Testing | Pest (backend) · Vitest + Vue Test Utils (components) · Playwright (E2E) |
 
 ### How the dual target works
 
@@ -38,6 +39,7 @@ A single Laravel codebase serves two targets from the same source: a **web app**
 - **Log a visit** — check in live (now) or log a backdated past visit. One visit is one park, with dates, a free-text journal, and photos.
 - **Check off points of interest** — each park carries a curated list of POIs (places, things to do, visitor centers, campgrounds) mirrored from the NPS API. Per visit, tick off what you experienced; attach photos to the visit or to individual POIs.
 - **Visualize progress** — a list view of all 63 parks with visited/unvisited state, visit counts, and last-visited dates; a U.S. map with parks pinned and color-coded by status. Filter and sort by state, visited status, or last-visit date.
+- **Collect stamps** — earn collectible "stamps" by checking into parks: count milestones (visit any 1/5/10/25/63), one collection per state, and the eight NPS Passport regions in their official colors. A stamps page groups them by tier with live progress, and a celebratory modal reveals each one as it unlocks on check-in.
 - **Share** — generate a public, read-only share link rendering your list and map. It exposes nothing beyond a display name, and is revocable/rotatable from settings.
 
 ### NPS data sync
@@ -140,7 +142,11 @@ composer ci:check    # the full CI gate (JS lint/format/types + PHP test)
 
 npm run lint         # ESLint (auto-fix)
 npm run types:check  # vue-tsc
+npm run test:js      # Vitest (Vue component tests)
+npm run test:e2e     # Playwright E2E (boots the app against a seeded SQLite DB)
 ```
+
+The pre-push hook runs Pint, PHPStan, the JS lint/format/type checks, Vitest, and Pest; the Playwright E2E suite runs in its own CI workflow.
 
 ## Deployment
 
@@ -169,14 +175,16 @@ The web app targets **[Laravel Cloud](https://cloud.laravel.com)**, with R2 (S3-
 ```
 app/
   Actions/        Single-responsibility invokable classes
-  Console/        Artisan commands (NpsSyncCommand)
+  Console/        Artisan commands (nps:sync, stamps:evaluate)
   Domain/         Domain models and value objects
+  Enums/          App enums (StampCriteria, PassportRegion)
   Http/           Controllers, requests, resources
   Integrations/   NPS API client
   Models/         Eloquent models
-database/migrations/  Schema (NPS mirror + user-data tables)
-resources/        Vue/Inertia pages and components
-routes/           web.php, settings.php, console.php
+database/migrations/  Schema (NPS mirror + user-data + stamps tables)
+resources/        Vue/Inertia pages and components (+ css/app.css theme tokens)
+routes/           web.php, api.php, settings.php, console.php
+tests/            Pest (Feature/Unit); tests/e2e/ Playwright
 nativephp/        Generated iOS/Android shells (gitignored)
 PLAN.md           Canonical stack, functionality, and schema reference
 ```
