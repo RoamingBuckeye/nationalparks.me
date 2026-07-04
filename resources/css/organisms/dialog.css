@@ -1,0 +1,198 @@
+/* Dialog — a modal overlay with centered content. Organism. */
+
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgb(0 0 0 / 0.8);
+}
+.dialog-overlay[data-state='open'] {
+    animation: np-fade-in 0.2s ease;
+}
+.dialog-overlay[data-state='closed'] {
+    animation: np-fade-out 0.2s ease;
+}
+
+.dialog-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+    display: grid;
+    width: 100%;
+    max-width: calc(100% - 2rem);
+    gap: 1rem;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
+    padding: 1.5rem;
+    box-shadow:
+        0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+@media (min-width: 640px) {
+    .dialog-content {
+        max-width: 32rem;
+    }
+}
+.dialog-content[data-state='open'] {
+    animation: np-dialog-in 0.2s ease;
+}
+.dialog-content[data-state='closed'] {
+    animation: np-dialog-out 0.2s ease;
+}
+
+.dialog-content__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border-radius: var(--radius-sm);
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+.dialog-content__close:hover {
+    opacity: 1;
+}
+.dialog-content__close:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--color-background),
+        0 0 0 4px var(--color-ring);
+}
+.dialog-content__close svg:not([class*='size-']) {
+    width: 1rem;
+    height: 1rem;
+}
+
+.dialog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+@media (min-width: 640px) {
+    .dialog-header {
+        text-align: left;
+    }
+}
+
+.dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+}
+@media (min-width: 640px) {
+    .dialog-footer {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}
+
+.dialog-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.dialog-description {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Scrollable variant */
+.dialog-scroll-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    background: rgb(0 0 0 / 0.8);
+}
+.dialog-scroll-overlay[data-state='open'] {
+    animation: np-fade-in 0.2s ease;
+}
+.dialog-scroll-overlay[data-state='closed'] {
+    animation: np-fade-out 0.2s ease;
+}
+.dialog-scroll-content {
+    position: relative;
+    z-index: 50;
+    display: grid;
+    width: 100%;
+    max-width: 32rem;
+    margin: 2rem 0;
+    gap: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+@media (min-width: 640px) {
+    .dialog-scroll-content {
+        border-radius: var(--radius-lg);
+    }
+}
+.dialog-scroll-content__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.125rem;
+    border-radius: var(--radius-md);
+    transition: background-color 0.15s ease;
+}
+.dialog-scroll-content__close:hover {
+    background: var(--color-secondary);
+}
+.dialog-scroll-content__close svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+@keyframes np-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes np-fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes np-dialog-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+@keyframes np-dialog-out {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-overlay,
+    .dialog-content,
+    .dialog-scroll-overlay,
+    .dialog-scroll-content {
+        animation: none;
+    }
+}
