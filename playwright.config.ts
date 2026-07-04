@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const PORT = 8123;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
+const DATABASE = path.resolve('database/e2e.sqlite');
 
 export default defineConfig({
     testDir: './tests/e2e',
@@ -11,7 +12,6 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 1 : 0,
     reporter: 'list',
-    globalSetup: './tests/e2e/global-setup.ts',
 
     use: {
         baseURL: BASE_URL,
@@ -20,17 +20,23 @@ export default defineConfig({
 
     projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 
-    // `artisan serve` reads the app's .env for APP_KEY etc.; the DB overrides
-    // point it at the E2E SQLite database prepared in global setup.
+    // The command builds assets and seeds a fresh SQLite database *before*
+    // `artisan serve` binds the port, so the server is only reachable once the
+    // app can actually render — CI has no pre-built assets to rely on.
     webServer: {
-        command: `php artisan serve --port=${PORT}`,
+        command: [
+            `touch "${DATABASE}"`,
+            'npm run build',
+            'php artisan migrate:fresh --seed --seeder=E2eSeeder --force',
+            `php artisan serve --port=${PORT}`,
+        ].join(' && '),
         url: BASE_URL,
         reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
+        timeout: 180_000,
         env: {
             APP_ENV: 'local',
             DB_CONNECTION: 'sqlite',
-            DB_DATABASE: path.resolve('database/e2e.sqlite'),
+            DB_DATABASE: DATABASE,
             SESSION_DRIVER: 'file',
             CACHE_STORE: 'file',
             QUEUE_CONNECTION: 'sync',
