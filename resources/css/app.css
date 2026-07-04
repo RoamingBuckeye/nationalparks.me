@@ -4,8 +4,12 @@
 
 /* Custom BEM/Atomic layer (migrating off Tailwind, component by component). */
 @import './atoms/app-logo.css';
+@import './atoms/button.css';
+@import './atoms/card.css';
 @import './atoms/heading.css';
+@import './atoms/input.css';
 @import './atoms/input-error.css';
+@import './atoms/label.css';
 @import './atoms/text-link.css';
 @import './molecules/stamp.css';
 
