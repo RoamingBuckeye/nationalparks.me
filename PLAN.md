@@ -85,7 +85,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 
 ### Implementation status
 
-**Web app: feature-complete for the core scope** as of 2026-06-29 (10 PRs merged; 171 Pest tests green; Pint, PHPStan level 7, ESLint, vue-tsc, Prettier all clean; enforced by a pre-push hook). Shipped slices:
+**Web app: feature-complete for the core scope, plus a collectible Stamps feature** (as of 2026-07-04). Test coverage: **206 Pest** (backend), **12 Vitest** (Vue components), and a **Playwright E2E** journey. Pint, PHPStan level 7, ESLint, vue-tsc, Prettier all clean; enforced by a pre-push hook (the E2E suite runs in its own CI workflow, not the hook). Shipped slices:
 
 - **Auth** — Fortify email/password, required email verification, TOTP + hand-rolled email-code 2FA, passkeys, honeypot on registration. `display_name` + `share_enabled` surfaced.
 - **Mobile token API** — Sanctum bearer-token endpoints (`POST /api/login`, `/api/two-factor-challenge`, `/api/two-factor-challenge/email-code`, `/api/logout`, `GET /api/user`) with full 2FA parity (TOTP, email code, recovery codes) and the same email-verification gate as the web. Tokens never expire.
@@ -97,6 +97,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 - **Sharing** — token-gated, read-only public list + map; generate / rotate / revoke from settings.
 - **Alerts** — NPS alerts on park detail as a compact, severity-ordered two-level accordion.
 - **Dashboard + branded homepage** — real stats; brand color centralized as `brand-*` Tailwind tokens.
+- **Stamps (collectible)** — earn stamps by checking into parks. 45 seeded: 5 count milestones, 32 state/territory collections, 8 NPS Passport regions. A `/stamps` page grouped by tier with live progress, and a celebratory reveal modal on check-in. See the **Stamps** section below.
 
 **Remaining / deferred:**
 
@@ -151,6 +152,17 @@ Per-section detail and the decisions log follow below.
 ### Alerts
 
 **Status (2026-06-29):** built (park detail). The synced NPS alerts are surfaced on `/parks/{park}` via a reusable `ParkAlerts.vue` component — active alerts only, severity-ordered (Danger → Park Closure → Caution → Information). Rendered as a **two-level accordion, collapsed/compact by default**: the section collapses to a single row whose header still shows severity count chips (e.g. "6 Closures · 3 Cautions · 1 Info") so a collapsed section never hides a closure; expanding reveals one-line per-alert rows that each expand to show description + NPS link. `AlertCategory::severity()` drives ordering; `Park::alerts()` + `Alert::scopeActive()` back the query. **Closure indicators (built 2026-06-30):** parks with an active `Park Closure` alert get a red "Closure" chip on the list + shared page and a red ring on their map pin. A `Park::scopeWithClosureStatus()` subquery feeds a `closed` flag through `SummarizePark`, so all three pages share one source of truth.
+
+### Stamps
+
+**Status (2026-07-04):** built. Collectible "stamps" (the UI term everywhere) earned by checking into parks, in the spirit of the NPS Passport program and Gowalla's location badges.
+
+- **Earning:** a check-in (a `visits` row) is the signal; distinct parks are counted. The `EvaluateStamps` action runs on check-in (and via a `stamps:evaluate` backfill command), is idempotent, and earning is **sticky** (never revoked). Progress is computed live, never stored.
+- **Three criteria types** (`StampCriteria` enum): `park_count` (any N distinct parks), `state_set` (all parks in a state), `region_set` (all parks in a Passport region). State/region membership is **derived from `parks.states`** (`whereJsonContains`), so no hand-maintained park lists.
+- **Catalog (45, seeded via `StampSeeder`):** 5 milestones (1/5/10/25/63), 32 state/territory collections with special names (Utah = "Mighty Five", Ohio = "Buckeye", …), and the 8 usable NPS **Passport regions**, each in its official passport color. Slugs are code-based (`state-ut`, `region-southeast`) so the first-draft names can be revised without breaking earned identity.
+- **Versioning:** `stamps.members_changed_at` vs `user_stamps.earned_at` flags "vintage" editions — if a collection's set later changes, earlier earners keep the stamp shown with its year, e.g. "Buckeye · 2025".
+- **UI:** a reusable `<Stamp>` badge (SVG scene + accent color, greyscale when locked — placeholder scene art for now); a `/stamps` page grouped by tier with earned/locked + live progress; a global `StampReveal` modal that fires on check-in from the `flash.stampsEarned` payload.
+- **Tables:** `stamps` (definitions) and `user_stamps` (earned; unique `(user_id, stamp_id)`, `earned_at`; row exists ⇔ earned).
 
 ### Out of scope (for now)
 
@@ -280,6 +292,11 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | Map provider | **Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only for vector tiles / richer styling. | 2026-06-29 |
 | Brand color | Centralized as `brand-{300,400,700,800}` Tailwind tokens aliased to `emerald` in `resources/css/app.css`; rebrand = repoint those aliases. UI uses `brand-*`, never raw `emerald-*`. | 2026-06-29 |
 | Closure indicators | **Built 2026-06-30** as closures-only: a red "Closure" chip on cards (list + shared page) and a red ring on map pins, driven by a `Park::scopeWithClosureStatus()` subquery surfaced through `SummarizePark` as a `closed` flag. | 2026-06-29 |
+| Stamps — UI naming | Called **"Stamps"** everywhere (UI + code + tables), leaning into the NPS Passport program. | 2026-07-04 |
+| Stamps — collections | One collection **per state/territory that has a national park** (fully cover the state), plus milestones and the 8 NPS Passport regions. Membership derived from `parks.states`; not hand-listed. | 2026-07-04 |
+| Stamps — regions | Use the **Passport to Your National Parks** 9-region scheme (8 usable; National Capital has no parks), each in its official color — not the administrative 7/12-region schemes. | 2026-07-04 |
+| Stamps — earning | Sticky (never revoked); progress computed live; awarded on check-in + a `stamps:evaluate` backfill. Versioning via `members_changed_at` → "vintage" year labels. | 2026-07-04 |
+| Frontend tests | **Vitest + Vue Test Utils** (unit, in pre-push + CI) and **Playwright E2E** (one journey, own CI workflow). Both were named in the stack but not configured until now. | 2026-07-04 |
 
 **Auth slice status:** the auth rows above were implemented 2026-06-28. Broader status: see **Implementation status** near the top of Functionality. Rationale archives in memory: `project_auth_stack_decisions.md`, `project_user_data_schema.md`.
 
