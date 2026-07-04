@@ -41,7 +41,7 @@ defineProps<{
                 >
                     <AppLogoIcon class="size-5" />
                 </span>
-                National Parks
+                NationalParks.me
             </a>
         </header>
 
