@@ -22,10 +22,11 @@ Single Laravel codebase, dual-target: the **same project** is served as a web ap
 | Inertia.js (client) | 3.x | `@inertiajs/vue3` |
 | Vite | latest | `laravel-vite-plugin`, `@vitejs/plugin-vue`, `@inertiajs/vite`, `@laravel/vite-plugin-wayfinder` |
 | Wayfinder | — | Typed route helpers for the frontend |
-| Tailwind CSS | 4 | via `@tailwindcss/vite` |
+| Tailwind CSS | 4 | via `@tailwindcss/vite`; passport-theme tokens in `resources/css/app.css` |
+| Fonts | Instrument Sans + Fraunces | body sans + serif display; self-hosted via the Vite/Bunny pipeline |
 | TypeScript | strict | starter kit defaults |
 | axios | latest | re-added; Inertia 3 dropped it but NativePHP needs it |
-| Testing | Vitest + Vue Test Utils | (frontend); PHPUnit (backend) |
+| Testing | Vitest + Vue Test Utils (frontend); PHPUnit/Pest (backend); Playwright (E2E) | all configured and CI-gated |
 
 ### Mobile (NativePHP for Mobile v3)
 
@@ -96,7 +97,7 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 - **Map** — Leaflet + OpenStreetMap map of all parks by visited state (authenticated `/map` + the public shared page).
 - **Sharing** — token-gated, read-only public list + map; generate / rotate / revoke from settings.
 - **Alerts** — NPS alerts on park detail as a compact, severity-ordered two-level accordion.
-- **Dashboard + branded homepage** — real stats; brand color centralized as `brand-*` Tailwind tokens.
+- **Dashboard + branded homepage** — real stats; the **passport design system** (paper & pine palette, Fraunces serif display, mono for data) lives in `resources/css/app.css`.
 - **Stamps (collectible)** — earn stamps by checking into parks. 45 seeded: 5 count milestones, 32 state/territory collections, 8 NPS Passport regions. A `/stamps` page grouped by tier with live progress, and a celebratory reveal modal on check-in. See the **Stamps** section below.
 
 **Remaining / deferred:**
@@ -139,7 +140,7 @@ Per-section detail and the decisions log follow below.
 - **Map view:** US map with parks pinned, color/state encoded as visited vs. unvisited; tap/click a pin to see visit summary
 - Filtering / sorting: by state, by visited status, by date of last visit
 
-**Status (2026-06-29):** built with **Leaflet + OpenStreetMap** (free, no API key). A reusable `ParksMap` Vue component (OSM tiles, `circleMarker`s colored emerald=visited / gray=unvisited, click popups with visit summary) powers both an authenticated `/map` page (sidebar nav, links pins to park detail) and the public shared page. `MapController` returns parks with coordinates + the user's visited state via `Park::withVisitStatsFor()`.
+**Status (2026-06-29):** built with **Leaflet + OpenStreetMap** (free, no API key). A reusable `ParksMap` Vue component (OSM tiles, `circleMarker`s colored green=visited / gray=unvisited, click popups with visit summary) powers both an authenticated `/map` page (sidebar nav, links pins to park detail) and the public shared page. `MapController` returns parks with coordinates + the user's visited state via `Park::withVisitStatsFor()`.
 
 ### Sharing
 
@@ -290,7 +291,9 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 | API resource wrapping | `JsonResource::withoutWrapping()` — the mobile API returns bare JSON objects (no top-level `data` key), consistent for nested and top-level resources. | 2026-06-30 |
 | API rate limits | `api-auth` (10/min by IP) on the unauthenticated auth endpoints; `api` (60/min by user/IP) on authenticated endpoints. Defined in `AppServiceProvider`. | 2026-06-30 |
 | Map provider | **Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only for vector tiles / richer styling. | 2026-06-29 |
-| Brand color | Centralized as `brand-{300,400,700,800}` Tailwind tokens aliased to `emerald` in `resources/css/app.css`; rebrand = repoint those aliases. UI uses `brand-*`, never raw `emerald-*`. | 2026-06-29 |
+| Brand color | Centralized as `brand-{300,400,700,800}` tokens in `resources/css/app.css` (repoint to rebrand); UI uses `brand-*`, never a raw palette. Originally aliased to emerald; **repointed to the passport pine green `#2f7d46` on 2026-07-04**. | 2026-06-29 |
+| Design system | **Passport theme (2026-07-04):** paper & pine palette (light) + "passport night" (dark), green primary/ring, region-colored charts. Type roles: **Fraunces** serif display (h1/h2), Instrument Sans body, monospace for data/tabular figures. Tokens in `resources/css/app.css`; Fraunces self-hosted via the Vite/Bunny font pipeline. | 2026-07-04 |
+| Site name | **NationalParks.me** (`APP_NAME` → titles, mail from-name, brand wordmarks). Descriptive "National Parks" copy (parks list heading, visit tallies) refers to the parks themselves and is left as-is. | 2026-07-04 |
 | Closure indicators | **Built 2026-06-30** as closures-only: a red "Closure" chip on cards (list + shared page) and a red ring on map pins, driven by a `Park::scopeWithClosureStatus()` subquery surfaced through `SummarizePark` as a `closed` flag. | 2026-06-29 |
 | Stamps — UI naming | Called **"Stamps"** everywhere (UI + code + tables), leaning into the NPS Passport program. | 2026-07-04 |
 | Stamps — collections | One collection **per state/territory that has a national park** (fully cover the state), plus milestones and the 8 NPS Passport regions. Membership derived from `parks.states`; not hand-listed. | 2026-07-04 |
