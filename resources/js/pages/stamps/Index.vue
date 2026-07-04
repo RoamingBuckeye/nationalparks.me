@@ -56,7 +56,9 @@ const groups = computed(() =>
                 <h2 class="text-lg font-semibold tracking-tight">
                     {{ group.category }}
                 </h2>
-                <span class="text-sm text-muted-foreground tabular-nums">
+                <span
+                    class="font-mono text-sm text-muted-foreground tabular-nums"
+                >
                     {{ group.earned }}/{{ group.stamps.length }}
                 </span>
             </div>

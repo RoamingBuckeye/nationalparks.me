@@ -82,7 +82,9 @@ const stats = computed(() => [
                     />
                 </CardHeader>
                 <CardContent>
-                    <p class="text-3xl font-bold">{{ stat.value }}</p>
+                    <p class="font-mono text-3xl font-semibold tabular-nums">
+                        {{ stat.value }}
+                    </p>
                 </CardContent>
             </Card>
         </div>
