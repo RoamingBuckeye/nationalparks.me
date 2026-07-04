@@ -1,0 +1,27 @@
+/* Avatar — a user image with a text fallback. Atom. */
+
+.avatar {
+    position: relative;
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 9999px;
+}
+
+.avatar__image {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: 100%;
+}
+
+.avatar__fallback {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--color-muted);
+}

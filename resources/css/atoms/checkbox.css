@@ -1,0 +1,45 @@
+/* Checkbox — atom. */
+
+.checkbox {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    border: 1px solid var(--color-input);
+    border-radius: 4px;
+    background: transparent;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+    outline: none;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.checkbox[data-state='checked'] {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+}
+
+.checkbox:focus-visible {
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 3px
+        color-mix(in oklab, var(--color-ring) 50%, transparent);
+}
+
+.checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.checkbox__indicator {
+    display: grid;
+    place-content: center;
+    color: currentColor;
+}
+
+.checkbox__indicator svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
