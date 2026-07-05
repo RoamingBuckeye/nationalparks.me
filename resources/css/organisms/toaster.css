@@ -1,0 +1,17 @@
+/* Toaster (vue-sonner) — themed via CSS vars set on the component; these
+   cover the slot icons. Organism. (np-spin comes from atoms/spinner.css.) */
+
+.toaster__icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.toaster__icon--spin {
+    animation: np-spin 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toaster__icon--spin {
+        animation: none;
+    }
+}
