@@ -13,12 +13,14 @@
 @import './atoms/input.css';
 @import './atoms/input-error.css';
 @import './atoms/label.css';
+@import './atoms/placeholder-pattern.css';
 @import './atoms/separator.css';
 @import './atoms/skeleton.css';
 @import './atoms/spinner.css';
 @import './atoms/text-link.css';
 @import './molecules/alert.css';
 @import './molecules/alert-error.css';
+@import './molecules/appearance-tabs.css';
 @import './molecules/breadcrumb.css';
 @import './molecules/input-otp.css';
 @import './molecules/passkey-item.css';
@@ -29,6 +31,7 @@
 @import './molecules/user-info.css';
 @import './molecules/user-menu.css';
 @import './organisms/app-header.css';
+@import './organisms/delete-user.css';
 @import './organisms/manage-passkeys.css';
 @import './organisms/manage-two-factor.css';
 @import './organisms/dialog.css';
@@ -38,6 +41,7 @@
 @import './organisms/navigation-menu.css';
 @import './organisms/recovery-codes.css';
 @import './organisms/sheet.css';
+@import './organisms/stamp-reveal.css';
 @import './organisms/toaster.css';
 @import './organisms/two-factor-modal.css';
 

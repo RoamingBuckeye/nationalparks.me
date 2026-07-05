@@ -22,18 +22,16 @@ const passwordInput = useTemplateRef('passwordInput');
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="delete-user">
         <Heading
             variant="small"
             title="Delete account"
             description="Delete your account and all of its resources"
         />
-        <div
-            class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
-        >
-            <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
-                <p class="font-medium">Warning</p>
-                <p class="text-sm">
+        <div class="delete-user__warning">
+            <div class="delete-user__warning-text">
+                <p class="delete-user__warning-title">Warning</p>
+                <p class="delete-user__warning-desc">
                     Please proceed with caution, this cannot be undone.
                 </p>
             </div>
@@ -51,10 +49,10 @@ const passwordInput = useTemplateRef('passwordInput');
                         :options="{
                             preserveScroll: true,
                         }"
-                        class="space-y-6"
+                        class="delete-user__form"
                         v-slot="{ errors, processing, reset, clearErrors }"
                     >
-                        <DialogHeader class="space-y-3">
+                        <DialogHeader class="delete-user__dialog-header">
                             <DialogTitle
                                 >Are you sure you want to delete your
                                 account?</DialogTitle
@@ -68,7 +66,7 @@ const passwordInput = useTemplateRef('passwordInput');
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div class="grid gap-2">
+                        <div class="delete-user__field">
                             <Label for="password" class="sr-only"
                                 >Password</Label
                             >
@@ -81,7 +79,7 @@ const passwordInput = useTemplateRef('passwordInput');
                             <InputError :message="errors.password" />
                         </div>
 
-                        <DialogFooter class="gap-2">
+                        <DialogFooter>
                             <DialogClose as-child>
                                 <Button
                                     variant="secondary"

@@ -4,7 +4,7 @@ import { LayoutGrid, Map, Menu, Mountain, Stamp } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/atoms/AppLogo.vue';
 import AppLogoIcon from '@/components/atoms/AppLogoIcon.vue';
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue';
 import UserMenuContent from '@/components/molecules/UserMenuContent.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';

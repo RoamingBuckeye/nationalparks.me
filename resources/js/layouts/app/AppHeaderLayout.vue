@@ -2,7 +2,7 @@
 import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppHeader from '@/components/organisms/AppHeader.vue';
-import StampReveal from '@/components/StampReveal.vue';
+import StampReveal from '@/components/organisms/StampReveal.vue';
 import { Toaster } from '@/components/ui/sonner';
 import type { BreadcrumbItem } from '@/types';
 

@@ -1,0 +1,23 @@
+/* StampReveal — the celebratory "new stamp earned" modal. Organism. */
+
+@media (min-width: 640px) {
+    .stamp-reveal {
+        max-width: 28rem;
+    }
+}
+.stamp-reveal__header {
+    align-items: center;
+    text-align: center;
+}
+.stamp-reveal__stamps {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.5rem 0;
+}
+@media (min-width: 640px) {
+    .stamp-reveal__footer {
+        justify-content: center;
+    }
+}

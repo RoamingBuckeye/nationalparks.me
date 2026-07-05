@@ -1,0 +1,51 @@
+/* DeleteUser — the danger-zone delete-account panel + confirm dialog. Organism.
+   The warning uses semantic red (outside the passport palette). */
+
+.delete-user {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.delete-user__warning {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid rgb(254 226 226);
+    border-radius: var(--radius-lg);
+    background: rgb(254 242 242);
+    padding: 1rem;
+}
+.dark .delete-user__warning {
+    border-color: rgb(254 202 202 / 0.1);
+    background: rgb(185 28 28 / 0.1);
+}
+.delete-user__warning-text {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    color: #dc2626;
+}
+.dark .delete-user__warning-text {
+    color: #fee2e2;
+}
+.delete-user__warning-title {
+    font-weight: 500;
+}
+.delete-user__warning-desc {
+    font-size: 0.875rem;
+}
+.delete-user__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.delete-user__dialog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.delete-user__field {
+    display: grid;
+    gap: 0.5rem;
+}
