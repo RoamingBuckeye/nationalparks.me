@@ -99,16 +99,22 @@ Switching is driven by environment/config (e.g. a `RUNTIME_TARGET` flag + dedica
 - **Alerts** — NPS alerts on park detail as a compact, severity-ordered two-level accordion.
 - **Dashboard + branded homepage** — real stats; the **passport design system** (paper & pine palette, Fraunces serif display, mono for data) lives in `resources/css/app.css`.
 - **Stamps (collectible)** — earn stamps by checking into parks. 45 seeded: 5 count milestones, 32 state/territory collections, 8 NPS Passport regions. A `/stamps` page grouped by tier with live progress, and a celebratory reveal modal on check-in. See the **Stamps** section below.
+- **Styling system (Tailwind fully removed)** — the app runs on a hand-written **BEM + Atomic Design** CSS system in a central `resources/css/` tree (`generic/` reset + `atoms/` · `molecules/` · `organisms/` · `templates/` · `pages/`, imported into `app.css`), all consuming the passport tokens as CSS custom properties. Migrated incrementally across PRs #31–#54; `@tailwindcss/vite`/`tailwindcss`/`tw-animate-css`/`prettier-plugin-tailwindcss` are uninstalled. See the **Styling** section below.
 
 **Remaining / deferred:**
 
 - **Mobile track (largest unbuilt area):** the NativePHP build and offline-first SQLite sync. The Sanctum token API the app will authenticate against is now built (see Mobile token API above).
-- **Styling refactor (in progress):** moving off Tailwind utility styling to a **custom CSS system** — **BEM** (Block-Element-Modifier) class naming + **Atomic Design** component organization. Scope (locked): **full Tailwind removal**, rewriting every app component and every `ui/` primitive; hand-written BEM lives in a **central `resources/css/` tree** (`atoms/`, `molecules/`, `organisms/`) imported into `app.css`, decoupled from the SFCs. The passport palette/type tokens carry over unchanged as CSS custom properties (only the class layer changes). Migrating incrementally — Tailwind stays loaded until the last component is converted, then it's removed.
-  - **Done — the entire live `ui/` primitive library is off Tailwind:** Stamp (molecule pilot, PR #31); simple atoms — AppLogo, Heading, InputError, TextLink (#32); `ui/` primitives — Button/Card/Input/Label (#33), Badge/Avatar/Separator/Spinner/Skeleton/Checkbox (#34), Dialog/Sheet (#35), DropdownMenu/NavigationMenu (#36), Sonner/InputOTP (#38), Alert/Breadcrumb (#39). Collapsible needed no change (class-free reka wrappers). The `ui/` primitives keep their `cva`/`cn` structure but emit BEM classes; `cva` variants → BEM modifiers, reka `data-*` attributes → attribute selectors, `tw-animate-css` → local `np-*` keyframes. (#38 was wrongly called "complete"; a grep audit caught alert + breadcrumb still on Tailwind → fixed in #39. Lesson: audit, don't assume.)
-  - **Remaining:** app molecules/organisms (AppHeader, ParkAlerts, ParksMap, UserMenuContent, UserInfo, AppearanceTabs, DeleteUser, Passkey/2FA components, forms) → pages + layouts (Dashboard, parks/*, visits/*, stamps/*, Map, shared/*, Welcome, auth/*, settings/* — the layout-Tailwind-heavy bulk) → **delete dead code** (`select`/`sidebar`/`tooltip` ui dirs + the unused sidebar-variant branches in AppShell/AppContent) → **final Tailwind teardown** (remove `@tailwindcss/vite`, the `@theme` block, `tw-animate-css`, `prettier-plugin-tailwindcss`; move tokens into a `settings/` layer; add a `.sr-only` utility; sweep leftover `size-4` on icons in converted `ui/` files).
-  - **Conventions (reference for continuing):** flat BEM (`.block__element--modifier`), colors/fonts via `var(--color-*)`/`var(--font-*)`, one stylesheet per component under the atomic tree, `ui/` files stay in `components/ui/` (prettier/eslint-ignored — keep shadcn style), app components move into `components/{atoms,molecules,organisms}/`. Each batch: convert → gates (Pint/PHPStan not needed; ESLint, vue-tsc, Vitest, `vite build`) → visual check → E2E → one focused PR → merge.
 
 Per-section detail and the decisions log follow below.
+
+### Styling
+
+The app uses a hand-written **BEM + Atomic Design** CSS system — **no Tailwind** (removed across PRs #31–#54).
+
+- **Where it lives:** a central `resources/css/` tree — `generic/reset.css` (a Preflight replacement + `.sr-only`), then `atoms/` · `molecules/` · `organisms/` · `templates/` · `pages/`, one stylesheet per component/page, all `@import`ed into `app.css` (Vite bundles them). `app.css` also holds the design tokens.
+- **Tokens:** the raw passport palette is on `:root` / `.dark` in `app.css` (`--background`, `--primary`, `--border`, `--radius`, …); a semantic-alias `:root` block maps them to the names the BEM layer consumes via `var()` (`--color-background`, `--color-brand-700`, `--font-serif`, `--radius-md`, …). To add a token, add it to that alias block.
+- **Conventions:** flat BEM (`.block__element--modifier`); dark mode via `.dark .foo`; reka `data-*` → attribute selectors; animations via local `np-*` keyframes; semantic non-palette colors (alert red/amber/blue/green, landing neutrals) are intentional literal hex.
+- **Component organization:** app components live in `resources/js/components/{atoms,molecules,organisms}/`; the shadcn `ui/` primitive library stays in `components/ui/` (prettier/eslint-ignored) with its `cva`/`cn` emitting BEM classes.
 
 ### Users & authentication
 
