@@ -1,0 +1,230 @@
+/* ParkAlerts — a two-level, severity-ordered alerts accordion. Organism.
+   Category colors are semantic (red/orange/amber/blue), outside the passport
+   palette, so they're literal here. */
+
+.park-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.park-alerts__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+.park-alerts__empty {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+.park-alerts__panel {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+}
+.park-alerts__summary {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-align: left;
+    transition: background-color 0.15s ease;
+}
+.park-alerts__summary:hover {
+    background: color-mix(in oklab, var(--color-muted) 50%, transparent);
+}
+.park-alerts__summary-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+.park-alerts__count {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+.park-alerts__chevron {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    color: var(--color-muted-foreground);
+    transition: transform 0.2s ease;
+}
+.park-alerts__chevron--open {
+    transform: rotate(180deg);
+}
+.park-alerts__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    border-top: 1px solid var(--color-border);
+    padding: 0.75rem;
+}
+
+/* Count pills in the collapsed header */
+.park-alert-chip {
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.park-alert-chip--danger {
+    background: rgb(239 68 68 / 0.15);
+    color: #b91c1c;
+}
+.dark .park-alert-chip--danger {
+    color: #f87171;
+}
+.park-alert-chip--closure {
+    background: rgb(249 115 22 / 0.15);
+    color: #c2410c;
+}
+.dark .park-alert-chip--closure {
+    color: #fb923c;
+}
+.park-alert-chip--caution {
+    background: rgb(245 158 11 / 0.15);
+    color: #b45309;
+}
+.dark .park-alert-chip--caution {
+    color: #f59e0b;
+}
+.park-alert-chip--info {
+    background: rgb(59 130 246 / 0.15);
+    color: #1d4ed8;
+}
+.dark .park-alert-chip--info {
+    color: #60a5fa;
+}
+
+/* Individual alert */
+.park-alert {
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+}
+.park-alert--danger {
+    border-color: rgb(239 68 68 / 0.3);
+    background: rgb(239 68 68 / 0.1);
+}
+.park-alert--closure {
+    border-color: rgb(249 115 22 / 0.3);
+    background: rgb(249 115 22 / 0.1);
+}
+.park-alert--caution {
+    border-color: rgb(245 158 11 / 0.3);
+    background: rgb(245 158 11 / 0.1);
+}
+.park-alert--info {
+    border-color: rgb(59 130 246 / 0.3);
+    background: rgb(59 130 246 / 0.1);
+}
+.park-alert--notice {
+    border-color: var(--color-border);
+    background: color-mix(in oklab, var(--color-muted) 40%, transparent);
+}
+
+.park-alert__trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    text-align: left;
+}
+.park-alert__icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+.park-alert__category {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+}
+/* Icon + category share the alert's accent color. */
+.park-alert--danger .park-alert__icon,
+.park-alert--danger .park-alert__category {
+    color: #dc2626;
+}
+.dark .park-alert--danger .park-alert__icon,
+.dark .park-alert--danger .park-alert__category {
+    color: #f87171;
+}
+.park-alert--closure .park-alert__icon,
+.park-alert--closure .park-alert__category {
+    color: #ea580c;
+}
+.dark .park-alert--closure .park-alert__icon,
+.dark .park-alert--closure .park-alert__category {
+    color: #fb923c;
+}
+.park-alert--caution .park-alert__icon,
+.park-alert--caution .park-alert__category {
+    color: #d97706;
+}
+.dark .park-alert--caution .park-alert__icon,
+.dark .park-alert--caution .park-alert__category {
+    color: #f59e0b;
+}
+.park-alert--info .park-alert__icon,
+.park-alert--info .park-alert__category {
+    color: #2563eb;
+}
+.dark .park-alert--info .park-alert__icon,
+.dark .park-alert--info .park-alert__category {
+    color: #60a5fa;
+}
+.park-alert--notice .park-alert__icon,
+.park-alert--notice .park-alert__category {
+    color: var(--color-muted-foreground);
+}
+
+.park-alert__title {
+    flex: 1 1 0%;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.park-alert__chevron {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: var(--color-muted-foreground);
+    transition: transform 0.2s ease;
+}
+.park-alert__chevron--open {
+    transform: rotate(180deg);
+}
+.park-alert__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-top: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+}
+@media (min-width: 640px) {
+    .park-alert__body {
+        padding-left: 2.5rem;
+    }
+}
+.park-alert__desc {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+.park-alert__link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-brand-700);
+}
+.park-alert__link:hover {
+    text-decoration: underline;
+}
+.dark .park-alert__link {
+    color: var(--color-brand-400);
+}

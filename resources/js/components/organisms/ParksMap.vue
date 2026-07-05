@@ -22,10 +22,10 @@ let map: L.Map | null = null;
 
 const buildPopup = (park: MapPark): HTMLElement => {
     const container = document.createElement('div');
-    container.className = 'space-y-0.5';
+    container.className = 'parks-map__popup';
 
     const title = document.createElement('p');
-    title.className = 'font-semibold';
+    title.className = 'parks-map__popup-title';
     title.textContent = park.name;
     container.appendChild(title);
 
@@ -44,7 +44,7 @@ const buildPopup = (park: MapPark): HTMLElement => {
     if (park.closed) {
         const closure = document.createElement('p');
         closure.textContent = 'Active closure';
-        closure.className = 'font-medium text-red-600';
+        closure.className = 'parks-map__popup-closure';
         container.appendChild(closure);
     }
 
@@ -52,7 +52,7 @@ const buildPopup = (park: MapPark): HTMLElement => {
         const link = document.createElement('a');
         link.href = park.href;
         link.textContent = 'View park →';
-        link.className = 'text-brand-700 underline';
+        link.className = 'parks-map__popup-link';
         container.appendChild(link);
     }
 
@@ -103,5 +103,5 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="mapEl" class="relative z-0 h-[75vh] w-full rounded-xl border" />
+    <div ref="mapEl" class="parks-map" />
 </template>
