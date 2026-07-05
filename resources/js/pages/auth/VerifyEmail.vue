@@ -22,17 +22,14 @@ defineProps<{
 <template>
     <Head title="Email verification" />
 
-    <div
-        v-if="status === 'verification-link-sent'"
-        class="mb-4 text-center text-sm font-medium text-green-600"
-    >
+    <div v-if="status === 'verification-link-sent'" class="auth-status">
         A new verification link has been sent to the email address you provided
         during registration.
     </div>
 
     <Form
         v-bind="send.form()"
-        class="space-y-6 text-center"
+        class="auth-form auth-form--center"
         v-slot="{ processing }"
     >
         <Button :disabled="processing" variant="secondary">
@@ -40,7 +37,7 @@ defineProps<{
             Resend verification email
         </Button>
 
-        <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
+        <TextLink :href="logout()" as="button" class="auth-logout-link">
             Log out
         </TextLink>
     </Form>
