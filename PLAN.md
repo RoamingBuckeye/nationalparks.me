@@ -319,44 +319,48 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 
 ## Deployment (Laravel Cloud)
 
-Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Git-based deploys, managed compute + Postgres + KV + object storage). The mobile track ships separately through NativePHP and is out of scope here. Planning started 2026-07-05.
+Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Git-based deploys; managed compute, Postgres, Managed Queues, and object storage). Optimized for **lowest cost** — every resource scales to zero when idle, and there is no always-on queue/cache infrastructure. The mobile track ships separately through NativePHP and is out of scope here. Planning started 2026-07-05.
 
 ### Platform decisions
 
 | Topic | Decision | Notes |
 |---|---|---|
-| Database | **Serverless Postgres** (Cloud-native) | Switch from the MySQL used in Sail dev. Requires a portability pass — see "Postgres portability" below. |
-| Mail | **Amazon SES** | Needs `aws/aws-sdk-php` added and SES production-access (out of sandbox) before real signups. |
-| Object storage | **Laravel Cloud object storage** | S3-compatible; the existing `s3` disk in `config/filesystems.php` drives it. `FILESYSTEM_DISK=s3`. |
-| Cache / session / queue | **Cloud KV (Redis)** | Horizon requires Redis; move all three off the `database` driver. |
-| Queue worker | **Horizon** process (always-on) | Must be running before signups open — mailables/notifications are queued. |
+| Plan | **Starter** — $5/mo + $5 usage credit, with a **spend cap** | Predictable bill; realistic total ~$5–8/mo at low traffic. |
+| Compute | **Flex 512 MB, scale-to-zero** | Hibernates when idle (<500ms wake via checkpoint/restore). No SSR process to host. One-click bump to 1 GB if it needs headroom. |
+| Database | **Serverless Postgres** (Neon), scale-to-zero | ~$0.003/hr active compute + $0.15/GB-mo storage; our DB is well under 1 GB. Portability pass done (#62). |
+| Mail | **Amazon SES** | Needs `aws/aws-sdk-php` (added #60) and SES production-access (out of sandbox) before real signups. |
+| Object storage | **Laravel Cloud object storage** (Cloudflare R2-backed) | $0.02/GB-mo, **zero egress fees**. `FILESYSTEM_DISK=s3` drives the pre-wired `s3` disk. |
+| Queue | **Cloud Managed Queues** (`cloud` driver) | Autoscaling workers scale to zero — nothing billed while idle; per-op billing is negligible at our volume. Cloud auto-sets `QUEUE_CONNECTION=cloud`; requires `aws/aws-sdk-php` (present). **Replaces Horizon.** |
+| Cache / session | **Database** (Postgres) | No Redis/Valkey instance to provision. The `cache`/`cache_locks`/`sessions` tables already exist. |
 | Scheduler | Cloud **scheduler** toggle | Runs `schedule:run`; drives `nps:sync` + `nps:sync alerts`. |
 | SSR | **None** | Inertia SSR bundle is disabled; no Node process to host. |
+
+**Why not Horizon/Redis:** Horizon needs an always-on Redis (Valkey ~$8/mo) *and* an always-on worker process (~$6/mo) — ~$14/mo that never hibernates, for a queue workload that's just verification/2FA emails and thumbnails. Managed Queues cover the same need with scale-to-zero autoscaling and no Redis, so Horizon was removed (see Repo changes). Cache/session moved to the database because, with no Redis provisioned, Postgres is their home.
 
 ### Already deploy-ready
 
 - Health check `/up` wired in `bootstrap/app.php` (Cloud's ping target).
 - `s3` disk pre-wired with `AWS_ENDPOINT` + path-style for S3-compatible storage; `photos.disk` records per-file disk.
 - `env()` confined to config files (PHP rule), so `config:cache` is safe.
-- Horizon + the `nps:sync` schedule already exist.
+- `aws/aws-sdk-php` present — required by both SES and Managed Queues.
+- Database cache/session ready — `cache`, `cache_locks`, `sessions` tables exist; `config/cache.php` and `config/queue.php` default to `database`.
+- The `nps:sync` schedule already exists.
 
 ### Blockers (must clear before first boot)
 
 1. **Mail is `log`** — email verification is required and email-code 2FA both send mail; no mailer means no one can complete sign-in.
-2. **Queued mail + worker** — all mailables/notifications are queued, so Horizon must be up on first deploy or verification emails never send.
+2. **Managed Queue not provisioned** — queued mailables/notifications (verification, 2FA) won't process until the Managed Queue exists. No always-on worker to run; Cloud autoscales it from zero.
 3. **DB driver + creds** — `.env.example` defaults to sqlite; wire Cloud's Postgres and run `migrate --force` on deploy.
-4. **cache / session / queue = `database`** — point at Cloud KV (Redis).
-5. **App flags** — `APP_ENV=production`, `APP_DEBUG=false`, generate `APP_KEY`.
-6. **Storage** — provision the bucket, set `FILESYSTEM_DISK=s3` + creds (photos default to ephemeral `local` otherwise).
+4. **App flags** — `APP_ENV=production`, `APP_DEBUG=false`, generate `APP_KEY`.
+5. **Storage** — provision the bucket, set `FILESYSTEM_DISK=s3` + creds (photos default to ephemeral `local` otherwise).
 
-### Repo changes
+### Repo changes (Phase 1 — done)
 
-- Add `aws/aws-sdk-php` (required by the SES mail transport).
-- **Postgres portability pass** — run the 206 Pest suite against Postgres and fix case-sensitivity divergences from MySQL: the parks search filter (`LIKE` → `ILIKE`/`whereRaw LOWER(...)`), email uniqueness/login casing, and any `whereJsonContains` on `parks.states`.
-- `->trustProxies()` in `bootstrap/app.php` — correct HTTPS/scheme behind Cloud's load balancer (matters for passkeys + absolute URLs).
-- `LOG_CHANNEL=stderr` so Cloud captures logs.
-- Confirm the Horizon dashboard gate (`viewHorizon`) authorizes the owner in production, not just `local`.
-- Consider moving `nativephp/mobile` to `require-dev` to slim the prod image (verify it's not referenced at web runtime first).
+- ✅ Added `aws/aws-sdk-php`; moved `nativephp/mobile` to `require-dev` (#60).
+- ✅ **Postgres portability pass** (#62) — verified the suite on Postgres; fixed `uuid`→`string` columns and `like`→`whereLike` search.
+- ✅ `trustProxies()` in `bootstrap/app.php` (#61) — correct HTTPS/scheme behind Cloud's load balancer.
+- ✅ **Removed Horizon** — replaced by Managed Queues; database cache/session need no Redis.
+- `LOG_CHANNEL=stderr` — set as a Cloud env var; the channel already exists, so no code change.
 
 ### Build & deploy
 
@@ -366,7 +370,7 @@ Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Gi
 ### Post-deploy / data & verification
 
 - Set `NPS_API_KEY`; run `nps:sync` (parks + POIs + alerts) and the stamp seeder once (~63 parks / ~7.5k POIs, well under the rate limit).
-- Enable the Cloud scheduler; start the Horizon worker.
+- Enable the Cloud scheduler; provision the Managed Queue (autoscales from zero — nothing to keep running).
 - Smoke-test the auth-critical path on the prod domain: register → verification email → TOTP + email-code 2FA → passkey enrollment (WebAuthn RP ID is domain-bound).
 
 ### Environment (dev default → production on Cloud)
@@ -377,11 +381,10 @@ Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Gi
 | `APP_KEY` | empty | generated |
 | `APP_URL` | `http://localhost` | `https://nationalparks.me` |
 | `DB_CONNECTION` + `DB_*` | `sqlite` | `pgsql` + Cloud Postgres creds |
-| `CACHE_STORE` | `database` | `redis` (Cloud KV) |
-| `SESSION_DRIVER` | `database` | `redis` |
-| `QUEUE_CONNECTION` | `database` | `redis` |
+| `CACHE_STORE` | `database` | `database` |
+| `SESSION_DRIVER` | `database` | `database` |
+| `QUEUE_CONNECTION` | `database` | `cloud` (set automatically by Cloud) |
 | `FILESYSTEM_DISK` | `local` | `s3` (Cloud bucket) |
 | `MAIL_MAILER` + creds | `log` | `ses` + `AWS_*` |
 | `LOG_CHANNEL` | `stack` | `stderr` |
 | `NPS_API_KEY` | set locally | set in Cloud |
-| `HORIZON_AUTHORIZED_EMAILS` | empty | owner email(s) — gates the Horizon dashboard |
