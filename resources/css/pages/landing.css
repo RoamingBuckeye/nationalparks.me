@@ -1,0 +1,334 @@
+/* Public landing (Welcome) + shared parks list. These use their own neutral
+   marketing palette (literal hex, intentionally outside the passport tokens);
+   the brand green still comes from the tokens. Reuses .park-badge from parks.css. */
+
+.landing {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: #fdfdfc;
+    color: #1b1b18;
+}
+.dark .landing {
+    background: #0a0a0a;
+    color: #ededec;
+}
+
+.landing-header {
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+@media (min-width: 1024px) {
+    .landing-header {
+        padding: 2rem;
+    }
+}
+.landing-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+.landing-brand-chip {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: var(--color-brand-700);
+    color: #fff;
+}
+.landing-brand-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.landing-footer {
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #706f6c;
+}
+@media (min-width: 1024px) {
+    .landing-footer {
+        padding: 2rem;
+    }
+}
+.dark .landing-footer {
+    color: #a1a09a;
+}
+.landing-footer-link {
+    font-weight: 500;
+    color: var(--color-brand-700);
+}
+.dark .landing-footer-link {
+    color: var(--color-brand-400);
+}
+.landing-footer-link:hover {
+    text-decoration: underline;
+}
+
+/* Buttons (shared marketing) */
+.landing-btn {
+    border-radius: var(--radius-md);
+    padding: 0.375rem 1rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+}
+.landing-btn--primary {
+    background: var(--color-brand-700);
+    color: #fff;
+}
+.landing-btn--primary:hover {
+    background: var(--color-brand-800);
+}
+.landing-btn--ghost {
+    color: #1b1b18;
+}
+.landing-btn--ghost:hover {
+    background: rgb(0 0 0 / 0.05);
+}
+.dark .landing-btn--ghost {
+    color: #ededec;
+}
+.dark .landing-btn--ghost:hover {
+    background: rgb(255 255 255 / 0.1);
+}
+
+/* Welcome hero */
+.landing-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.landing-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+.landing-hero {
+    display: flex;
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    flex: 1 1 0%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 4rem 1.5rem;
+    text-align: center;
+}
+.landing-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid
+        color-mix(in oklab, var(--color-brand-700) 20%, transparent);
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--color-brand-700) 10%, transparent);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-brand-800);
+}
+.dark .landing-pill {
+    color: var(--color-brand-300);
+}
+.landing-title {
+    max-width: 48rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+@media (min-width: 640px) {
+    .landing-title {
+        font-size: 3.75rem;
+    }
+}
+.landing-title-accent {
+    color: var(--color-brand-700);
+}
+.dark .landing-title-accent {
+    color: var(--color-brand-400);
+}
+.landing-lead {
+    max-width: 42rem;
+    font-size: 1.125rem;
+    color: #706f6c;
+}
+.dark .landing-lead {
+    color: #a1a09a;
+}
+.landing-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+@media (min-width: 640px) {
+    .landing-cta {
+        flex-direction: row;
+    }
+}
+.landing-btn-lg {
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+.landing-btn-lg--primary {
+    background: var(--color-brand-700);
+    color: #fff;
+}
+.landing-btn-lg--primary:hover {
+    background: var(--color-brand-800);
+}
+.landing-btn-lg--outline {
+    border: 1px solid #19140035;
+    font-weight: 500;
+}
+.landing-btn-lg--outline:hover {
+    border-color: #1915014a;
+}
+.dark .landing-btn-lg--outline {
+    border-color: #3e3e3a;
+}
+.dark .landing-btn-lg--outline:hover {
+    border-color: #62605b;
+}
+.landing-stats {
+    margin-top: 2rem;
+    display: grid;
+    width: 100%;
+    max-width: 42rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+}
+.landing-stat {
+    border: 1px solid rgb(0 0 0 / 0.05);
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 1rem;
+}
+.dark .landing-stat {
+    border-color: rgb(255 255 255 / 0.1);
+    background: #161615;
+}
+.landing-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-brand-700);
+}
+.dark .landing-stat-value {
+    color: var(--color-brand-400);
+}
+.landing-stat-label {
+    font-size: 0.875rem;
+    color: #706f6c;
+}
+.dark .landing-stat-label {
+    color: #a1a09a;
+}
+
+/* Shared parks list */
+.share-main {
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    flex: 1 1 0%;
+    padding: 0 1.5rem 4rem;
+}
+.share-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+}
+.share-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+.share-subtitle {
+    color: #706f6c;
+}
+.dark .share-subtitle {
+    color: #a1a09a;
+}
+.share-map {
+    margin-bottom: 2rem;
+}
+.share-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+@media (min-width: 640px) {
+    .share-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 1024px) {
+    .share-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+.share-card {
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+.share-card--visited {
+    border-color: color-mix(in oklab, var(--color-brand-700) 30%, transparent);
+    background: color-mix(in oklab, var(--color-brand-700) 5%, transparent);
+}
+.share-card--unvisited {
+    border-color: rgb(0 0 0 / 0.05);
+    opacity: 0.6;
+}
+.dark .share-card--unvisited {
+    border-color: rgb(255 255 255 / 0.1);
+}
+.share-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.share-card-name {
+    line-height: 1.25;
+    font-weight: 600;
+}
+.share-card-badges {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+.share-card-meta {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #706f6c;
+}
+.dark .share-card-meta {
+    color: #a1a09a;
+}
+.share-card-last {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #706f6c;
+}
+.dark .share-card-last {
+    color: #a1a09a;
+}
