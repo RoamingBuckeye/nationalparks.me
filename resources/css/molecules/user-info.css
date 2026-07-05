@@ -1,0 +1,32 @@
+/* UserInfo — avatar + name/email block. Molecule. */
+
+.user-info__avatar {
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+}
+.user-info__fallback {
+    border-radius: var(--radius-lg);
+    color: var(--color-foreground);
+}
+.user-info__text {
+    display: grid;
+    flex: 1 1 0%;
+    text-align: left;
+    font-size: 0.875rem;
+    line-height: 1.25;
+}
+.user-info__name {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.user-info__email {
+    overflow: hidden;
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

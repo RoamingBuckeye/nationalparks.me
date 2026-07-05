@@ -1,0 +1,220 @@
+/* AppHeader — the sticky top bar (brand, nav, user menu, breadcrumbs). Organism. */
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in oklab, var(--color-background) 90%, transparent);
+    backdrop-filter: blur(4px);
+}
+
+.app-header__bar {
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--color-sidebar-border) 80%, transparent);
+}
+
+.app-header__inner {
+    display: flex;
+    height: 4rem;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+@media (min-width: 768px) {
+    .app-header__inner {
+        max-width: 80rem;
+    }
+}
+
+/* Mobile menu */
+.app-header__mobile {
+    display: block;
+}
+@media (min-width: 1024px) {
+    .app-header__mobile {
+        display: none;
+    }
+}
+.app-header__menu-button {
+    margin-right: 0.5rem;
+}
+.app-header__menu-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+.app-header__sheet {
+    width: 300px;
+    padding: 1.5rem;
+}
+.app-header__sheet-header {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+.app-header__sheet-logo {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: currentColor;
+    color: #000;
+}
+.dark .app-header__sheet-logo {
+    color: #fff;
+}
+.app-header__mobile-nav-wrap {
+    display: flex;
+    height: 100%;
+    flex: 1 1 0%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 0;
+}
+.app-header__mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0 -0.75rem;
+}
+.app-header__mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-lg);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.app-header__mobile-link:hover {
+    background: var(--color-accent);
+}
+.app-header__mobile-link--active {
+    color: var(--color-brand-700);
+}
+.dark .app-header__mobile-link--active {
+    color: var(--color-brand-400);
+}
+.app-header__mobile-link-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Brand */
+.app-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Desktop nav */
+.app-header__desktop {
+    display: none;
+    height: 100%;
+}
+@media (min-width: 1024px) {
+    .app-header__desktop {
+        display: flex;
+        flex: 1 1 0%;
+    }
+}
+.app-header__nav {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+    margin-left: 2.5rem;
+}
+.app-header__nav-list {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+.app-header__nav-item {
+    position: relative;
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+.app-header__nav-link {
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    cursor: pointer;
+}
+.app-header__nav-link--active {
+    color: var(--color-brand-700);
+}
+.dark .app-header__nav-link--active {
+    color: var(--color-brand-400);
+}
+.app-header__nav-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+.app-header__nav-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    transform: translateY(1px);
+    background: var(--color-brand-700);
+}
+.dark .app-header__nav-underline {
+    background: var(--color-brand-400);
+}
+
+/* User menu */
+.app-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+.app-header__avatar-button {
+    position: relative;
+    width: auto;
+    height: 2.5rem;
+    border-radius: 9999px;
+    padding: 0.25rem;
+}
+.app-header__avatar-button:focus-within {
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+.app-header__avatar {
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: 9999px;
+}
+.app-header__avatar-fallback {
+    border-radius: var(--radius-lg);
+    background: var(--color-secondary);
+    font-weight: 600;
+    color: var(--color-foreground);
+}
+.app-header__menu {
+    width: 14rem;
+}
+
+/* Breadcrumbs row */
+.app-header__breadcrumbs {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--color-sidebar-border) 70%, transparent);
+}
+.app-header__breadcrumbs-inner {
+    display: flex;
+    height: 3rem;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 auto;
+    padding: 0 1rem;
+    color: var(--color-muted-foreground);
+}
+@media (min-width: 768px) {
+    .app-header__breadcrumbs-inner {
+        max-width: 80rem;
+    }
+}
