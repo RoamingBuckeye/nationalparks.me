@@ -2,7 +2,7 @@
 import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import InputError from '@/components/atoms/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
+import PasswordInput from '@/components/molecules/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

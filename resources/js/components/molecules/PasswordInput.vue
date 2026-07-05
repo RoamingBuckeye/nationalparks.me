@@ -21,26 +21,22 @@ defineExpose({
 </script>
 
 <template>
-    <div class="relative">
+    <div class="password-input">
         <Input
             ref="inputRef"
             :type="showPassword ? 'text' : 'password'"
-            :class="cn('pr-10', props.class)"
+            :class="cn('password-input__field', props.class)"
             v-bind="$attrs"
         />
         <button
             type="button"
             @click="showPassword = !showPassword"
-            :class="
-                cn(
-                    'absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none',
-                )
-            "
+            class="password-input__toggle"
             :aria-label="showPassword ? 'Hide password' : 'Show password'"
             :tabindex="-1"
         >
-            <EyeOff v-if="showPassword" class="size-4" />
-            <Eye v-else class="size-4" />
+            <EyeOff v-if="showPassword" class="password-input__icon" />
+            <Eye v-else class="password-input__icon" />
         </button>
     </div>
 </template>

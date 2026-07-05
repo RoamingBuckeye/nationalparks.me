@@ -1,0 +1,33 @@
+/* PasskeyRegister — the "add passkey" form. Molecule. */
+
+.passkey-register__unsupported {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+.passkey-register__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--color-muted) 50%, transparent);
+    padding: 1rem;
+}
+.passkey-register__field {
+    display: grid;
+    gap: 0.5rem;
+}
+.passkey-register__input {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    border-color: color-mix(in oklab, var(--color-foreground) 20%, transparent);
+}
+.passkey-register__hint {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+}
+.passkey-register__actions {
+    display: flex;
+    gap: 0.5rem;
+}

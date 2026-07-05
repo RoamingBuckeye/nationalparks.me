@@ -32,27 +32,25 @@ const handleDelete = () => {
 </script>
 
 <template>
-    <div class="flex items-center justify-between border-b p-4 last:border-b-0">
-        <div class="flex items-center gap-4">
-            <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted"
-            >
-                <KeyRound class="h-5 w-5 text-muted-foreground" />
+    <div class="passkey-item">
+        <div class="passkey-item__info">
+            <div class="passkey-item__icon-box">
+                <KeyRound class="passkey-item__icon" />
             </div>
-            <div class="space-y-1">
-                <div class="flex items-center gap-2.5">
-                    <p class="font-medium tracking-tight">{{ passkey.name }}</p>
+            <div class="passkey-item__details">
+                <div class="passkey-item__name-row">
+                    <p class="passkey-item__name">{{ passkey.name }}</p>
                     <span
                         v-if="passkey.authenticator"
-                        class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase ring-1 ring-border ring-inset"
+                        class="passkey-item__badge"
                     >
                         {{ passkey.authenticator }}
                     </span>
                 </div>
-                <p class="text-sm text-muted-foreground">
+                <p class="passkey-item__meta">
                     Added {{ passkey.created_at_diff }}
                     <template v-if="passkey.last_used_at_diff">
-                        <span class="mx-1 text-muted-foreground/50">/</span>
+                        <span class="passkey-item__meta-sep">/</span>
                         Last used {{ passkey.last_used_at_diff }}
                     </template>
                 </p>
@@ -61,12 +59,8 @@ const handleDelete = () => {
 
         <Dialog>
             <DialogTrigger as-child>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    class="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                >
-                    <Trash2 class="h-4 w-4" />
+                <Button variant="ghost" size="sm" class="passkey-item__remove">
+                    <Trash2 class="passkey-item__remove-icon" />
                     <span class="sr-only">Remove</span>
                 </Button>
             </DialogTrigger>
@@ -77,7 +71,7 @@ const handleDelete = () => {
                     Are you sure you want to remove the "{{ passkey.name }}"
                     passkey? You will no longer be able to use it to sign in.
                 </DialogDescription>
-                <DialogFooter class="gap-2">
+                <DialogFooter>
                     <DialogClose as-child>
                         <Button variant="secondary">Cancel</Button>
                     </DialogClose>
