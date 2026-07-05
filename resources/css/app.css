@@ -17,6 +17,8 @@
 @import './atoms/skeleton.css';
 @import './atoms/spinner.css';
 @import './atoms/text-link.css';
+@import './molecules/alert.css';
+@import './molecules/breadcrumb.css';
 @import './molecules/input-otp.css';
 @import './molecules/stamp.css';
 @import './organisms/dialog.css';
