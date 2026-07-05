@@ -2,7 +2,7 @@
 import { Head, Link, router, setLayoutProps, useForm } from '@inertiajs/vue3';
 import { CalendarPlus, ExternalLink, MapPin, Trash2 } from '@lucide/vue';
 import { ref } from 'vue';
-import ParkAlerts from '@/components/ParkAlerts.vue';
+import ParkAlerts from '@/components/organisms/ParkAlerts.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

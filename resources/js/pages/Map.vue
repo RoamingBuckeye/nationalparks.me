@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import ParksMap from '@/components/ParksMap.vue';
-import type { MapPark } from '@/components/ParksMap.vue';
+import ParksMap from '@/components/organisms/ParksMap.vue';
+import type { MapPark } from '@/components/organisms/ParksMap.vue';
 import { map as mapRoute } from '@/routes';
 
 defineProps<{

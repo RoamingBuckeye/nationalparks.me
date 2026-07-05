@@ -2,7 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { Ban, Check } from '@lucide/vue';
 import AppLogoIcon from '@/components/atoms/AppLogoIcon.vue';
-import ParksMap from '@/components/ParksMap.vue';
+import ParksMap from '@/components/organisms/ParksMap.vue';
 
 type SharedPark = {
     id: number;
