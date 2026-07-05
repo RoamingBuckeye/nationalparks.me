@@ -146,27 +146,27 @@ watch(search, () => {
 <template>
     <Head :title="`Visit · ${park.name}`" />
 
-    <div class="flex h-full flex-1 flex-col gap-6 p-4">
-        <header class="flex flex-wrap items-start justify-between gap-3">
+    <div class="page page--gap-6">
+        <header class="visit-header">
             <div>
-                <h1 class="text-2xl font-semibold tracking-tight">
+                <h1 class="page-title">
                     {{ park.name }}
                 </h1>
-                <p class="text-sm text-muted-foreground">
+                <p class="page-desc">
                     {{ checkedPoiIds.length }} of {{ totalPois }} points of
                     interest checked off
                 </p>
             </div>
             <Button variant="ghost" @click="deleteVisit">
-                <Trash2 class="size-4 text-destructive" /> Delete visit
+                <Trash2 class="visit-delete-icon" /> Delete visit
             </Button>
         </header>
 
         <Card>
-            <CardContent class="p-5">
-                <form class="flex flex-col gap-4" @submit.prevent="saveVisit">
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="grid gap-1.5">
+            <CardContent class="visit-form-body">
+                <form class="visit-form" @submit.prevent="saveVisit">
+                    <div class="visit-form-grid">
+                        <div class="visit-form-field">
                             <Label for="started_at">Arrived</Label>
                             <Input
                                 id="started_at"
@@ -176,15 +176,15 @@ watch(search, () => {
                             />
                             <p
                                 v-if="form.errors.started_at"
-                                class="text-sm text-destructive"
+                                class="visit-form-error"
                             >
                                 {{ form.errors.started_at }}
                             </p>
                         </div>
-                        <div class="grid gap-1.5">
+                        <div class="visit-form-field">
                             <Label for="ended_at"
                                 >Left
-                                <span class="text-muted-foreground"
+                                <span class="visit-optional"
                                     >(optional)</span
                                 ></Label
                             >
@@ -195,23 +195,23 @@ watch(search, () => {
                             />
                             <p
                                 v-if="form.errors.ended_at"
-                                class="text-sm text-destructive"
+                                class="visit-form-error"
                             >
                                 {{ form.errors.ended_at }}
                             </p>
                         </div>
                     </div>
-                    <div class="grid gap-1.5">
+                    <div class="visit-form-field">
                         <Label for="notes">Journal</Label>
                         <textarea
                             id="notes"
                             v-model="form.notes"
                             rows="4"
                             placeholder="What stood out about this trip?"
-                            class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs"
+                            class="visit-textarea"
                         />
                     </div>
-                    <div class="flex gap-2">
+                    <div class="visit-form-actions">
                         <Button type="submit" :disabled="form.processing">
                             Save
                         </Button>
@@ -228,9 +228,9 @@ watch(search, () => {
             </CardContent>
         </Card>
 
-        <section class="flex flex-col gap-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="text-lg font-semibold">Photos</h2>
+        <section class="visit-section">
+            <div class="page-topbar">
+                <h2 class="visit-section-title">Photos</h2>
                 <label>
                     <input
                         ref="fileInput"
@@ -241,81 +241,71 @@ watch(search, () => {
                         @change="uploadPhotos"
                     />
                     <span
-                        class="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                        class="visit-upload-btn"
                         :class="{
-                            'pointer-events-none opacity-50':
-                                photoForm.processing,
+                            'visit-upload-btn--disabled': photoForm.processing,
                         }"
                     >
-                        <ImagePlus class="size-4" />
+                        <ImagePlus />
                         {{ photoForm.processing ? 'Uploading…' : 'Add photos' }}
                     </span>
                 </label>
             </div>
 
-            <p v-if="photoForm.errors.photos" class="text-sm text-destructive">
+            <p v-if="photoForm.errors.photos" class="visit-form-error">
                 {{ photoForm.errors.photos }}
             </p>
 
-            <div
-                v-if="photos.length === 0"
-                class="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground"
-            >
+            <div v-if="photos.length === 0" class="visit-empty">
                 No photos yet. Add shots from this trip — we'll read the date
                 and location from each image when available.
             </div>
 
-            <div
-                v-else
-                class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
-            >
+            <div v-else class="visit-photo-grid">
                 <div
                     v-for="photo in photos"
                     :key="photo.id"
-                    class="group relative aspect-square overflow-hidden rounded-lg border"
+                    class="visit-photo"
                 >
                     <a :href="photo.url" target="_blank" rel="noopener">
                         <img
                             :src="photo.thumbnail_url"
                             :alt="photo.original_filename"
                             loading="lazy"
-                            class="size-full object-cover transition-transform group-hover:scale-105"
+                            class="visit-photo-img"
                         />
                     </a>
-                    <span
-                        v-if="photo.taken_at"
-                        class="absolute right-0 bottom-0 left-0 bg-black/50 px-2 py-1 text-xs text-white"
-                    >
+                    <span v-if="photo.taken_at" class="visit-photo-date">
                         {{ photo.taken_at }}
                     </span>
                     <Button
                         variant="secondary"
                         size="icon"
-                        class="absolute top-1 right-1 size-7 opacity-0 transition-opacity group-hover:opacity-100"
+                        class="visit-photo-delete"
                         aria-label="Delete photo"
                         @click="deletePhoto(photo.id)"
                     >
-                        <Trash2 class="size-4 text-destructive" />
+                        <Trash2 class="visit-delete-icon" />
                     </Button>
                 </div>
             </div>
         </section>
 
-        <section class="flex flex-col gap-4">
-            <h2 class="text-lg font-semibold">Points of interest</h2>
+        <section class="visit-section">
+            <h2 class="visit-section-title">Points of interest</h2>
 
-            <div class="flex flex-col gap-3 sm:flex-row">
+            <div class="visit-filters">
                 <Input
                     v-model="search"
                     type="search"
                     placeholder="Search points of interest…"
                     aria-label="Search points of interest"
-                    class="sm:max-w-xs"
+                    class="visit-search"
                 />
                 <select
                     v-model="kind"
                     aria-label="Filter by kind"
-                    class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
+                    class="visit-select"
                 >
                     <option value="">All kinds</option>
                     <option v-for="k in kinds" :key="k.value" :value="k.value">
@@ -324,43 +314,30 @@ watch(search, () => {
                 </select>
             </div>
 
-            <div
-                v-if="pois.data.length === 0"
-                class="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground"
-            >
+            <div v-if="pois.data.length === 0" class="visit-empty">
                 No points of interest match your filters.
             </div>
 
-            <ul v-else class="flex flex-col gap-1">
-                <li
-                    v-for="poi in pois.data"
-                    :key="poi.id"
-                    class="flex items-center gap-3 rounded-md border border-border/60 px-3 py-2"
-                >
+            <ul v-else class="visit-poi-list">
+                <li v-for="poi in pois.data" :key="poi.id" class="visit-poi">
                     <Checkbox
                         :model-value="checkedSet.has(poi.id)"
                         @update:model-value="togglePoi(poi.id)"
                     />
-                    <div class="flex flex-1 flex-col">
-                        <span class="text-sm font-medium">{{ poi.title }}</span>
-                        <span class="text-xs text-muted-foreground">{{
-                            poi.kind_label
-                        }}</span>
+                    <div class="visit-poi-text">
+                        <span class="visit-poi-title">{{ poi.title }}</span>
+                        <span class="visit-poi-kind">{{ poi.kind_label }}</span>
                     </div>
                 </li>
             </ul>
 
-            <nav v-if="pois.links.length > 3" class="flex flex-wrap gap-1">
+            <nav v-if="pois.links.length > 3" class="visit-pagination">
                 <template v-for="(link, index) in pois.links" :key="index">
                     <a
                         v-if="link.url"
                         :href="link.url"
-                        class="rounded-md px-3 py-1.5 text-sm"
-                        :class="
-                            link.active
-                                ? 'bg-brand-700 text-white'
-                                : 'text-muted-foreground hover:bg-muted'
-                        "
+                        class="visit-page-link"
+                        :class="{ 'visit-page-link--active': link.active }"
                         @click.prevent="
                             router.get(
                                 link.url,
@@ -372,7 +349,7 @@ watch(search, () => {
                     />
                     <span
                         v-else
-                        class="rounded-md px-3 py-1.5 text-sm text-muted-foreground opacity-50"
+                        class="visit-page-link visit-page-link--disabled"
                         v-html="link.label"
                     />
                 </template>

@@ -1,0 +1,227 @@
+/* Visit detail page — edit form, photo grid, POI checklist. */
+
+.visit-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.visit-delete-icon {
+    color: var(--color-destructive);
+}
+
+/* Edit form */
+.visit-form-body {
+    padding: 1.25rem;
+}
+.visit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.visit-form-grid {
+    display: grid;
+    gap: 1rem;
+}
+@media (min-width: 640px) {
+    .visit-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+.visit-form-field {
+    display: grid;
+    gap: 0.375rem;
+}
+.visit-form-error {
+    font-size: 0.875rem;
+    color: var(--color-destructive);
+}
+.visit-optional {
+    color: var(--color-muted-foreground);
+}
+.visit-textarea {
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+.visit-form-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Sections */
+.visit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.visit-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+.visit-empty {
+    border: 1px dashed var(--color-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Photos */
+.visit-upload-btn {
+    display: inline-flex;
+    height: 2.25rem;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-primary-foreground);
+    transition: background-color 0.15s ease;
+}
+.visit-upload-btn:hover {
+    background: color-mix(in oklab, var(--color-primary) 90%, transparent);
+}
+.visit-upload-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+.visit-upload-btn--disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+.visit-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+@media (min-width: 640px) {
+    .visit-photo-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (min-width: 768px) {
+    .visit-photo-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+.visit-photo {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+.visit-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+.visit-photo:hover .visit-photo-img {
+    transform: scale(1.05);
+}
+.visit-photo-date {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgb(0 0 0 / 0.5);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    color: #fff;
+}
+.visit-photo-delete {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+.visit-photo:hover .visit-photo-delete {
+    opacity: 1;
+}
+
+/* POI checklist */
+.visit-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+@media (min-width: 640px) {
+    .visit-filters {
+        flex-direction: row;
+    }
+}
+@media (min-width: 640px) {
+    .visit-search {
+        max-width: 20rem;
+    }
+}
+.visit-select {
+    height: 2.25rem;
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+.visit-poi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.visit-poi {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+}
+.visit-poi-text {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+}
+.visit-poi-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.visit-poi-kind {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+}
+.visit-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+.visit-page-link {
+    border-radius: var(--radius-md);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+.visit-page-link:hover {
+    background: var(--color-muted);
+}
+.visit-page-link--active,
+.visit-page-link--active:hover {
+    background: var(--color-brand-700);
+    color: #fff;
+}
+.visit-page-link--disabled {
+    opacity: 0.5;
+}
