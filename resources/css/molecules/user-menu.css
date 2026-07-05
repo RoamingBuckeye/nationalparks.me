@@ -1,0 +1,25 @@
+/* UserMenuContent — the user dropdown's contents. Molecule. */
+
+.user-menu__label {
+    padding: 0;
+    font-weight: 400;
+}
+.user-menu__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.25rem;
+    text-align: left;
+    font-size: 0.875rem;
+}
+.user-menu__link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    cursor: pointer;
+}
+.user-menu__icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
