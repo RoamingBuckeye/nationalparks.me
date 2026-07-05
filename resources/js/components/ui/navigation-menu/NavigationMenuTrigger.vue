@@ -21,11 +21,11 @@ const forwardedProps = useForwardProps(delegatedProps)
   <NavigationMenuTrigger
     data-slot="navigation-menu-trigger"
     v-bind="forwardedProps"
-    :class="cn(navigationMenuTriggerStyle(), 'group', props.class)"
+    :class="cn(navigationMenuTriggerStyle(), props.class)"
   >
     <slot />
     <ChevronDown
-      class="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+      class="navigation-menu-trigger__chevron"
       aria-hidden="true"
     />
   </NavigationMenuTrigger>

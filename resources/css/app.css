@@ -19,6 +19,8 @@
 @import './atoms/text-link.css';
 @import './molecules/stamp.css';
 @import './organisms/dialog.css';
+@import './organisms/dropdown-menu.css';
+@import './organisms/navigation-menu.css';
 @import './organisms/sheet.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
