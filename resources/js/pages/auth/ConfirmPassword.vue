@@ -39,13 +39,13 @@ defineOptions({
         reset-on-success
         v-slot="{ errors, processing }"
     >
-        <div class="space-y-6">
-            <div class="grid gap-2">
+        <div class="auth-form">
+            <div class="auth-field">
                 <Label htmlFor="password">Password</Label>
                 <PasswordInput
                     id="password"
                     name="password"
-                    class="mt-1 block w-full"
+                    class="auth-input"
                     required
                     autocomplete="current-password"
                     autofocus
@@ -54,9 +54,9 @@ defineOptions({
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="flex items-center">
+            <div class="auth-submit-row">
                 <Button
-                    class="w-full"
+                    class="auth-submit"
                     :disabled="processing"
                     data-test="confirm-password-button"
                 >

@@ -29,10 +29,7 @@ defineProps<{
 <template>
     <Head title="Log in" />
 
-    <div
-        v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
-    >
+    <div v-if="status" class="auth-status">
         {{ status }}
     </div>
 
@@ -42,10 +39,10 @@ defineProps<{
         v-bind="store.form()"
         :reset-on-success="['password']"
         v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
+        class="auth-form"
     >
-        <div class="grid gap-6">
-            <div class="grid gap-2">
+        <div class="auth-fields">
+            <div class="auth-field">
                 <Label for="email">Email address</Label>
                 <Input
                     id="email"
@@ -60,13 +57,13 @@ defineProps<{
                 <InputError :message="errors.email" />
             </div>
 
-            <div class="grid gap-2">
-                <div class="flex items-center justify-between">
+            <div class="auth-field">
+                <div class="auth-label-row">
                     <Label for="password">Password</Label>
                     <TextLink
                         v-if="canResetPassword"
                         :href="request()"
-                        class="text-sm"
+                        class="auth-link-sm"
                         :tabindex="5"
                     >
                         Forgot your password?
@@ -83,8 +80,8 @@ defineProps<{
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="flex items-center justify-between">
-                <Label for="remember" class="flex items-center space-x-3">
+            <div class="auth-remember-row">
+                <Label for="remember" class="auth-remember">
                     <Checkbox id="remember" name="remember" :tabindex="3" />
                     <span>Remember me</span>
                 </Label>
@@ -92,7 +89,7 @@ defineProps<{
 
             <Button
                 type="submit"
-                class="mt-4 w-full"
+                class="auth-submit auth-submit--spaced"
                 :tabindex="4"
                 :disabled="processing"
                 data-test="login-button"
@@ -102,7 +99,7 @@ defineProps<{
             </Button>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <div class="auth-footer">
             Don't have an account?
             <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
         </div>
