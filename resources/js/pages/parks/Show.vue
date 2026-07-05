@@ -97,51 +97,48 @@ const deleteVisit = (id: number): void => {
 <template>
     <Head :title="park.name" />
 
-    <div class="flex h-full flex-1 flex-col gap-6 p-4">
-        <header class="flex flex-col gap-2">
-            <h1 class="text-2xl font-semibold tracking-tight">
+    <div class="page page--gap-6">
+        <header class="park-header">
+            <h1 class="page-title">
                 {{ park.name }}
             </h1>
-            <p class="text-sm text-muted-foreground">
+            <p class="page-desc">
                 {{ park.designation }}
                 <span v-if="park.states.length">
                     · {{ park.states.map((s) => s.name).join(', ') }}</span
                 >
             </p>
-            <div class="flex flex-wrap gap-3 text-sm">
+            <div class="park-links">
                 <a
                     v-if="park.url"
                     :href="park.url"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center gap-1 text-brand-700 hover:underline dark:text-brand-400"
+                    class="park-link"
                 >
-                    <ExternalLink class="size-3.5" /> NPS park page
+                    <ExternalLink /> NPS park page
                 </a>
                 <a
                     v-if="park.directions_url"
                     :href="park.directions_url"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center gap-1 text-brand-700 hover:underline dark:text-brand-400"
+                    class="park-link"
                 >
-                    <MapPin class="size-3.5" /> Directions
+                    <MapPin /> Directions
                 </a>
             </div>
         </header>
 
-        <p
-            v-if="park.description"
-            class="max-w-3xl text-sm leading-relaxed whitespace-pre-line text-muted-foreground"
-        >
+        <p v-if="park.description" class="park-description">
             {{ park.description }}
         </p>
 
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="park-poi-grid">
             <Card v-for="count in poiCounts" :key="count.value">
-                <CardContent class="p-4">
-                    <p class="text-2xl font-bold">{{ count.count }}</p>
-                    <p class="text-xs text-muted-foreground">
+                <CardContent class="park-poi-body">
+                    <p class="park-poi-count">{{ count.count }}</p>
+                    <p class="park-poi-label">
                         {{ count.label }}
                     </p>
                 </CardContent>
@@ -150,30 +147,27 @@ const deleteVisit = (id: number): void => {
 
         <ParkAlerts :alerts="alerts" />
 
-        <section class="flex flex-col gap-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="text-lg font-semibold">Your visits</h2>
-                <div class="flex gap-2">
+        <section class="park-visits">
+            <div class="page-topbar">
+                <h2 class="park-visits-title">Your visits</h2>
+                <div class="park-visit-actions">
                     <Button :disabled="checkingIn" @click="checkInNow">
-                        <MapPin class="size-4" /> Check in now
+                        <MapPin /> Check in now
                     </Button>
                     <Button
                         variant="outline"
                         @click="showPastForm = !showPastForm"
                     >
-                        <CalendarPlus class="size-4" /> Log a past visit
+                        <CalendarPlus /> Log a past visit
                     </Button>
                 </div>
             </div>
 
             <Card v-if="showPastForm">
-                <CardContent class="p-5">
-                    <form
-                        class="flex flex-col gap-4"
-                        @submit.prevent="submitPastVisit"
-                    >
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div class="grid gap-1.5">
+                <CardContent class="park-form-body">
+                    <form class="park-form" @submit.prevent="submitPastVisit">
+                        <div class="park-form-grid">
+                            <div class="park-form-field">
                                 <Label for="started_at">Arrived</Label>
                                 <Input
                                     id="started_at"
@@ -183,15 +177,15 @@ const deleteVisit = (id: number): void => {
                                 />
                                 <p
                                     v-if="pastForm.errors.started_at"
-                                    class="text-sm text-destructive"
+                                    class="park-form-error"
                                 >
                                     {{ pastForm.errors.started_at }}
                                 </p>
                             </div>
-                            <div class="grid gap-1.5">
+                            <div class="park-form-field">
                                 <Label for="ended_at"
                                     >Left
-                                    <span class="text-muted-foreground"
+                                    <span class="park-optional"
                                         >(optional)</span
                                     ></Label
                                 >
@@ -202,16 +196,16 @@ const deleteVisit = (id: number): void => {
                                 />
                                 <p
                                     v-if="pastForm.errors.ended_at"
-                                    class="text-sm text-destructive"
+                                    class="park-form-error"
                                 >
                                     {{ pastForm.errors.ended_at }}
                                 </p>
                             </div>
                         </div>
-                        <div class="grid gap-1.5">
+                        <div class="park-form-field">
                             <Label for="notes"
                                 >Journal
-                                <span class="text-muted-foreground"
+                                <span class="park-optional"
                                     >(optional)</span
                                 ></Label
                             >
@@ -220,10 +214,10 @@ const deleteVisit = (id: number): void => {
                                 v-model="pastForm.notes"
                                 rows="3"
                                 placeholder="What stood out about this trip?"
-                                class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs"
+                                class="park-textarea"
                             />
                         </div>
-                        <div class="flex gap-2">
+                        <div class="park-form-actions">
                             <Button
                                 type="submit"
                                 :disabled="pastForm.processing"
@@ -242,35 +236,30 @@ const deleteVisit = (id: number): void => {
                 </CardContent>
             </Card>
 
-            <div
-                v-if="visits.length === 0"
-                class="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground"
-            >
+            <div v-if="visits.length === 0" class="parks-empty">
                 You haven't logged a visit to this park yet.
             </div>
 
-            <div v-else class="flex flex-col gap-2">
+            <div v-else class="park-visit-list">
                 <Card v-for="visit in visits" :key="visit.id">
-                    <CardContent
-                        class="flex items-center justify-between gap-3 p-4"
-                    >
+                    <CardContent class="park-visit-body">
                         <Link
                             :href="visitShow(visit.id)"
-                            class="flex flex-1 flex-col gap-0.5"
+                            class="park-visit-link"
                         >
-                            <span class="flex items-center gap-2 font-medium">
+                            <span class="park-visit-title">
                                 {{ visit.started_at }}
                                 <span v-if="visit.ended_at">
                                     – {{ visit.ended_at }}</span
                                 >
                                 <span
                                     v-if="visit.is_live"
-                                    class="rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
+                                    class="park-visit-live"
                                 >
                                     Live
                                 </span>
                             </span>
-                            <span class="text-xs text-muted-foreground">
+                            <span class="park-visit-meta">
                                 {{ visit.pois_count }} checked off
                                 <span v-if="visit.has_notes"> · Journal</span>
                             </span>
@@ -281,7 +270,7 @@ const deleteVisit = (id: number): void => {
                             aria-label="Delete visit"
                             @click="deleteVisit(visit.id)"
                         >
-                            <Trash2 class="size-4 text-destructive" />
+                            <Trash2 class="park-visit-delete-icon" />
                         </Button>
                     </CardContent>
                 </Card>

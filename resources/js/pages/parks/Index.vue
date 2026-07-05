@@ -56,29 +56,27 @@ watch([visited, state], applyFilters);
 <template>
     <Head title="Parks" />
 
-    <div class="flex h-full flex-1 flex-col gap-6 p-4">
+    <div class="page page--gap-6">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight">
-                National Parks
-            </h1>
-            <p class="text-sm text-muted-foreground">
+            <h1 class="page-title">National Parks</h1>
+            <p class="page-desc">
                 {{ parks.length }} of 63 parks shown — check in to the ones
                 you've visited.
             </p>
         </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="parks-filters">
             <Input
                 v-model="search"
                 type="search"
                 placeholder="Search parks…"
                 aria-label="Search parks"
-                class="sm:max-w-xs"
+                class="parks-search"
             />
             <select
                 v-model="visited"
                 aria-label="Filter by visited status"
-                class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
+                class="parks-select"
             >
                 <option value="">All parks</option>
                 <option value="visited">Visited</option>
@@ -87,7 +85,7 @@ watch([visited, state], applyFilters);
             <select
                 v-model="state"
                 aria-label="Filter by state"
-                class="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
+                class="parks-select"
             >
                 <option value="">All states</option>
                 <option v-for="s in states" :key="s.code" :value="s.code">
@@ -96,57 +94,52 @@ watch([visited, state], applyFilters);
             </select>
         </div>
 
-        <div
-            v-if="parks.length === 0"
-            class="rounded-xl border border-dashed p-12 text-center text-sm text-muted-foreground"
-        >
+        <div v-if="parks.length === 0" class="parks-empty parks-empty--roomy">
             No parks match your filters.
         </div>
 
-        <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-else class="parks-grid">
             <Link
                 v-for="park in parks"
                 :key="park.id"
                 :href="parkShow(park.id)"
-                class="block transition-transform hover:-translate-y-0.5"
+                class="park-card-link"
             >
-                <Card class="h-full">
-                    <CardContent class="flex h-full flex-col gap-2 p-5">
-                        <div class="flex items-start justify-between gap-2">
-                            <h2 class="leading-tight font-semibold">
+                <Card class="park-card">
+                    <CardContent class="park-card-body">
+                        <div class="park-card-top">
+                            <h2 class="park-card-name">
                                 {{ park.name }}
                             </h2>
-                            <div class="flex shrink-0 flex-col items-end gap-1">
+                            <div class="park-card-badges">
                                 <span
                                     v-if="park.closed"
-                                    class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400"
+                                    class="park-badge park-badge--closure"
                                 >
-                                    <Ban class="size-3" />
+                                    <Ban />
                                     Closure
                                 </span>
                                 <span
                                     v-if="park.visits_count > 0"
-                                    class="inline-flex items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
+                                    class="park-badge park-badge--visited"
                                 >
-                                    <Check class="size-3" />
+                                    <Check />
                                     Visited
                                 </span>
                             </div>
                         </div>
-                        <p class="text-xs text-muted-foreground">
+                        <p class="park-card-meta">
                             {{ park.designation }}
                             <span v-if="park.states.length">
                                 · {{ park.states.join(', ') }}</span
                             >
                         </p>
-                        <div
-                            class="mt-auto flex items-center gap-3 text-xs text-muted-foreground"
-                        >
+                        <div class="park-card-stats">
                             <span
                                 v-if="park.visits_count > 0"
-                                class="inline-flex items-center gap-1"
+                                class="park-card-stat"
                             >
-                                <MapPin class="size-3" />
+                                <MapPin />
                                 {{ park.visits_count }}
                                 {{
                                     park.visits_count === 1 ? 'visit' : 'visits'
