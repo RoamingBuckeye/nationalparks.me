@@ -1,0 +1,229 @@
+/* TwoFactorSetupModal — QR/manual-key setup + OTP verify. Organism. */
+
+@media (min-width: 640px) {
+    .two-factor-modal {
+        max-width: 28rem;
+    }
+}
+
+.two-factor-modal__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.two-factor-modal__badge {
+    margin-bottom: 0.75rem;
+    width: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    background: var(--color-card);
+    padding: 0.125rem;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+.two-factor-modal__badge-inner {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    background: var(--color-muted);
+    padding: 0.625rem;
+}
+.two-factor-modal__grid-cols,
+.two-factor-modal__grid-rows {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    opacity: 0.5;
+}
+.two-factor-modal__grid-cols {
+    grid-template-columns: repeat(5, 1fr);
+}
+.two-factor-modal__grid-rows {
+    grid-template-rows: repeat(5, 1fr);
+}
+.two-factor-modal__grid-col {
+    border-right: 1px solid var(--color-border);
+}
+.two-factor-modal__grid-col:last-child {
+    border-right: 0;
+}
+.two-factor-modal__grid-row {
+    border-bottom: 1px solid var(--color-border);
+}
+.two-factor-modal__grid-row:last-child {
+    border-bottom: 0;
+}
+.two-factor-modal__scan-icon {
+    position: relative;
+    z-index: 20;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-foreground);
+}
+.two-factor-modal__desc {
+    text-align: center;
+}
+
+.two-factor-modal__body {
+    position: relative;
+    display: flex;
+    width: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+}
+.two-factor-modal__qr-wrap {
+    position: relative;
+    margin: 0 auto;
+    display: flex;
+    max-width: 28rem;
+    align-items: center;
+    overflow: hidden;
+}
+.two-factor-modal__qr {
+    position: relative;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    width: 16rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+.two-factor-modal__qr-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    animation: np-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.two-factor-modal__qr-svg {
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    padding: 1.25rem;
+}
+.two-factor-modal__qr-image {
+    display: flex;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.two-factor-modal__actions {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 1.25rem;
+}
+.two-factor-modal__button {
+    width: 100%;
+}
+.two-factor-modal__button-flex {
+    width: auto;
+    flex: 1 1 0%;
+}
+
+.two-factor-modal__divider {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.two-factor-modal__divider-line {
+    position: absolute;
+    inset: 0;
+    top: 50%;
+    height: 1px;
+    width: 100%;
+    background: var(--color-border);
+}
+.two-factor-modal__divider-text {
+    position: relative;
+    background: var(--color-card);
+    padding: 0.25rem 0.5rem;
+}
+
+.two-factor-modal__manual {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.two-factor-modal__key {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+}
+.two-factor-modal__key-loading {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-muted);
+    padding: 0.75rem;
+}
+.two-factor-modal__key-input {
+    width: 100%;
+    height: 100%;
+    background: var(--color-background);
+    padding: 0.75rem;
+    color: var(--color-foreground);
+}
+.two-factor-modal__key-copy {
+    position: relative;
+    display: block;
+    height: auto;
+    border-left: 1px solid var(--color-border);
+    padding: 0 0.75rem;
+    background: transparent;
+    cursor: pointer;
+}
+.two-factor-modal__key-copy:hover {
+    background: var(--color-muted);
+}
+.two-factor-modal__copy-icon {
+    width: 1rem;
+}
+.two-factor-modal__copy-icon--done {
+    color: #22c55e;
+}
+
+.two-factor-modal__pin {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.two-factor-modal__pin-inner {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .two-factor-modal__qr-loading {
+        animation: none;
+    }
+}

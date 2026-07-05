@@ -30,13 +30,16 @@
 @import './molecules/user-menu.css';
 @import './organisms/app-header.css';
 @import './organisms/manage-passkeys.css';
+@import './organisms/manage-two-factor.css';
 @import './organisms/dialog.css';
 @import './organisms/park-alerts.css';
 @import './organisms/parks-map.css';
 @import './organisms/dropdown-menu.css';
 @import './organisms/navigation-menu.css';
+@import './organisms/recovery-codes.css';
 @import './organisms/sheet.css';
 @import './organisms/toaster.css';
+@import './organisms/two-factor-modal.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
