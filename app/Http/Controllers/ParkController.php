@@ -33,8 +33,8 @@ class ParkController extends Controller
             ->withClosureStatus()
             ->when($search !== '', fn (Builder $query) => $query->where(
                 fn (Builder $inner) => $inner
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere('full_name', 'like', "%{$search}%"),
+                    ->whereLike('name', "%{$search}%")
+                    ->orWhereLike('full_name', "%{$search}%"),
             ))
             ->when($state !== '', fn (Builder $query) => $query->whereJsonContains('states', $state))
             ->orderBy('name')

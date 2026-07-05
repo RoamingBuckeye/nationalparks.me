@@ -65,7 +65,7 @@ class VisitController extends Controller
         $pois = $visit->park->pointsOfInterest()
             ->active()
             ->when($kind !== '', fn (Builder $query) => $query->where('kind', $kind))
-            ->when($search !== '', fn (Builder $query) => $query->where('title', 'like', "%{$search}%"))
+            ->when($search !== '', fn (Builder $query) => $query->whereLike('title', "%{$search}%"))
             ->orderBy('title')
             ->paginate(30)
             ->withQueryString()

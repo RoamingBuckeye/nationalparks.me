@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::table('parks', function (Blueprint $table): void {
             $table->string('nps_source_code', 16)->nullable()->after('park_code');
-            $table->uuid('nps_source_id')->nullable()->after('nps_source_code');
+            $table->string('nps_source_id')->nullable()->after('nps_source_code');
             $table->index('nps_source_code');
             $table->dropUnique(['nps_id']);
             $table->index('nps_id');
