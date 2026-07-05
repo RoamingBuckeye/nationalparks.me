@@ -343,9 +343,10 @@ Provisioned via the `cloud` CLI + REST API. **Created 2026-07-05:**
 
 - **Application:** `nationalparks.me` — `app-a2304df1-255a-483e-9bd1-d4fec2c9437b`, region `us-east-2`, repo `RoamingBuckeye/nationalparks.me` (branch `main`).
 - **Environment:** `production` — `env-a2304df2-149a-4dd2-85eb-e3856fb07d12`, PHP 8.5.
+- **Database:** serverless Postgres cluster `nationalparks` — id `frosty-snow-41947171` (`neon_serverless_postgres_18`), region `us-east-2`, scale-to-zero (0.25–1 CU, 300s suspend, 7-day PITR); schema `main`. Credentials are auto-injected once the schema is linked to the environment.
 - **Organization:** `bill-condo` — `org-9e4a1418-3f7f-4e5d-8038-b4abf29adea1`. Org + application ids are pinned in `.cloud/config.json` so CLI commands resolve automatically.
 
-**Still to provision:** serverless Postgres, object-storage bucket, Managed Queue, env vars (see the table below), the GitHub repo authorization for the org, SES domain/production-access, and the first deploy.
+**Still to provision:** object-storage bucket, Managed Queue, env vars (see the table below), linking the DB schema to the production environment, the GitHub repo authorization for the org, SES domain/production-access, and the first deploy.
 
 > **CLI note:** `laravel/cloud-cli` v0.5.0 crashes parsing create-command responses (`JsonException` in `Response.php:211`), so resource **creates** are done against the REST API directly (`POST https://cloud.laravel.com/api/...`, `Authorization: Bearer <token>`). Read commands (`application:list`, `usage`) work fine.
 
