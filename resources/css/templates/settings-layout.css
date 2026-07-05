@@ -1,0 +1,62 @@
+/* Settings layout — left nav + content section. Template. */
+
+.settings-layout {
+    padding: 1.5rem 1rem;
+}
+.settings-layout__body {
+    display: flex;
+    flex-direction: column;
+}
+@media (min-width: 1024px) {
+    .settings-layout__body {
+        flex-direction: row;
+        gap: 3rem;
+    }
+}
+.settings-layout__aside {
+    width: 100%;
+    max-width: 36rem;
+}
+@media (min-width: 1024px) {
+    .settings-layout__aside {
+        width: 12rem;
+    }
+}
+.settings-layout__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.settings-layout__nav-btn {
+    width: 100%;
+    justify-content: flex-start;
+}
+.settings-layout__nav-btn--active {
+    background: var(--color-muted);
+}
+.settings-layout__nav-icon {
+    width: 1rem;
+    height: 1rem;
+}
+.settings-layout__separator {
+    margin: 1.5rem 0;
+}
+@media (min-width: 1024px) {
+    .settings-layout__separator {
+        display: none;
+    }
+}
+.settings-layout__content {
+    flex: 1 1 0%;
+}
+@media (min-width: 768px) {
+    .settings-layout__content {
+        max-width: 42rem;
+    }
+}
+.settings-layout__section {
+    display: flex;
+    max-width: 36rem;
+    flex-direction: column;
+    gap: 3rem;
+}
