@@ -1,0 +1,152 @@
+/* NavigationMenu — the horizontal top nav. Organism. */
+
+.navigation-menu {
+    position: relative;
+    display: flex;
+    max-width: max-content;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation-menu-list {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    list-style: none;
+}
+
+.navigation-menu-item {
+    position: relative;
+}
+
+/* navigationMenuTriggerStyle() resolves to this base; callers layer their own state styles. */
+.navigation-menu-trigger {
+    display: inline-flex;
+    height: 2.25rem;
+    width: max-content;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    outline: none;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.navigation-menu-trigger:hover,
+.navigation-menu-trigger:focus {
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+}
+.navigation-menu-trigger:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+.navigation-menu-trigger[data-state='open'] {
+    background: color-mix(in oklab, var(--color-accent) 50%, transparent);
+    color: var(--color-accent-foreground);
+}
+.navigation-menu-trigger:focus-visible {
+    box-shadow: 0 0 0 3px
+        color-mix(in oklab, var(--color-ring) 50%, transparent);
+}
+
+.navigation-menu-trigger__chevron {
+    position: relative;
+    top: 1px;
+    margin-left: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    transition: transform 0.3s ease;
+}
+.navigation-menu-trigger[data-state='open'] .navigation-menu-trigger__chevron {
+    transform: rotate(180deg);
+}
+
+.navigation-menu-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    transition:
+        color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.navigation-menu-link:hover,
+.navigation-menu-link:focus {
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+}
+.navigation-menu-link[data-active] {
+    background: color-mix(in oklab, var(--color-accent) 50%, transparent);
+    color: var(--color-accent-foreground);
+}
+.navigation-menu-link svg:not([class*='size-']) {
+    width: 1rem;
+    height: 1rem;
+}
+.navigation-menu-link svg:not([class*='text-']) {
+    color: var(--color-muted-foreground);
+}
+
+/* Flyout machinery (unused today; kept Tailwind-free with sane defaults). */
+.navigation-menu-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.navigation-menu-viewport-wrapper {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    isolation: isolate;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+}
+.navigation-menu-viewport {
+    position: relative;
+    margin-top: 0.375rem;
+    width: 100%;
+    height: var(--reka-navigation-menu-viewport-height);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-popover);
+    color: var(--color-popover-foreground);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+    transform-origin: top center;
+}
+
+.navigation-menu-indicator {
+    position: relative;
+    top: 100%;
+    z-index: 1;
+    display: flex;
+    height: 0.375rem;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+}
+.navigation-menu-indicator__arrow {
+    position: relative;
+    top: 60%;
+    width: 0.5rem;
+    height: 0.5rem;
+    transform: rotate(45deg);
+    border-top-left-radius: var(--radius-sm);
+    background: var(--color-border);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
