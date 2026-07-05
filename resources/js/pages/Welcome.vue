@@ -10,38 +10,34 @@ import { dashboard, login, register } from '@/routes';
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
 
-    <div
-        class="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
-    >
-        <header class="mx-auto w-full max-w-5xl p-6 lg:p-8">
-            <nav class="flex items-center justify-between gap-4">
-                <span class="flex items-center gap-2 font-semibold">
-                    <span
-                        class="flex size-8 items-center justify-center rounded-md bg-brand-700 text-white"
-                    >
-                        <AppLogoIcon class="size-5" />
+    <div class="landing">
+        <header class="landing-header">
+            <nav class="landing-nav">
+                <span class="landing-brand">
+                    <span class="landing-brand-chip">
+                        <AppLogoIcon class="landing-brand-icon" />
                     </span>
                     NationalParks.me
                 </span>
 
-                <div class="flex items-center gap-3 text-sm">
+                <div class="landing-nav-actions">
                     <Link
                         v-if="$page.props.auth.user"
                         :href="dashboard()"
-                        class="rounded-md bg-brand-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-brand-800"
+                        class="landing-btn landing-btn--primary"
                     >
                         Go to dashboard
                     </Link>
                     <template v-else>
                         <Link
                             :href="login()"
-                            class="rounded-md px-4 py-1.5 font-medium text-[#1b1b18] transition-colors hover:bg-black/5 dark:text-[#EDEDEC] dark:hover:bg-white/10"
+                            class="landing-btn landing-btn--ghost"
                         >
                             Log in
                         </Link>
                         <Link
                             :href="register()"
-                            class="rounded-md bg-brand-700 px-4 py-1.5 font-medium text-white transition-colors hover:bg-brand-800"
+                            class="landing-btn landing-btn--primary"
                         >
                             Get started
                         </Link>
@@ -50,98 +46,60 @@ import { dashboard, login, register } from '@/routes';
             </nav>
         </header>
 
-        <main
-            class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center"
-        >
-            <span
-                class="inline-flex items-center gap-2 rounded-full border border-brand-700/20 bg-brand-700/10 px-3 py-1 text-xs font-medium text-brand-800 dark:text-brand-300"
-            >
-                All 63 U.S. National Parks
-            </span>
+        <main class="landing-hero">
+            <span class="landing-pill"> All 63 U.S. National Parks </span>
 
-            <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
+            <h1 class="landing-title">
                 Every park. One map.
-                <span class="text-brand-700 dark:text-brand-400"
-                    >Your story.</span
-                >
+                <span class="landing-title-accent">Your story.</span>
             </h1>
 
-            <p class="max-w-2xl text-lg text-[#706f6c] dark:text-[#A1A09A]">
+            <p class="landing-lead">
                 Check in to the parks you've explored, tick off the trails,
                 peaks, and viewpoints you've reached, and keep a journal of
                 every trip — on the web and on your phone.
             </p>
 
-            <div class="flex flex-col gap-3 sm:flex-row">
+            <div class="landing-cta">
                 <Link
                     v-if="$page.props.auth.user"
                     :href="dashboard()"
-                    class="rounded-lg bg-brand-700 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
+                    class="landing-btn-lg landing-btn-lg--primary"
                 >
                     Go to your dashboard
                 </Link>
                 <template v-else>
                     <Link
                         :href="register()"
-                        class="rounded-lg bg-brand-700 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
+                        class="landing-btn-lg landing-btn-lg--primary"
                     >
                         Start your map
                     </Link>
                     <Link
                         :href="login()"
-                        class="rounded-lg border border-[#19140035] px-6 py-3 font-medium transition-colors hover:border-[#1915014a] dark:border-[#3E3E3A] dark:hover:border-[#62605b]"
+                        class="landing-btn-lg landing-btn-lg--outline"
                     >
                         Log in
                     </Link>
                 </template>
             </div>
 
-            <dl
-                class="mt-8 grid w-full max-w-2xl grid-cols-3 gap-4 text-center"
-            >
-                <div
-                    class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
-                >
-                    <dt
-                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
-                    >
-                        63
-                    </dt>
-                    <dd class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                        National Parks
-                    </dd>
+            <dl class="landing-stats">
+                <div class="landing-stat">
+                    <dt class="landing-stat-value">63</dt>
+                    <dd class="landing-stat-label">National Parks</dd>
                 </div>
-                <div
-                    class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
-                >
-                    <dt
-                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
-                    >
-                        7,000+
-                    </dt>
-                    <dd class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                        Points of interest
-                    </dd>
+                <div class="landing-stat">
+                    <dt class="landing-stat-value">7,000+</dt>
+                    <dd class="landing-stat-label">Points of interest</dd>
                 </div>
-                <div
-                    class="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#161615]"
-                >
-                    <dt
-                        class="text-2xl font-bold text-brand-700 dark:text-brand-400"
-                    >
-                        Web + app
-                    </dt>
-                    <dd class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                        iOS &amp; Android
-                    </dd>
+                <div class="landing-stat">
+                    <dt class="landing-stat-value">Web + app</dt>
+                    <dd class="landing-stat-label">iOS &amp; Android</dd>
                 </div>
             </dl>
         </main>
 
-        <footer
-            class="mx-auto w-full max-w-5xl p-6 text-center text-sm text-[#706f6c] lg:p-8 dark:text-[#A1A09A]"
-        >
-            nationalparks.me
-        </footer>
+        <footer class="landing-footer">nationalparks.me</footer>
     </div>
 </template>

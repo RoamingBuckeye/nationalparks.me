@@ -31,66 +31,60 @@ defineProps<{
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
 
-    <div
-        class="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
-    >
-        <header class="mx-auto w-full max-w-5xl p-6 lg:p-8">
-            <a href="/" class="flex items-center gap-2 font-semibold">
-                <span
-                    class="flex size-8 items-center justify-center rounded-md bg-brand-700 text-white"
-                >
-                    <AppLogoIcon class="size-5" />
+    <div class="landing">
+        <header class="landing-header">
+            <a href="/" class="landing-brand">
+                <span class="landing-brand-chip">
+                    <AppLogoIcon class="landing-brand-icon" />
                 </span>
                 NationalParks.me
             </a>
         </header>
 
-        <main class="mx-auto w-full max-w-5xl flex-1 px-6 pb-16">
-            <div class="mb-8 flex flex-col gap-1">
-                <h1 class="text-3xl font-bold tracking-tight">
-                    {{ displayName }}'s parks
-                </h1>
-                <p class="text-[#706f6c] dark:text-[#A1A09A]">
+        <main class="share-main">
+            <div class="share-heading">
+                <h1 class="share-title">{{ displayName }}'s parks</h1>
+                <p class="share-subtitle">
                     {{ visitedCount }} of {{ totalCount }} National Parks
                     visited
                 </p>
             </div>
 
-            <ParksMap :parks="parks" class="mb-8" />
+            <ParksMap :parks="parks" class="share-map" />
 
-            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="share-grid">
                 <div
                     v-for="park in parks"
                     :key="park.id"
-                    class="rounded-xl border p-4"
+                    class="share-card"
                     :class="
                         park.visited
-                            ? 'border-brand-700/30 bg-brand-700/5'
-                            : 'border-black/5 opacity-60 dark:border-white/10'
+                            ? 'share-card--visited'
+                            : 'share-card--unvisited'
                     "
                 >
-                    <div class="flex items-start justify-between gap-2">
-                        <h2 class="leading-tight font-semibold">
+                    <div class="share-card-top">
+                        <h2 class="share-card-name">
                             {{ park.name }}
                         </h2>
-                        <div class="flex shrink-0 flex-col items-end gap-1">
+                        <div class="share-card-badges">
                             <span
                                 v-if="park.closed"
-                                class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400"
+                                class="park-badge park-badge--closure"
                             >
-                                <Ban class="size-3" />
+                                <Ban />
                                 Closure
                             </span>
                             <span
                                 v-if="park.visited"
-                                class="inline-flex items-center gap-1 rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
+                                class="park-badge park-badge--visited"
                             >
-                                <Check class="size-3" />
+                                <Check />
                                 Visited
                             </span>
                         </div>
                     </div>
-                    <p class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                    <p class="share-card-meta">
                         {{ park.designation }}
                         <span v-if="park.states.length">
                             · {{ park.states.join(', ') }}</span
@@ -98,7 +92,7 @@ defineProps<{
                     </p>
                     <p
                         v-if="park.visited && park.last_visited_at"
-                        class="mt-2 text-xs text-[#706f6c] dark:text-[#A1A09A]"
+                        class="share-card-last"
                     >
                         Last visited {{ park.last_visited_at }}
                     </p>
@@ -106,15 +100,9 @@ defineProps<{
             </div>
         </main>
 
-        <footer
-            class="mx-auto w-full max-w-5xl p-6 text-center text-sm text-[#706f6c] lg:p-8 dark:text-[#A1A09A]"
-        >
+        <footer class="landing-footer">
             Track your own at
-            <a
-                href="/"
-                class="font-medium text-brand-700 hover:underline dark:text-brand-400"
-                >nationalparks.me</a
-            >
+            <a href="/" class="landing-footer-link">nationalparks.me</a>
         </footer>
     </div>
 </template>
