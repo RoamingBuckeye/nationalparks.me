@@ -158,3 +158,9 @@
         animation: none;
     }
 }
+
+.dropdown-menu-item__indicator svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: currentColor;
+}
