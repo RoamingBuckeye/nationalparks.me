@@ -337,6 +337,18 @@ Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Gi
 
 **Why not Horizon/Redis:** Horizon needs an always-on Redis (Valkey ~$8/mo) *and* an always-on worker process (~$6/mo) — ~$14/mo that never hibernates, for a queue workload that's just verification/2FA emails and thumbnails. Managed Queues cover the same need with scale-to-zero autoscaling and no Redis, so Horizon was removed (see Repo changes). Cache/session moved to the database because, with no Redis provisioned, Postgres is their home.
 
+### Provisioning status (Laravel Cloud, org `bill-condo`)
+
+Provisioned via the `cloud` CLI + REST API. **Created 2026-07-05:**
+
+- **Application:** `nationalparks.me` — `app-a2304df1-255a-483e-9bd1-d4fec2c9437b`, region `us-east-2`, repo `RoamingBuckeye/nationalparks.me` (branch `main`).
+- **Environment:** `production` — `env-a2304df2-149a-4dd2-85eb-e3856fb07d12`, PHP 8.5.
+- **Organization:** `bill-condo` — `org-9e4a1418-3f7f-4e5d-8038-b4abf29adea1`. Org + application ids are pinned in `.cloud/config.json` so CLI commands resolve automatically.
+
+**Still to provision:** serverless Postgres, object-storage bucket, Managed Queue, env vars (see the table below), the GitHub repo authorization for the org, SES domain/production-access, and the first deploy.
+
+> **CLI note:** `laravel/cloud-cli` v0.5.0 crashes parsing create-command responses (`JsonException` in `Response.php:211`), so resource **creates** are done against the REST API directly (`POST https://cloud.laravel.com/api/...`, `Authorization: Bearer <token>`). Read commands (`application:list`, `usage`) work fine.
+
 ### Already deploy-ready
 
 - Health check `/up` wired in `bootstrap/app.php` (Cloud's ping target).
