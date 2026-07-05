@@ -148,7 +148,9 @@ watch(
                                     v-if="!qrCodeSvg"
                                     class="two-factor-modal__qr-loading"
                                 >
-                                    <Spinner class="size-6" />
+                                    <Spinner
+                                        class="two-factor-modal__spinner"
+                                    />
                                 </div>
                                 <div v-else class="two-factor-modal__qr-svg">
                                     <div

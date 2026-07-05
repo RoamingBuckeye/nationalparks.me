@@ -17,30 +17,25 @@ defineProps<{
 </script>
 
 <template>
-    <div
-        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10"
-    >
-        <div class="flex w-full max-w-md flex-col gap-6">
-            <Link
-                :href="home()"
-                class="flex items-center gap-2 self-center font-medium"
-            >
-                <div class="flex h-9 w-9 items-center justify-center">
-                    <AppLogoIcon
-                        class="size-9 fill-current text-black dark:text-white"
-                    />
+    <div class="auth-card">
+        <div class="auth-card__container">
+            <Link :href="home()" class="auth-card__logo-link">
+                <div class="auth-card__logo-box">
+                    <AppLogoIcon class="auth-card__logo-icon" />
                 </div>
             </Link>
 
-            <div class="flex flex-col gap-6">
-                <Card class="rounded-xl">
-                    <CardHeader class="px-10 pt-8 pb-0 text-center">
-                        <CardTitle class="text-xl">{{ title }}</CardTitle>
+            <div class="auth-card__card-wrap">
+                <Card>
+                    <CardHeader class="auth-card__header">
+                        <CardTitle class="auth-card__title">{{
+                            title
+                        }}</CardTitle>
                         <CardDescription>
                             {{ description }}
                         </CardDescription>
                     </CardHeader>
-                    <CardContent class="px-10 py-8">
+                    <CardContent class="auth-card__content">
                         <slot />
                     </CardContent>
                 </Card>

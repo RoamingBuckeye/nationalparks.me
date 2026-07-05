@@ -1,0 +1,230 @@
+/* Auth layouts — simple, split, and card variants. Template. */
+
+/* Simple (centered) */
+.auth-simple {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: var(--color-background);
+    padding: 1.5rem;
+}
+@media (min-width: 768px) {
+    .auth-simple {
+        padding: 2.5rem;
+    }
+}
+.auth-simple__container {
+    width: 100%;
+    max-width: 24rem;
+}
+.auth-simple__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.auth-simple__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.auth-simple__logo-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+.auth-simple__logo-box {
+    display: flex;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-bottom: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+}
+.auth-simple__logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    fill: currentColor;
+    color: var(--color-foreground);
+}
+.dark .auth-simple__logo-icon {
+    color: #fff;
+}
+.auth-simple__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+.auth-simple__title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+.auth-simple__desc {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Split (two-column) */
+.auth-split {
+    position: relative;
+    display: grid;
+    height: 100dvh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+}
+@media (min-width: 640px) {
+    .auth-split {
+        padding: 0;
+    }
+}
+@media (min-width: 1024px) {
+    .auth-split {
+        max-width: none;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0;
+    }
+}
+.auth-split__panel {
+    position: relative;
+    display: none;
+    height: 100%;
+    flex-direction: column;
+    background: var(--color-muted);
+    padding: 2.5rem;
+    color: #fff;
+}
+@media (min-width: 1024px) {
+    .auth-split__panel {
+        display: flex;
+    }
+}
+.dark .auth-split__panel {
+    border-right: 1px solid var(--color-border);
+}
+.auth-split__panel-bg {
+    position: absolute;
+    inset: 0;
+    background: #18181b;
+}
+.auth-split__brand {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+.auth-split__logo {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+    fill: currentColor;
+    color: #fff;
+}
+.auth-split__main {
+    padding: 0;
+}
+@media (min-width: 1024px) {
+    .auth-split__main {
+        padding: 2rem;
+    }
+}
+.auth-split__form {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+}
+@media (min-width: 640px) {
+    .auth-split__form {
+        width: 350px;
+    }
+}
+.auth-split__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+.auth-split__title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+.auth-split__desc {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+
+/* Card */
+.auth-card {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: var(--color-muted);
+    padding: 1.5rem;
+}
+@media (min-width: 768px) {
+    .auth-card {
+        padding: 2.5rem;
+    }
+}
+.auth-card__container {
+    display: flex;
+    width: 100%;
+    max-width: 28rem;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.auth-card__logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: center;
+    font-weight: 500;
+}
+.auth-card__logo-box {
+    display: flex;
+    width: 2.25rem;
+    height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+}
+.auth-card__logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    fill: currentColor;
+    color: #000;
+}
+.dark .auth-card__logo-icon {
+    color: #fff;
+}
+.auth-card__card-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.auth-card__header {
+    padding: 2rem 2.5rem 0;
+    text-align: center;
+}
+.auth-card__title {
+    font-size: 1.25rem;
+}
+.auth-card__content {
+    padding: 2rem 2.5rem;
+}
