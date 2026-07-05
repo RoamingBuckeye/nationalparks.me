@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import Heading from '@/components/atoms/Heading.vue';
 import InputError from '@/components/atoms/InputError.vue';
-import DeleteUser from '@/components/DeleteUser.vue';
+import DeleteUser from '@/components/organisms/DeleteUser.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';

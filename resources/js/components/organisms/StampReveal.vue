@@ -50,8 +50,8 @@ onUnmounted(() => stopListening?.());
 
 <template>
     <Dialog :open="isOpen" @update:open="isOpen = $event">
-        <DialogContent class="sm:max-w-md">
-            <DialogHeader class="items-center text-center">
+        <DialogContent class="stamp-reveal">
+            <DialogHeader class="stamp-reveal__header">
                 <DialogTitle>
                     {{
                         earned.length > 1
@@ -70,11 +70,11 @@ onUnmounted(() => stopListening?.());
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="flex flex-wrap justify-center gap-6 py-2">
+            <div class="stamp-reveal__stamps">
                 <Stamp v-for="stamp in earned" :key="stamp.id" :stamp="stamp" />
             </div>
 
-            <DialogFooter class="sm:justify-center">
+            <DialogFooter class="stamp-reveal__footer">
                 <Button @click="isOpen = false">Nice!</Button>
             </DialogFooter>
         </DialogContent>

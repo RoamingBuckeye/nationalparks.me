@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import StampReveal from '@/components/StampReveal.vue';
+import StampReveal from '@/components/organisms/StampReveal.vue';
 import type { EarnedStamp } from '@/types/stamps';
 
 // Capture the flash handler Inertia's router registers so tests can fire it.
