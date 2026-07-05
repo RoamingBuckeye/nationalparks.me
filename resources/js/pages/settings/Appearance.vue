@@ -21,7 +21,7 @@ defineOptions({
 
     <h1 class="sr-only">Appearance settings</h1>
 
-    <div class="space-y-6">
+    <div class="settings-stack">
         <Heading
             variant="small"
             title="Appearance settings"

@@ -54,54 +54,51 @@ const copy = async (): Promise<void> => {
 <template>
     <Head title="Sharing settings" />
 
-    <div class="flex flex-col space-y-6">
+    <div class="settings-stack">
         <Heading
             variant="small"
             title="Sharing"
             description="Share a read-only view of your parks list with a private link"
         />
 
-        <div
-            v-if="!shareEnabled"
-            class="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
-        >
+        <div v-if="!shareEnabled" class="settings-share-warning">
             Public sharing is currently off, so your link won't load for anyone.
             Turn on
-            <Link :href="profileEdit()" class="font-medium underline"
+            <Link :href="profileEdit()" class="settings-share-warning-link"
                 >public sharing in your profile</Link
             >
             to activate it.
         </div>
 
-        <div v-if="isActive && shareUrl" class="flex flex-col gap-4">
-            <div class="grid gap-1.5">
-                <label class="text-sm font-medium" for="share-url"
+        <div v-if="isActive && shareUrl" class="settings-share-active">
+            <div class="settings-share-field">
+                <label class="settings-share-label" for="share-url"
                     >Your share link</label
                 >
-                <div class="flex gap-2">
+                <div class="settings-share-row">
                     <Input
                         id="share-url"
                         :model-value="shareUrl"
                         readonly
-                        class="font-mono text-xs"
+                        class="settings-share-input"
                         @focus="
                             (e: FocusEvent) =>
                                 (e.target as HTMLInputElement).select()
                         "
                     />
                     <Button variant="outline" type="button" @click="copy">
-                        <Check v-if="copied" class="size-4" />
-                        <Copy v-else class="size-4" />
+                        <Check v-if="copied" />
+                        <Copy v-else />
                         {{ copied ? 'Copied' : 'Copy' }}
                     </Button>
                 </div>
-                <p class="text-sm text-muted-foreground">
+                <p class="settings-hint">
                     Anyone with this link can see which parks you've visited and
                     your display name — nothing else.
                 </p>
             </div>
 
-            <div class="flex gap-2">
+            <div class="settings-share-actions">
                 <Button variant="outline" type="button" @click="generate">
                     Rotate link
                 </Button>
@@ -111,8 +108,8 @@ const copy = async (): Promise<void> => {
             </div>
         </div>
 
-        <div v-else class="flex flex-col gap-3">
-            <p class="text-sm text-muted-foreground">
+        <div v-else class="settings-share-inactive">
+            <p class="settings-hint">
                 You don't have an active share link yet.
             </p>
             <div>

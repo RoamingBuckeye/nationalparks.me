@@ -47,6 +47,7 @@
 @import './templates/app-shell.css';
 @import './templates/auth-layout.css';
 @import './templates/settings-layout.css';
+@import './pages/settings.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
