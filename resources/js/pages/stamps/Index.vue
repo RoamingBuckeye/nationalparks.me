@@ -38,10 +38,10 @@ const groups = computed(() =>
 <template>
     <Head title="Stamps" />
 
-    <div class="flex h-full flex-1 flex-col gap-8 p-4">
+    <div class="page page--gap-8">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight">Stamps</h1>
-            <p class="text-sm text-muted-foreground">
+            <h1 class="page-title">Stamps</h1>
+            <p class="page-desc">
                 {{ earnedCount }} of {{ totalCount }} earned — check into parks
                 to collect them.
             </p>
@@ -50,28 +50,18 @@ const groups = computed(() =>
         <section
             v-for="group in groups"
             :key="group.category"
-            class="flex flex-col gap-4"
+            class="stamps-group"
         >
-            <div class="flex items-baseline gap-3 border-b pb-2">
-                <h2 class="text-lg font-semibold tracking-tight">
+            <div class="stamps-group-header">
+                <h2 class="stamps-group-title">
                     {{ group.category }}
                 </h2>
-                <span
-                    class="font-mono text-sm text-muted-foreground tabular-nums"
-                >
+                <span class="stamps-group-count">
                     {{ group.earned }}/{{ group.stamps.length }}
                 </span>
             </div>
 
-            <div
-                class="grid justify-items-center gap-x-4 gap-y-8"
-                style="
-                    grid-template-columns: repeat(
-                        auto-fill,
-                        minmax(8.5rem, 1fr)
-                    );
-                "
-            >
+            <div class="stamps-grid">
                 <Stamp
                     v-for="stamp in group.stamps"
                     :key="stamp.id"
