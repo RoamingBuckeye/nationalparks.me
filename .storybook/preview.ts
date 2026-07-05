@@ -1,3 +1,4 @@
+import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/vue3-vite';
 
 // The design system: reset + all BEM component layers + tokens.
@@ -10,6 +11,27 @@ const preview: Preview = {
         },
         // The app defines its own body background/foreground; don't fight it.
         backgrounds: { disable: true },
+        // Breakpoints matching the CSS (sm 640 / md 768 / lg 1024).
+        viewport: {
+            options: {
+                mobile: {
+                    name: 'Mobile · 375',
+                    styles: { width: '375px', height: '720px' },
+                },
+                sm: {
+                    name: 'sm · 640',
+                    styles: { width: '640px', height: '820px' },
+                },
+                md: {
+                    name: 'md · 768',
+                    styles: { width: '768px', height: '900px' },
+                },
+                lg: {
+                    name: 'lg · 1024',
+                    styles: { width: '1024px', height: '900px' },
+                },
+            },
+        },
         options: {
             storySort: {
                 order: [
@@ -21,34 +43,18 @@ const preview: Preview = {
             },
         },
     },
-    globalTypes: {
-        theme: {
-            description: 'Passport theme',
-            defaultValue: 'light',
-            toolbar: {
-                title: 'Theme',
-                icon: 'paintbrush',
-                items: [
-                    { value: 'light', title: 'Light' },
-                    { value: 'dark', title: 'Passport night' },
-                ],
-                dynamicTitle: true,
-            },
-        },
-    },
     decorators: [
-        (story, context) => {
-            document.documentElement.classList.toggle(
-                'dark',
-                context.globals.theme === 'dark',
-            );
-
-            return {
-                components: { story },
-                template:
-                    '<div style="padding: 2rem; background: var(--color-background); color: var(--color-foreground);"><story /></div>',
-            };
-        },
+        // First-party light / passport-night toggle — sets .dark on <html>.
+        withThemeByClassName({
+            themes: { light: '', dark: 'dark' },
+            defaultTheme: 'light',
+            parentSelector: 'html',
+        }),
+        (story) => ({
+            components: { story },
+            template:
+                '<div style="padding: 2rem; background: var(--color-background); color: var(--color-foreground);"><story /></div>',
+        }),
     ],
 };
 

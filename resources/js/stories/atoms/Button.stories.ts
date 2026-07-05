@@ -61,3 +61,19 @@ export const Sizes: Story = {
             </div>`,
     }),
 };
+
+// The `pseudo-*` classes come from storybook-addon-pseudo-states and force the
+// matching CSS state, so every interactive state is documented side by side.
+export const States: Story = {
+    render: () => ({
+        components: { Button },
+        template: `
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+                <Button>Default</Button>
+                <Button class="pseudo-hover">Hover</Button>
+                <Button class="pseudo-focus-visible">Focus</Button>
+                <Button class="pseudo-active">Active</Button>
+                <Button disabled>Disabled</Button>
+            </div>`,
+    }),
+};
