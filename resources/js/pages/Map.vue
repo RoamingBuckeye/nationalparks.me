@@ -20,27 +20,25 @@ defineOptions({
 <template>
     <Head title="Map" />
 
-    <div class="flex h-full flex-1 flex-col gap-4 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="page page--gap-4">
+        <div class="page-topbar">
             <div>
-                <h1 class="text-2xl font-semibold tracking-tight">Map</h1>
-                <p class="text-sm text-muted-foreground">
+                <h1 class="page-title">Map</h1>
+                <p class="page-desc">
                     {{ visitedCount }} of {{ totalCount }} parks visited
                 </p>
             </div>
-            <div class="flex items-center gap-4 text-sm text-muted-foreground">
-                <span class="flex items-center gap-1.5">
-                    <span class="size-3 rounded-full bg-brand-700" />
+            <div class="map-legend">
+                <span class="map-legend-item">
+                    <span class="map-dot map-dot--visited" />
                     Visited
                 </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="size-3 rounded-full bg-gray-400" />
+                <span class="map-legend-item">
+                    <span class="map-dot map-dot--unvisited" />
                     Not visited
                 </span>
-                <span class="flex items-center gap-1.5">
-                    <span
-                        class="size-3 rounded-full border-2 border-red-600 bg-gray-400"
-                    />
+                <span class="map-legend-item">
+                    <span class="map-dot map-dot--closure" />
                     Active closure
                 </span>
             </div>

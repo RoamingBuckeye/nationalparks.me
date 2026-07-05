@@ -48,7 +48,11 @@
 @import './templates/auth-layout.css';
 @import './templates/settings-layout.css';
 @import './pages/auth.css';
+@import './pages/dashboard.css';
+@import './pages/map.css';
+@import './pages/page.css';
 @import './pages/settings.css';
+@import './pages/stamps.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

@@ -49,62 +49,48 @@ const stats = computed(() => [
 <template>
     <Head title="Dashboard" />
 
-    <div class="flex h-full flex-1 flex-col gap-6 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="page page--gap-6">
+        <div class="page-topbar">
             <div>
-                <h1 class="text-2xl font-semibold tracking-tight">
-                    Welcome back, {{ greetingName }}
-                </h1>
-                <p class="text-sm text-muted-foreground">
+                <h1 class="page-title">Welcome back, {{ greetingName }}</h1>
+                <p class="page-desc">
                     Here's your National Parks progress at a glance.
                 </p>
             </div>
             <Button as-child>
-                <Link :href="parksIndex()">
-                    <Mountain class="size-4" /> Browse parks
-                </Link>
+                <Link :href="parksIndex()"> <Mountain /> Browse parks </Link>
             </Button>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-3">
+        <div class="dashboard-stats">
             <Card v-for="stat in stats" :key="stat.label">
-                <CardHeader
-                    class="flex flex-row items-center justify-between space-y-0 pb-2"
-                >
-                    <CardTitle
-                        class="text-sm font-medium text-muted-foreground"
-                    >
+                <CardHeader class="dashboard-stat-header">
+                    <CardTitle class="dashboard-stat-label">
                         {{ stat.label }}
                     </CardTitle>
-                    <component
-                        :is="stat.icon"
-                        class="size-5 text-brand-700 dark:text-brand-400"
-                    />
+                    <component :is="stat.icon" class="dashboard-stat-icon" />
                 </CardHeader>
                 <CardContent>
-                    <p class="font-mono text-3xl font-semibold tabular-nums">
+                    <p class="dashboard-stat-value">
                         {{ stat.value }}
                     </p>
                 </CardContent>
             </Card>
         </div>
 
-        <Card class="flex-1">
+        <Card class="dashboard-recent">
             <CardHeader>
-                <CardTitle class="text-base">Recent visits</CardTitle>
+                <CardTitle class="dashboard-recent-title"
+                    >Recent visits</CardTitle
+                >
             </CardHeader>
             <CardContent>
-                <div
-                    v-if="recentVisits.length === 0"
-                    class="flex flex-col items-center justify-center gap-3 py-12 text-center"
-                >
-                    <div
-                        class="flex size-12 items-center justify-center rounded-full bg-brand-700/10 text-brand-700 dark:text-brand-400"
-                    >
-                        <MapPin class="size-6" />
+                <div v-if="recentVisits.length === 0" class="dashboard-empty">
+                    <div class="dashboard-empty-icon-box">
+                        <MapPin class="dashboard-empty-icon" />
                     </div>
-                    <h2 class="text-lg font-semibold">No visits logged yet</h2>
-                    <p class="max-w-md text-sm text-muted-foreground">
+                    <h2 class="dashboard-empty-title">No visits logged yet</h2>
+                    <p class="dashboard-empty-text">
                         Check in to a park to start tracking your visits, points
                         of interest, and journal entries.
                     </p>
@@ -113,22 +99,22 @@ const stats = computed(() => [
                     </Button>
                 </div>
 
-                <ul v-else class="flex flex-col gap-1">
+                <ul v-else class="dashboard-visits">
                     <li v-for="visit in recentVisits" :key="visit.id">
                         <Link
                             :href="visitShow(visit.id)"
-                            class="flex items-center justify-between gap-3 rounded-md px-3 py-2 hover:bg-muted"
+                            class="dashboard-visit"
                         >
-                            <span class="flex items-center gap-2 font-medium">
+                            <span class="dashboard-visit-name">
                                 {{ visit.park_name }}
                                 <span
                                     v-if="visit.is_live"
-                                    class="rounded-full bg-brand-700/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400"
+                                    class="dashboard-visit-live"
                                 >
                                     Live
                                 </span>
                             </span>
-                            <span class="text-sm text-muted-foreground">
+                            <span class="dashboard-visit-date">
                                 {{ visit.started_at }}
                             </span>
                         </Link>
