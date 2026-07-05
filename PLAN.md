@@ -316,3 +316,72 @@ Designed in a Q&A session on 2026-06-28. Decisions are reflected below; the unde
 ## Open questions
 
 1. ~~**Map provider:** Mapbox vs. Leaflet + OpenStreetMap.~~ **Resolved 2026-06-29 → Leaflet + OpenStreetMap** (free, no API key/token, dependency-light). Revisit Mapbox only if we want vector tiles / richer styling later.
+
+## Deployment (Laravel Cloud)
+
+Target: deploy the **web** app to [Laravel Cloud](https://cloud.laravel.com) (Git-based deploys, managed compute + Postgres + KV + object storage). The mobile track ships separately through NativePHP and is out of scope here. Planning started 2026-07-05.
+
+### Platform decisions
+
+| Topic | Decision | Notes |
+|---|---|---|
+| Database | **Serverless Postgres** (Cloud-native) | Switch from the MySQL used in Sail dev. Requires a portability pass — see "Postgres portability" below. |
+| Mail | **Amazon SES** | Needs `aws/aws-sdk-php` added and SES production-access (out of sandbox) before real signups. |
+| Object storage | **Laravel Cloud object storage** | S3-compatible; the existing `s3` disk in `config/filesystems.php` drives it. `FILESYSTEM_DISK=s3`. |
+| Cache / session / queue | **Cloud KV (Redis)** | Horizon requires Redis; move all three off the `database` driver. |
+| Queue worker | **Horizon** process (always-on) | Must be running before signups open — mailables/notifications are queued. |
+| Scheduler | Cloud **scheduler** toggle | Runs `schedule:run`; drives `nps:sync` + `nps:sync alerts`. |
+| SSR | **None** | Inertia SSR bundle is disabled; no Node process to host. |
+
+### Already deploy-ready
+
+- Health check `/up` wired in `bootstrap/app.php` (Cloud's ping target).
+- `s3` disk pre-wired with `AWS_ENDPOINT` + path-style for S3-compatible storage; `photos.disk` records per-file disk.
+- `env()` confined to config files (PHP rule), so `config:cache` is safe.
+- Horizon + the `nps:sync` schedule already exist.
+
+### Blockers (must clear before first boot)
+
+1. **Mail is `log`** — email verification is required and email-code 2FA both send mail; no mailer means no one can complete sign-in.
+2. **Queued mail + worker** — all mailables/notifications are queued, so Horizon must be up on first deploy or verification emails never send.
+3. **DB driver + creds** — `.env.example` defaults to sqlite; wire Cloud's Postgres and run `migrate --force` on deploy.
+4. **cache / session / queue = `database`** — point at Cloud KV (Redis).
+5. **App flags** — `APP_ENV=production`, `APP_DEBUG=false`, generate `APP_KEY`.
+6. **Storage** — provision the bucket, set `FILESYSTEM_DISK=s3` + creds (photos default to ephemeral `local` otherwise).
+
+### Repo changes
+
+- Add `aws/aws-sdk-php` (required by the SES mail transport).
+- **Postgres portability pass** — run the 206 Pest suite against Postgres and fix case-sensitivity divergences from MySQL: the parks search filter (`LIKE` → `ILIKE`/`whereRaw LOWER(...)`), email uniqueness/login casing, and any `whereJsonContains` on `parks.states`.
+- `->trustProxies()` in `bootstrap/app.php` — correct HTTPS/scheme behind Cloud's load balancer (matters for passkeys + absolute URLs).
+- `LOG_CHANNEL=stderr` so Cloud captures logs.
+- Confirm the Horizon dashboard gate (`viewHorizon`) authorizes the owner in production, not just `local`.
+- Consider moving `nativephp/mobile` to `require-dev` to slim the prod image (verify it's not referenced at web runtime first).
+
+### Build & deploy
+
+- **Build:** Cloud runs `composer install`; add `npm ci && npm run build`. Wayfinder generates `@/routes` + `@/actions` during `vite build` by calling artisan, so composer must install first (Cloud's default order satisfies this).
+- **Deploy:** `php artisan migrate --force`; Cloud handles `optimize` (config/route/event cache). No `storage:link` needed — photos live in the bucket and stream through the authorized `/photos/{photo}` route.
+
+### Post-deploy / data & verification
+
+- Set `NPS_API_KEY`; run `nps:sync` (parks + POIs + alerts) and the stamp seeder once (~63 parks / ~7.5k POIs, well under the rate limit).
+- Enable the Cloud scheduler; start the Horizon worker.
+- Smoke-test the auth-critical path on the prod domain: register → verification email → TOTP + email-code 2FA → passkey enrollment (WebAuthn RP ID is domain-bound).
+
+### Environment (dev default → production on Cloud)
+
+| Var | Dev default | Production |
+|---|---|---|
+| `APP_ENV` / `APP_DEBUG` | `local` / `true` | `production` / `false` |
+| `APP_KEY` | empty | generated |
+| `APP_URL` | `http://localhost` | `https://nationalparks.me` |
+| `DB_CONNECTION` + `DB_*` | `sqlite` | `pgsql` + Cloud Postgres creds |
+| `CACHE_STORE` | `database` | `redis` (Cloud KV) |
+| `SESSION_DRIVER` | `database` | `redis` |
+| `QUEUE_CONNECTION` | `database` | `redis` |
+| `FILESYSTEM_DISK` | `local` | `s3` (Cloud bucket) |
+| `MAIL_MAILER` + creds | `log` | `ses` + `AWS_*` |
+| `LOG_CHANNEL` | `stack` | `stderr` |
+| `NPS_API_KEY` | set locally | set in Cloud |
+| `HORIZON_AUTHORIZED_EMAILS` | empty | owner email(s) — gates the Horizon dashboard |

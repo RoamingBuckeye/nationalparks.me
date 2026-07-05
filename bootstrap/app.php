@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind Laravel Cloud's load balancer the app is only reachable through
+        // the proxy, so trust it for correct client IP + HTTPS scheme detection
+        // (the latter matters for passkeys/WebAuthn and absolute URL generation).
+        $middleware->trustProxies(at: '*');
+
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->web(append: [

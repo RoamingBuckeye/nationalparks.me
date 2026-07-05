@@ -19,6 +19,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Authorized Emails
+    |--------------------------------------------------------------------------
+    |
+    | In non-local environments the Horizon dashboard is gated by the
+    | "viewHorizon" gate (see HorizonServiceProvider). Set this to a
+    | comma-separated list of the email addresses allowed to view it.
+    |
+    */
+
+    'authorized_emails' => array_filter(array_map(
+        'trim',
+        explode(',', (string) env('HORIZON_AUTHORIZED_EMAILS', '')),
+    )),
+
+    /*
+    |--------------------------------------------------------------------------
     | Horizon Domain
     |--------------------------------------------------------------------------
     |
