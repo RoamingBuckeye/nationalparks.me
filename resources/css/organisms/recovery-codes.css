@@ -1,0 +1,91 @@
+/* TwoFactorRecoveryCodes — reveal/regenerate recovery codes. Organism.
+   (np-pulse comes from atoms/skeleton.css.) */
+
+.recovery-codes {
+    width: 100%;
+}
+.recovery-codes__title {
+    display: flex;
+    gap: 0.75rem;
+}
+.recovery-codes__title svg {
+    width: 1rem;
+    height: 1rem;
+}
+.recovery-codes__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    user-select: none;
+}
+@media (min-width: 640px) {
+    .recovery-codes__actions {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+.recovery-codes__view-btn {
+    width: fit-content;
+}
+.recovery-codes__reveal {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+.recovery-codes__reveal--open {
+    height: auto;
+    opacity: 1;
+}
+.recovery-codes__error {
+    margin-top: 1.5rem;
+}
+.recovery-codes__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+.recovery-codes__list {
+    display: grid;
+    gap: 0.25rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-muted);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+}
+.recovery-codes__skeletons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.recovery-codes__skeleton {
+    height: 1rem;
+    border-radius: var(--radius-sm);
+    background: color-mix(
+        in oklab,
+        var(--color-muted-foreground) 20%,
+        transparent
+    );
+    animation: np-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.recovery-codes__hint {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+    user-select: none;
+}
+.recovery-codes__hint-strong {
+    font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .recovery-codes__reveal {
+        transition: none;
+    }
+    .recovery-codes__skeleton {
+        animation: none;
+    }
+}

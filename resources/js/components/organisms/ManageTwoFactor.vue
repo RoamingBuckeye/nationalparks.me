@@ -3,8 +3,8 @@ import { Form } from '@inertiajs/vue3';
 import { ShieldCheck } from '@lucide/vue';
 import { onUnmounted, ref } from 'vue';
 import Heading from '@/components/atoms/Heading.vue';
-import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
-import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
+import TwoFactorRecoveryCodes from '@/components/organisms/TwoFactorRecoveryCodes.vue';
+import TwoFactorSetupModal from '@/components/organisms/TwoFactorSetupModal.vue';
 import { Button } from '@/components/ui/button';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { disable, enable } from '@/routes/two-factor';
@@ -28,18 +28,15 @@ onUnmounted(() => clearTwoFactorAuthData());
 </script>
 
 <template>
-    <div v-if="canManageTwoFactor" class="space-y-6">
+    <div v-if="canManageTwoFactor" class="manage-2fa">
         <Heading
             variant="small"
             title="Two-factor authentication"
             description="Manage your two-factor authentication settings"
         />
 
-        <div
-            v-if="!twoFactorEnabled"
-            class="flex flex-col items-start justify-start space-y-4"
-        >
-            <p class="text-sm text-muted-foreground">
+        <div v-if="!twoFactorEnabled" class="manage-2fa__section">
+            <p class="manage-2fa__text">
                 When you enable two-factor authentication, you will be prompted
                 for a secure pin during login. This pin can be retrieved from a
                 TOTP-supported application on your phone.
@@ -62,14 +59,14 @@ onUnmounted(() => clearTwoFactorAuthData());
             </div>
         </div>
 
-        <div v-else class="flex flex-col items-start justify-start space-y-4">
-            <p class="text-sm text-muted-foreground">
+        <div v-else class="manage-2fa__section">
+            <p class="manage-2fa__text">
                 You will be prompted for a secure, random pin during login,
                 which you can retrieve from the TOTP-supported application on
                 your phone.
             </p>
 
-            <div class="relative inline">
+            <div class="manage-2fa__disable">
                 <Form v-bind="disable.form()" #default="{ processing }">
                     <Button
                         variant="destructive"

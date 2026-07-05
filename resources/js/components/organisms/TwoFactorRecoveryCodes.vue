@@ -39,10 +39,10 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Card class="w-full">
+    <Card class="recovery-codes">
         <CardHeader>
-            <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />2FA recovery codes
+            <CardTitle class="recovery-codes__title">
+                <LockKeyhole />2FA recovery codes
             </CardTitle>
             <CardDescription>
                 Recovery codes let you regain access if you lose your 2FA
@@ -50,14 +50,12 @@ onMounted(async () => {
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <div
-                class="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between"
-            >
-                <Button @click="toggleRecoveryCodesVisibility" class="w-fit">
-                    <component
-                        :is="isRecoveryCodesVisible ? EyeOff : Eye"
-                        class="size-4"
-                    />
+            <div class="recovery-codes__actions">
+                <Button
+                    @click="toggleRecoveryCodesVisibility"
+                    class="recovery-codes__view-btn"
+                >
+                    <component :is="isRecoveryCodesVisible ? EyeOff : Eye" />
                     {{ isRecoveryCodesVisible ? 'Hide' : 'View' }} recovery
                     codes
                 </Button>
@@ -81,25 +79,26 @@ onMounted(async () => {
             </div>
             <div
                 :class="[
-                    'relative overflow-hidden transition-all duration-300',
-                    isRecoveryCodesVisible
-                        ? 'h-auto opacity-100'
-                        : 'h-0 opacity-0',
+                    'recovery-codes__reveal',
+                    { 'recovery-codes__reveal--open': isRecoveryCodesVisible },
                 ]"
             >
-                <div v-if="errors?.length" class="mt-6">
+                <div v-if="errors?.length" class="recovery-codes__error">
                     <AlertError :errors="errors" />
                 </div>
-                <div v-else class="mt-3 space-y-3">
+                <div v-else class="recovery-codes__body">
                     <div
                         ref="recoveryCodeSectionRef"
-                        class="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
+                        class="recovery-codes__list"
                     >
-                        <div v-if="!recoveryCodesList.length" class="space-y-2">
+                        <div
+                            v-if="!recoveryCodesList.length"
+                            class="recovery-codes__skeletons"
+                        >
                             <div
                                 v-for="n in 8"
                                 :key="n"
-                                class="h-4 animate-pulse rounded bg-muted-foreground/20"
+                                class="recovery-codes__skeleton"
                             ></div>
                         </div>
                         <div
@@ -110,11 +109,14 @@ onMounted(async () => {
                             {{ code }}
                         </div>
                     </div>
-                    <p class="text-xs text-muted-foreground select-none">
+                    <p class="recovery-codes__hint">
                         Each recovery code can be used once to access your
                         account and will be removed after use. If you need more,
                         click
-                        <span class="font-bold">Regenerate codes</span> above.
+                        <span class="recovery-codes__hint-strong"
+                            >Regenerate codes</span
+                        >
+                        above.
                     </p>
                 </div>
             </div>

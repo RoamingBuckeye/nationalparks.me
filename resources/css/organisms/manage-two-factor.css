@@ -1,0 +1,21 @@
+/* ManageTwoFactor — enable/disable 2FA + recovery codes. Organism. */
+
+.manage-2fa {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.manage-2fa__section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.manage-2fa__text {
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+}
+.manage-2fa__disable {
+    position: relative;
+    display: inline;
+}
