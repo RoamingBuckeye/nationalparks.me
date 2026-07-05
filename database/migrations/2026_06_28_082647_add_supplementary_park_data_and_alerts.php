@@ -23,7 +23,7 @@ return new class extends Migration
 
         Schema::create('alerts', function (Blueprint $table): void {
             $table->id();
-            $table->uuid('nps_id');
+            $table->string('nps_id');
             $table->foreignId('park_id')->constrained()->cascadeOnDelete();
             $table->string('park_code', 16);
             $table->string('category', 64)->nullable();

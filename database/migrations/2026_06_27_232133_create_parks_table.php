@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('parks', function (Blueprint $table): void {
             $table->id();
-            $table->uuid('nps_id')->unique();
+            $table->string('nps_id')->unique();
             $table->string('park_code', 16)->unique();
             $table->string('name');
             $table->string('full_name');

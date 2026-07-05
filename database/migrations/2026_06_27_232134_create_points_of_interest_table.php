@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('points_of_interest', function (Blueprint $table): void {
             $table->id();
-            $table->uuid('nps_id')->unique();
+            $table->string('nps_id')->unique();
             $table->foreignId('park_id')->constrained()->cascadeOnDelete();
             $table->string('kind', 32);
             $table->string('title');
