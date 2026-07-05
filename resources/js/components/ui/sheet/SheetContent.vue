@@ -42,7 +42,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       <slot />
 
       <DialogClose class="sheet-content__close">
-        <X class="size-4" />
+        <X />
         <span class="sr-only">Close</span>
       </DialogClose>
     </DialogContent>
