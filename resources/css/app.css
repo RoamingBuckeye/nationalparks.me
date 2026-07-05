@@ -73,7 +73,7 @@
     --secondary: #e7e9df;
     --secondary-foreground: #1e3a2c;
     --muted: #ecefe4; /* panel */
-    --muted-foreground: #6c7867; /* sage */
+    --muted-foreground: #5c6857; /* sage — darkened to meet WCAG AA (4.5:1) */
     --accent: #e4e7db;
     --accent-foreground: #1e3a2c;
     --destructive: #b23b2e;
