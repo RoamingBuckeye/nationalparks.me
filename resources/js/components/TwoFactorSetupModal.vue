@@ -3,8 +3,8 @@ import { Form } from '@inertiajs/vue3';
 import { Check, Copy, ScanLine } from '@lucide/vue';
 import { useClipboard } from '@vueuse/core';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
-import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/atoms/InputError.vue';
+import AlertError from '@/components/molecules/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,

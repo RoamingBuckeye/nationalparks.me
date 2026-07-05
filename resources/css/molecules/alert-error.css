@@ -1,0 +1,7 @@
+/* AlertError — a destructive Alert listing validation errors. Molecule. */
+
+.alert-error__list {
+    list-style: disc;
+    list-style-position: inside;
+    font-size: 0.875rem;
+}

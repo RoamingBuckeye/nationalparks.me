@@ -4,7 +4,7 @@ import { useTemplateRef } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import Heading from '@/components/atoms/Heading.vue';
 import InputError from '@/components/atoms/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
+import PasswordInput from '@/components/molecules/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,

@@ -37,16 +37,16 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
 
 <template>
     <div v-if="isSupported">
-        <div class="grid gap-2">
+        <div class="passkey-verify__actions">
             <Button
                 type="button"
                 variant="outline"
-                class="w-full"
+                class="passkey-verify__button"
                 @click="verify"
                 :disabled="isLoading"
             >
                 <Spinner v-if="isLoading" />
-                <KeyRound v-else class="h-4 w-4" />
+                <KeyRound v-else />
                 {{
                     isLoading
                         ? (props.loadingLabel ?? 'Authenticating...')
@@ -54,17 +54,17 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
                 }}
             </Button>
 
-            <div v-if="error" class="text-center">
+            <div v-if="error" class="passkey-verify__error">
                 <InputError :message="error" />
             </div>
         </div>
 
-        <div class="relative my-6">
-            <div class="absolute inset-0 flex items-center">
-                <Separator class="w-full" />
+        <div class="passkey-verify__separator">
+            <div class="passkey-verify__separator-line">
+                <Separator />
             </div>
-            <div class="relative flex justify-center text-xs uppercase">
-                <span class="bg-background px-2 text-muted-foreground">
+            <div class="passkey-verify__separator-label">
+                <span class="passkey-verify__separator-text">
                     {{ props.separator ?? 'Or continue with email' }}
                 </span>
             </div>
