@@ -23,9 +23,12 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        // Dedicated SES credentials, kept separate from the AWS_* group that
+        // Laravel Cloud injects for the R2 object-storage disk. Sharing AWS_*
+        // would point the SES client at the bucket's credentials.
+        'key' => env('SES_KEY'),
+        'secret' => env('SES_SECRET'),
+        'region' => env('SES_REGION', 'us-east-1'),
     ],
 
     'slack' => [
