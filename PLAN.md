@@ -352,9 +352,11 @@ Provisioned via the `cloud` CLI + REST API. **Created 2026-07-05:**
 
 **SES mail (2026-07-06):** `SES_KEY`/`SES_SECRET` set, `SES_REGION=us-east-1` (IAM user `nationalparks`, account `421734977651`, send-only policy). Mail goes live once (a) the `nationalparks.me` domain identity finishes verifying (DKIM/DMARC records added, pending) and (b) SES **production access** is granted to exit the sandbox (until then, sends only to verified addresses).
 
-**Production data seeded (2026-07-06):** `nps:sync` on the production environment (via the Cloud command runner) loaded **63 parks, 7,501 POIs, 176 alerts** — matching the local dataset. Commands run synchronously and concurrently; Cloud buffers their output until exit.
+**Production data seeded (2026-07-06):** loaded via the Cloud command runner — **63 parks, 7,501 POIs, 176 alerts** (`nps:sync`) and the **45-stamp catalog** (`db:seed --class=StampSeeder`). Matches the local dataset. Commands run synchronously and concurrently; Cloud buffers their output until exit.
 
-**Still to provision:** confirm SES verification + sandbox exit; seed the **Stamps catalog** (`db:seed --class=StampSeeder`, 45 stamps) for the collectible feature; then the custom-domain DNS cutover to `nationalparks.me` (update `APP_URL`, which also fixes the passkey RP ID) before opening signups (email verification is required, so mail must work first).
+**Domain live (2026-07-06):** `nationalparks.me` is the primary domain (SSL verified). `APP_URL=https://nationalparks.me`, applied via a redeploy. Smoke-tested — `/up`, `/`, `/login` all 200, assets served from the real domain.
+
+**Still to provision:** SES only — confirm the `nationalparks.me` identity finishes verifying and request SES production access (sandbox exit). Once mail works, open signups (email verification is required).
 
 > **CLI note:** `laravel/cloud-cli` v0.5.0 crashes parsing create-command responses (`JsonException` in `Response.php:211`), so resource **creates** are done against the REST API directly (`POST https://cloud.laravel.com/api/...`, `Authorization: Bearer <token>`). Read commands (`application:list`, `usage`) work fine.
 
