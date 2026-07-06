@@ -352,7 +352,9 @@ Provisioned via the `cloud` CLI + REST API. **Created 2026-07-05:**
 
 **SES mail (2026-07-06):** `SES_KEY`/`SES_SECRET` set, `SES_REGION=us-east-1` (IAM user `nationalparks`, account `421734977651`, send-only policy). Mail goes live once (a) the `nationalparks.me` domain identity finishes verifying (DKIM/DMARC records added, pending) and (b) SES **production access** is granted to exit the sandbox (until then, sends only to verified addresses).
 
-**Still to provision:** confirm SES verification + sandbox exit, then the custom-domain DNS cutover to `nationalparks.me` (update `APP_URL`, which also fixes the passkey RP ID) before opening signups (email verification is required, so mail must work first).
+**Production data seeded (2026-07-06):** `nps:sync` on the production environment (via the Cloud command runner) loaded **63 parks, 7,501 POIs, 176 alerts** — matching the local dataset. Commands run synchronously and concurrently; Cloud buffers their output until exit.
+
+**Still to provision:** confirm SES verification + sandbox exit; seed the **Stamps catalog** (`db:seed --class=StampSeeder`, 45 stamps) for the collectible feature; then the custom-domain DNS cutover to `nationalparks.me` (update `APP_URL`, which also fixes the passkey RP ID) before opening signups (email verification is required, so mail must work first).
 
 > **CLI note:** `laravel/cloud-cli` v0.5.0 crashes parsing create-command responses (`JsonException` in `Response.php:211`), so resource **creates** are done against the REST API directly (`POST https://cloud.laravel.com/api/...`, `Authorization: Bearer <token>`). Read commands (`application:list`, `usage`) work fine.
 
